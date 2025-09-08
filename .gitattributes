@@ -1,0 +1,11 @@
+# Ensure consistent line endings
+* text=auto
+
+# Unity YAML (scenes, prefabs, etc.)
+*.unity text eol=lf
+*.prefab text eol=lf
+*.asset text eol=lf
+*.meta text eol=lf
+
+# C# scripts
+*.cs text diff=csharp
