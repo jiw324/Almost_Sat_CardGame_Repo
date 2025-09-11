@@ -11,7 +11,7 @@ public class CardMenu : MonoBehaviour
 
     private Vector3 originalPosition;
 
-    [SerializeField] private Vector3 focusPosition = new Vector3(180f, 0f, 0f);
+    private Vector3 focusPosition = new Vector3(240f, 0f, 0f);
 
     [SerializeField] private GameObject subMenuPanel; // reference to submenu
 
