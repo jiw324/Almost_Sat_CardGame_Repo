@@ -1,10 +1,23 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class SceneSwitch : MonoBehaviour
 {
-    public void SceneChanger(string sceneName)
+    public void SceneChanger(string route)
     {
-        SceneManager.LoadScene(sceneName);
+        GameRoute gameRoute = GameRoute.MainMenu;
+        switch(route)
+        {
+            case "MainMenu":
+                gameRoute = GameRoute.MainMenu;
+                break;
+            case "CardBoard":
+                gameRoute = GameRoute.Combat;
+                break;
+            default:
+                gameRoute = GameRoute.MainMenu;
+                break;
+        }
+
+        SceneLoader.Instance.Go(gameRoute);
     }
 }
