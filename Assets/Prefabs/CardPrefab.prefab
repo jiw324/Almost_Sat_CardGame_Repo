@@ -99,7 +99,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 24
   m_fontStyle: 32
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 16
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -300,6 +300,7 @@ GameObject:
   - component: {fileID: 4950528935624382978}
   - component: {fileID: 2308952942210704479}
   - component: {fileID: 5468993316143177581}
+  - component: {fileID: -7886420612243954633}
   m_Layer: 5
   m_Name: CardPrefab
   m_TagString: Untagged
@@ -410,6 +411,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6f01263cbc43446fbb8dc05a2422752, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-7886420612243954633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4475201272967640345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27c9c196f47e72b45b574676de4a48e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  demoTarget: {fileID: 0}
 --- !u!1 &4691758539144669897
 GameObject:
   m_ObjectHideFlags: 0
