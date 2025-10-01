@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 public class LootNode : INode
 {
+    public NodeDefinition nodeDefinition { get; }
     public List<INode> parents { get; }
     public List<INode> children { get; }
     public NodeType nodeType { get; }
@@ -9,8 +10,9 @@ public class LootNode : INode
     public int pathDepth { get; }
     public float nodeWeight { get; }
 
-    public LootNode(int depthIndex, int pathDepth)
+    public LootNode(NodeDefinition nodeDefinition, int depthIndex, int pathDepth)
     {
+        this.nodeDefinition = nodeDefinition;
         this.parents = new List<INode>();
         this.children = new List<INode>();
         this.nodeType = NodeType.Loot;
@@ -18,11 +20,4 @@ public class LootNode : INode
         this.depthIndex = depthIndex;
         this.pathDepth = pathDepth;
     }
-
-    public List<INode> GetParents() { return parents; }
-    public List<INode> GetChildren() { return children; }
-    public NodeType GetNodeType() { return nodeType; }
-    public float GetNodeWeight() { return nodeWeight; }
-    public int GetDepthIndex() { return depthIndex; }
-    public int GetPathDepth() { return pathDepth; }
 }

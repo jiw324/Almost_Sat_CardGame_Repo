@@ -1,22 +1,21 @@
-
 public class NodeFactory
 {
-    public INode CreateNode(NodeType nodeType, int depthIndex, int pathDepth)
+    public INode CreateNode(NodeDefinition nodeDefinition, int depthIndex, int pathDepth)
     {
-        switch (nodeType)
+        switch (nodeDefinition.nodeType)
         {
             case NodeType.Loot:
-                return new LootNode(depthIndex, pathDepth);
+                return new LootNode(nodeDefinition, depthIndex, pathDepth);
             case NodeType.Rest:
-                return new RestNode(depthIndex, pathDepth);
+                return new RestNode(nodeDefinition, depthIndex, pathDepth);
             case NodeType.Shop:
-                return new ShopNode(depthIndex, pathDepth);
+                return new ShopNode(nodeDefinition, depthIndex, pathDepth);
             case NodeType.Event:
-                return new EventNode(depthIndex, pathDepth);
+                return new EventNode(nodeDefinition, depthIndex, pathDepth);
             case NodeType.Combat:
-                return new CombatNode(depthIndex, pathDepth);
+                return new CombatNode(nodeDefinition, depthIndex, pathDepth);
             default:
-                throw new System.ArgumentException("Invalid Node Type", nameof(nodeType));
+                throw new System.ArgumentException("Invalid Node Type", nameof(nodeDefinition.nodeType));
         }
     }   
 }

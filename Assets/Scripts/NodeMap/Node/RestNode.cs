@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 public class RestNode : INode
 {
+    public NodeDefinition nodeDefinition { get; }
     public List<INode> parents { get; }
     public List<INode> children { get; }
     public NodeType nodeType { get; }
@@ -9,8 +10,9 @@ public class RestNode : INode
     public int pathDepth { get; }
     public float nodeWeight { get; }
 
-    public RestNode(int depthIndex, int pathDepth)
+    public RestNode(NodeDefinition nodeDefinition, int depthIndex, int pathDepth)
     {
+        this.nodeDefinition = nodeDefinition;
         this.parents = new List<INode>();
         this.children = new List<INode>();
         this.nodeType = NodeType.Rest;
@@ -18,11 +20,4 @@ public class RestNode : INode
         this.depthIndex = depthIndex;
         this.pathDepth = pathDepth;
     }
-
-    public List<INode> GetParents() { return parents; }
-    public List<INode> GetChildren() { return children; }
-    public NodeType GetNodeType() { return nodeType; }
-    public float GetNodeWeight() { return nodeWeight; }
-    public int GetDepthIndex() { return depthIndex; }
-    public int GetPathDepth() { return pathDepth; }
 }
