@@ -640,6 +640,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a093d4c90d7b4da4cbf72a793d17f6ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetCamera: {fileID: 1096593365}
+  sceneSwitch: {fileID: 1353077992}
 --- !u!1 &1353077991
 GameObject:
   m_ObjectHideFlags: 0
