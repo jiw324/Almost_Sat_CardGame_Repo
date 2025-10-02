@@ -18,7 +18,7 @@ public class CardUI : MonoBehaviour
 
 		titleText.text = cardData.cardName;
 		descriptionText.text = cardData.description;
-		costText.text = cardData.cost.ToString();
+		//costText.text = cardData.cost.ToString();
 		artworkImage.sprite = card.artwork;
 	}
 
