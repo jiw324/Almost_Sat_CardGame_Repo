@@ -1352,7 +1352,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   handArea: {fileID: 332714304}
-  cardPrefab: {fileID: 4475201272967640345, guid: a9b1a22910ccb47dbacf7b1a983d82f2, type: 3}
+  cardPrefab: {fileID: 5711857772937691287, guid: 5949bbd7406a44545a8f682c3bdc768d, type: 3}
   startingCards:
   - {fileID: 11400000, guid: a545b37dd65b34a7abe27f48d28db274, type: 2}
   - {fileID: 11400000, guid: 5b79d461c9faa4db0b99541f110f9f39, type: 2}
