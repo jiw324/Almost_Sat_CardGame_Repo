@@ -9,10 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e43063e3377c44b9bff5c9ab8eda1ab, type: 3}
-  m_Name: Fireball
+  m_Script: {fileID: 11500000, guid: 18e184ccc326e7642ab183669971b6ff, type: 3}
+  m_Name: damage5
   m_EditorClassIdentifier: 
-  cardName: Fireball
-  cost: 3
-  description: ' Shoots ball of fire at card for x damage'
-  artwork: {fileID: 5353841184698615464, guid: 03a0eb247d06d47b1a5acaedc423126c, type: 3}
+  amount: 6
