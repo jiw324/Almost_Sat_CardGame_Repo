@@ -320,7 +320,6 @@ GameObject:
   - component: {fileID: 585610852}
   - component: {fileID: 585610851}
   - component: {fileID: 585610850}
-  - component: {fileID: 585610849}
   m_Layer: 0
   m_Name: MapBase
   m_TagString: Untagged
@@ -328,27 +327,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!65 &585610849
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 585610848}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &585610850
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -443,7 +421,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7162942283949748320, guid: 0f0cf2f56c5eb094d9ffce64fe1cf4ce, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.102
+      value: 0.207
       objectReference: {fileID: 0}
     - target: {fileID: 7162942283949748320, guid: 0f0cf2f56c5eb094d9ffce64fe1cf4ce, type: 3}
       propertyPath: m_LocalPosition.y

@@ -12,14 +12,14 @@ public class ClickManager : MonoBehaviour
 
     private void OnEnable()
     {
-        controls.UI.Enable();
-        controls.UI.Click.performed += OnClick;
+        controls.NodeMap.Enable();
+        controls.NodeMap.Click.performed += OnClick;
     }
 
     private void OnDisable()
     {
-        controls.UI.Click.performed -= OnClick;
-        controls.UI.Disable();
+        controls.NodeMap.Click.performed -= OnClick;
+        controls.NodeMap.Disable();
     }
 
     private void OnClick(InputAction.CallbackContext context)
