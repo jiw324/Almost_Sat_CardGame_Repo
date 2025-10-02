@@ -1076,6 +1076,34 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""NodeMap"",
+            ""id"": ""34260cc4-8129-44db-8344-b04f372c88f8"",
+            ""actions"": [
+                {
+                    ""name"": ""Click"",
+                    ""type"": ""Button"",
+                    ""id"": ""2b395497-d0a8-427e-9909-a00ddf1c392c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""241c8b10-3e84-4e54-9e37-5547486ba12a"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": ""Press"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Click"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -1164,12 +1192,16 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_UI_ScrollWheel = m_UI.FindAction("ScrollWheel", throwIfNotFound: true);
         m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
+        // NodeMap
+        m_NodeMap = asset.FindActionMap("NodeMap", throwIfNotFound: true);
+        m_NodeMap_Click = m_NodeMap.FindAction("Click", throwIfNotFound: true);
     }
 
     ~@InputSystem_Actions()
     {
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, InputSystem_Actions.Player.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, InputSystem_Actions.UI.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_NodeMap.enabled, "This will cause a leak and performance issues, InputSystem_Actions.NodeMap.Disable() has not been called.");
     }
 
     /// <summary>
@@ -1620,6 +1652,102 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="UIActions" /> instance referencing this action map.
     /// </summary>
     public UIActions @UI => new UIActions(this);
+
+    // NodeMap
+    private readonly InputActionMap m_NodeMap;
+    private List<INodeMapActions> m_NodeMapActionsCallbackInterfaces = new List<INodeMapActions>();
+    private readonly InputAction m_NodeMap_Click;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "NodeMap".
+    /// </summary>
+    public struct NodeMapActions
+    {
+        private @InputSystem_Actions m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public NodeMapActions(@InputSystem_Actions wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "NodeMap/Click".
+        /// </summary>
+        public InputAction @Click => m_Wrapper.m_NodeMap_Click;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_NodeMap; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="NodeMapActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(NodeMapActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="NodeMapActions" />
+        public void AddCallbacks(INodeMapActions instance)
+        {
+            if (instance == null || m_Wrapper.m_NodeMapActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_NodeMapActionsCallbackInterfaces.Add(instance);
+            @Click.started += instance.OnClick;
+            @Click.performed += instance.OnClick;
+            @Click.canceled += instance.OnClick;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="NodeMapActions" />
+        private void UnregisterCallbacks(INodeMapActions instance)
+        {
+            @Click.started -= instance.OnClick;
+            @Click.performed -= instance.OnClick;
+            @Click.canceled -= instance.OnClick;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="NodeMapActions.UnregisterCallbacks(INodeMapActions)" />.
+        /// </summary>
+        /// <seealso cref="NodeMapActions.UnregisterCallbacks(INodeMapActions)" />
+        public void RemoveCallbacks(INodeMapActions instance)
+        {
+            if (m_Wrapper.m_NodeMapActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="NodeMapActions.AddCallbacks(INodeMapActions)" />
+        /// <seealso cref="NodeMapActions.RemoveCallbacks(INodeMapActions)" />
+        /// <seealso cref="NodeMapActions.UnregisterCallbacks(INodeMapActions)" />
+        public void SetCallbacks(INodeMapActions instance)
+        {
+            foreach (var item in m_Wrapper.m_NodeMapActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_NodeMapActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="NodeMapActions" /> instance referencing this action map.
+    /// </summary>
+    public NodeMapActions @NodeMap => new NodeMapActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     /// <summary>
     /// Provides access to the input control scheme.
@@ -1833,5 +1961,20 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "NodeMap" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="NodeMapActions.AddCallbacks(INodeMapActions)" />
+    /// <seealso cref="NodeMapActions.RemoveCallbacks(INodeMapActions)" />
+    public interface INodeMapActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Click" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnClick(InputAction.CallbackContext context);
     }
 }

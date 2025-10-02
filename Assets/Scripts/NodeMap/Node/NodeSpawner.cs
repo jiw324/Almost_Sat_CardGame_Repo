@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Mathematics;
 using UnityEngine;
 
 public class NodeSpawner : MonoBehaviour
@@ -43,19 +41,25 @@ public class NodeSpawner : MonoBehaviour
 
     private void SpawnPaths()
     {
+        const float NODE_RADIUS = 0.5f;
+        const float PATH_LENGTH = 0.5f;
+        const float PATH_NODE_GAP = 0.1f;
         for (int i = 0; i < nodeAnchors.Count - 1; i++)
         {
             Vector3 nodeOnePos = nodeAnchors[i].transform.position;
             Vector3 nodeTwoPos = nodeAnchors[i + 1].transform.position;
+            float nodeDist = Vector3.Distance(nodeOnePos, nodeTwoPos);
+            float pathScale = (nodeDist - PATH_NODE_GAP - NODE_RADIUS) / PATH_LENGTH;
             Vector3 midpoint = new Vector3(nodeOnePos.x + ((nodeTwoPos.x - nodeOnePos.x) / 2f), 0.02f,
                                            nodeOnePos.z + ((nodeTwoPos.z - nodeOnePos.z) / 2f));
 
-            Vector3 dir = nodeTwoPos - nodeOnePos;
-            float angleY = Mathf.Atan2(dir.z, dir.x) * Mathf.Rad2Deg;
+            Vector3 dir = (nodeTwoPos - nodeOnePos).normalized;
+            Quaternion rot = Quaternion.LookRotation(dir, Vector3.up);
 
-            GameObject pathObj = Instantiate(pathPrefab, midpoint, Quaternion.identity);
-            pathObj.transform.Rotate(0, angleY, 0);
-            pathObj.transform.parent = pathParentObj.transform;
+            GameObject pathObj = Instantiate(pathPrefab, midpoint, rot, pathParentObj.transform);
+            Vector3 currentScale = pathObj.transform.localScale;
+            currentScale.z *= pathScale;
+            pathObj.transform.localScale = currentScale;
             pathObj.name = "Path_" + (i + 1);
         }
     }
