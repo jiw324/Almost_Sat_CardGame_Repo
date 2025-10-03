@@ -46,8 +46,8 @@ public class NodeSpawner : MonoBehaviour
             var node = nodeFactory.CreateNode(predefinedNodes[i], 0, 0);
             var anchor = nodeAnchors[i];
 
-            GameObject nodeObj = Instantiate(node.nodeDefinition.prefab,
-                anchor.transform.position, Quaternion.identity);
+            GameObject nodeObj = Instantiate(node.nodeDefinition.prefab, anchor.transform.position,
+                Quaternion.identity);
             nodeObj.transform.SetParent(anchor.transform);
         }
     }
