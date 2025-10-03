@@ -19,6 +19,12 @@ MonoBehaviour:
   - route: 2
     sceneAsset: {fileID: 102900000, guid: 537b86293e300a8449bb01e9581b5bff, type: 3}
     scenePath: Assets/Scenes/ForestBattle.unity
+  - route: 3
+    sceneAsset: {fileID: 102900000, guid: a20d886556946a243b9ae343177bc7c6, type: 3}
+    scenePath: Assets/Scenes/ForestShop.unity
+  - route: 6
+    sceneAsset: {fileID: 102900000, guid: d2778f52d2f0eda40a6d4586391d3486, type: 3}
+    scenePath: Assets/Scenes/ForestRest.unity
   - route: 1
     sceneAsset: {fileID: 102900000, guid: 16ef7d33fbe6dfc4bb843fcc46a1a2e1, type: 3}
     scenePath: Assets/Scenes/Map3D.unity

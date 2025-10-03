@@ -68,12 +68,14 @@ public class ClickManager : MonoBehaviour
                     break;
                 case NodeType.Rest:
                     nodeString = "Rest";
+                    sceneSwitch.SceneChanger(nodeString);
                     break;
                 case NodeType.Event:
                     nodeString = "Event";
                     break;
                 case NodeType.Shop:
                     nodeString = "Shop";
+                    sceneSwitch.SceneChanger(nodeString);
                     break;
                 default:
                     nodeString = "Unknown Route";
