@@ -4,23 +4,25 @@ using UnityEngine;
 
 public class NodeSpawner : MonoBehaviour
 {
-    private List<NodeAnchor> nodeAnchors;
     [SerializeField] private List<NodeDefinition> predefinedNodes;
     [SerializeField] private GameObject pathPrefab;
+    private List<NodeAnchor> nodeAnchors;
     private GameObject pathParentObj;
     private NodeFactory nodeFactory;
+    private const float NodeRadius = 0.5f;
+    private const float PathLength = 0.5f;
+    private const float PathNodeGap = 0.1f;
 
-    public void Awake()
+    private void Awake()
     {
         nodeFactory = new NodeFactory();
         nodeAnchors = new List<NodeAnchor>();
     }
 
-    public void Start()
+    private void Start()
     {
-        nodeAnchors = FindObjectsByType<NodeAnchor>(FindObjectsSortMode.None)
-            .OrderBy(anchor => anchor.name).ToList();
-        pathParentObj = FindObjectsByType<PathList>(FindObjectsSortMode.None).ToArray()[0].gameObject;
+        InitializeAnchorsAndPaths();
+
         if (nodeAnchors.Count == predefinedNodes.Count)
         {
             SpawnNodes();
@@ -28,39 +30,58 @@ public class NodeSpawner : MonoBehaviour
         }
     }
 
+    private void InitializeAnchorsAndPaths()
+    {
+        nodeAnchors = FindObjectsByType<NodeAnchor>(FindObjectsSortMode.None)
+            .OrderBy(anchor => anchor.name).ToList();
+
+        pathParentObj = FindObjectsByType<PathList>(FindObjectsSortMode.None)
+            .FirstOrDefault()?.gameObject;
+    }
+
     private void SpawnNodes()
     {
         for (int i = 0; i < predefinedNodes.Count; i++)
         {
-            INode node = nodeFactory.CreateNode(predefinedNodes[i], 0, 0);
-            GameObject nodeObj = Instantiate(node.nodeDefinition.prefab, nodeAnchors[i].transform.position,
-                Quaternion.identity);
-            nodeObj.transform.parent = nodeAnchors[i].transform;
+            var node = nodeFactory.CreateNode(predefinedNodes[i], 0, 0);
+            var anchor = nodeAnchors[i];
+
+            GameObject nodeObj = Instantiate(node.nodeDefinition.prefab,
+                anchor.transform.position, Quaternion.identity);
+            nodeObj.transform.SetParent(anchor.transform);
         }
     }
 
     private void SpawnPaths()
     {
-        const float NODE_RADIUS = 0.5f;
-        const float PATH_LENGTH = 0.5f;
-        const float PATH_NODE_GAP = 0.1f;
         for (int i = 0; i < nodeAnchors.Count - 1; i++)
         {
-            Vector3 nodeOnePos = nodeAnchors[i].transform.position;
-            Vector3 nodeTwoPos = nodeAnchors[i + 1].transform.position;
-            float nodeDist = Vector3.Distance(nodeOnePos, nodeTwoPos);
-            float pathScale = (nodeDist - PATH_NODE_GAP - NODE_RADIUS) / PATH_LENGTH;
-            Vector3 midpoint = new Vector3(nodeOnePos.x + ((nodeTwoPos.x - nodeOnePos.x) / 2f), 0.02f,
-                                           nodeOnePos.z + ((nodeTwoPos.z - nodeOnePos.z) / 2f));
-
-            Vector3 dir = (nodeTwoPos - nodeOnePos).normalized;
-            Quaternion rot = Quaternion.LookRotation(dir, Vector3.up);
-
-            GameObject pathObj = Instantiate(pathPrefab, midpoint, rot, pathParentObj.transform);
-            Vector3 currentScale = pathObj.transform.localScale;
-            currentScale.z *= pathScale;
-            pathObj.transform.localScale = currentScale;
-            pathObj.name = "Path_" + (i + 1);
+            CreatePathBetween(nodeAnchors[i], nodeAnchors[i + 1], i + 1);
         }
+    }
+
+    private void CreatePathBetween(NodeAnchor startAnchor, NodeAnchor endAnchor, int pathIndex)
+    {
+        Vector3 startPos = startAnchor.transform.position;
+        Vector3 endPos = endAnchor.transform.position;
+
+        float distance = Vector3.Distance(startPos, endPos);
+        float scaleZ = (distance - PathNodeGap - NodeRadius) / PathLength;
+
+        Vector3 midpoint = new Vector3(
+            (startPos.x + endPos.x) * 0.5f,
+            0.02f,
+            (startPos.z + endPos.z) * 0.5f
+        );
+
+        Quaternion rotation = Quaternion.LookRotation((endPos - startPos).normalized, Vector3.up);
+
+        GameObject pathObj = Instantiate(pathPrefab, midpoint, rotation, pathParentObj.transform);
+
+        Vector3 newScale = pathObj.transform.localScale;
+        newScale.z *= scaleZ;
+        pathObj.transform.localScale = newScale;
+
+        pathObj.name = $"Path_{pathIndex}";
     }
 }
