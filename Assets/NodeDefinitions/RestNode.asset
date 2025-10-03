@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 981c72c744d018644b909ec287dc495f, type: 3}
   m_Name: RestNode
   m_EditorClassIdentifier: 
-  nodeType: 2
+  nodeType: 3
   prefab: {fileID: 288061483857402408, guid: 90833df09628aeb4fa2954c92fc0f3a5, type: 3}
