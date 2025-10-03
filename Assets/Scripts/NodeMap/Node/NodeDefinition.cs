@@ -5,4 +5,5 @@ public class NodeDefinition : ScriptableObject
 {
     public NodeType nodeType;
     public GameObject prefab;
+    public string nodeSceneName;
 }
