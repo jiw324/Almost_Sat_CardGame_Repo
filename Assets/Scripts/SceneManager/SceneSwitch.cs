@@ -10,8 +10,11 @@ public class SceneSwitch : MonoBehaviour
             case "MainMenu":
                 gameRoute = GameRoute.MainMenu;
                 break;
-            case "CardBoard":
+            case "Combat":
                 gameRoute = GameRoute.Combat;
+                break;
+            case "Map":
+                gameRoute = GameRoute.Map;
                 break;
             default:
                 gameRoute = GameRoute.MainMenu;

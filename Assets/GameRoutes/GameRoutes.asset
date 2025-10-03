@@ -19,3 +19,6 @@ MonoBehaviour:
   - route: 2
     sceneAsset: {fileID: 102900000, guid: c7bfa527b572747f89c4bffa7a538d2d, type: 3}
     scenePath: Assets/Scenes/CardBoardScene.unity
+  - route: 1
+    sceneAsset: {fileID: 102900000, guid: 16ef7d33fbe6dfc4bb843fcc46a1a2e1, type: 3}
+    scenePath: Assets/Scenes/Map3D.unity
