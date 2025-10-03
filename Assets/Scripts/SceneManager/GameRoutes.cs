@@ -5,4 +5,6 @@ public enum GameRoute
     Combat,
     Shop,
     Deck,
+    Event,
+    Rest
 }
