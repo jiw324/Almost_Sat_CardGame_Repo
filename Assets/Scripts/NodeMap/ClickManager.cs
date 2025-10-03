@@ -4,9 +4,9 @@ using UnityEngine.InputSystem;
 public class ClickManager : MonoBehaviour
 {
     [SerializeField] private Camera targetCamera;
+    [SerializeField] private SceneSwitch sceneSwitch;
     private InputSystem_Actions controls;
     private GameObject lastHovered;
-    [SerializeField] private SceneSwitch sceneSwitch;
 
     private void Awake()
     {
@@ -27,23 +27,25 @@ public class ClickManager : MonoBehaviour
 
     private void Update()
     {
+        HandleHover();
+    }
+
+    private void HandleHover()
+    {
         Ray ray = targetCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            Debug.DrawRay(ray.origin, ray.direction * 100f, Color.red, 1f);
             if (hit.collider.gameObject != lastHovered)
             {
-                if (lastHovered != null)
-                    // Handle end hover logic
-
+                EndHover(lastHovered);
                 lastHovered = hit.collider.gameObject;
-                // Handle start hover logic
+                StartHover(lastHovered);
             }
         }
         else if (lastHovered != null)
         {
-            // Handle end hover logic
+            EndHover(lastHovered);
             lastHovered = null;
         }
     }
@@ -54,32 +56,38 @@ public class ClickManager : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            NodeBehaviour nodeBehaviour = hit.collider.gameObject.GetComponent<NodeBehaviour>();
-            NodeType nodeType = nodeBehaviour.definition.nodeType;
-            string nodeString = "";
-            switch (nodeType)
+            NodeBehaviour nodeBehaviour = hit.collider.GetComponent<NodeBehaviour>();
+            if (nodeBehaviour == null)
             {
-                case NodeType.Combat:
-                    nodeString = "Combat";
-                    sceneSwitch.SceneChanger(nodeString);
-                    break;
-                case NodeType.Loot:
-                    nodeString = "Loot";
-                    break;
-                case NodeType.Rest:
-                    nodeString = "Rest";
-                    break;
-                case NodeType.Event:
-                    nodeString = "Event";
-                    break;
-                case NodeType.Shop:
-                    nodeString = "Shop";
-                    break;
-                default:
-                    nodeString = "Unknown Route";
-                    break;
+                return;   
             }
-            Debug.Log("Navigating to " + nodeString + " Scene");
+
+            NodeType nodeType = nodeBehaviour.definition.nodeType;
+            string sceneName = nodeBehaviour.definition.nodeSceneName;
+
+            if (nodeType == NodeType.Combat)
+            {
+                sceneSwitch.SceneChanger(sceneName);
+            }
+
+            Debug.Log($"Navigating to {sceneName} Scene");
         }
+    }
+
+    private void StartHover(GameObject obj)
+    {
+        if (obj == null)
+        {
+            return;
+        }
+        // start hover logic here
+    }
+
+    private void EndHover(GameObject obj)
+    {
+        if (obj == null) {
+            return;
+        }
+        // end hover logic here
     }
 }
