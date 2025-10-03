@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeType: 4
   prefab: {fileID: 1079500633909824745, guid: e5c551de6fe1e21489409c7625c330bb, type: 3}
+  nodeSceneName: Loot

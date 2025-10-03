@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeType: 0
   prefab: {fileID: 6430799345589326161, guid: b26293249188e2243ba5f8f36fe419ac, type: 3}
+  nodeSceneName: Combat

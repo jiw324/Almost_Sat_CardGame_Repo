@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeType: 2
   prefab: {fileID: 8655317165456944770, guid: 802e7a26c803afd4199cf1db60b4d8ec, type: 3}
+  nodeSceneName: Event
