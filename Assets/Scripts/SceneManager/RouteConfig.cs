@@ -40,7 +40,6 @@ public class RouteConfig : ScriptableObject
         {
             if (entry.sceneAsset != null)
             {
-                // Get path relative to Assets/, e.g. "Assets/Scenes/CombatScene.unity"
                 string path = UnityEditor.AssetDatabase.GetAssetPath(entry.sceneAsset);
 
                 entry.scenePath = path;
