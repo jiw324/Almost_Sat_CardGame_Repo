@@ -7,6 +7,6 @@ public class CardData : ScriptableObject
     public int cost;
     [TextArea] public string description;
     public Sprite artwork;
-
-    public CardEffectSO[] effects;
+    public bool isRanged; 
+    public CardEffect effect; 
 }
