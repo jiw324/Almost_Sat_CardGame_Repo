@@ -5,7 +5,7 @@ public class HandManager : MonoBehaviour
 	public Transform handArea;
 	public GameObject cardPrefab;
 	public CardData[] startingCards;
-    public Actor defaultTarget;
+    public EntityBase defaultTarget;
 
     private void Start()
 	{
