@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using UnityEngine;
 
 public abstract class EntityBase : MonoBehaviour
