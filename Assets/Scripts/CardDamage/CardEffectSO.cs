@@ -2,14 +2,17 @@ using UnityEngine;
 
 public abstract class CardEffectSO : ScriptableObject
 {
-    // default = single target
+    [Header("Targeting")]
+    public bool isAOE = false;
+    public TargetGroup targetGroup = TargetGroup.Enemies;
+
+    // single-target execution
     public virtual void Execute(Actor target) { }
 
-    // default = fan out to each; override if you need custom AOE logic
+    // multi-target execution (default = call single on each)
     public virtual void ExecuteMany(Actor[] targets)
     {
         if (targets == null) return;
-        foreach (var t in targets)
-            Execute(t);
+        foreach (var t in targets) Execute(t);
     }
 }

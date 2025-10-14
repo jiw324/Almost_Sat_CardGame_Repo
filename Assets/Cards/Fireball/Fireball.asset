@@ -17,4 +17,4 @@ MonoBehaviour:
   description: ' Shoots ball of fire at card for x damage'
   artwork: {fileID: 5353841184698615464, guid: 03a0eb247d06d47b1a5acaedc423126c, type: 3}
   effects:
-  - {fileID: 0}
+  - {fileID: 11400000, guid: ffd0ba26ba65fc64181c0f97ae79bc8e, type: 2}
