@@ -12,7 +12,7 @@ public class AddPrefabOnClick : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log("Card clicked");
+        Debug.Log("Draw Card clicked");
         if (eventData.button != PointerEventData.InputButton.Left) return;
         if (!prefab || !parent) return;
 
@@ -26,5 +26,7 @@ public class AddPrefabOnClick : MonoBehaviour, IPointerClickHandler
         rt.localScale = Vector3.one;
 
         if (asFirstSibling) rt.SetAsFirstSibling(); else rt.SetAsLastSibling();
+
+        go.name = $"{prefab.name} {parent.childCount}";
     }
 }

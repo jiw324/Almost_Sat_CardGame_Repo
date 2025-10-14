@@ -21,6 +21,7 @@ public class RectSizeLimiter : UIBehaviour, ILayoutSelfController
     [SerializeField]
     private float defaultSpacing = -40;
 
+    //If rt.rect.width > maxSize.x, then spacing = (maxSize.x - n*intendedElementWidth)/(n-1)
     public Vector2 maxSize
     {
         get { return m_maxSize; }
@@ -74,7 +75,7 @@ public class RectSizeLimiter : UIBehaviour, ILayoutSelfController
 
     public void SetLayoutHorizontal()
     {
-        if (m_maxSize.x > 0f && rt.rect.width > m_maxSize.x)
+        if (rt.rect.width > m_maxSize.x)
         {
             int n = transform.childCount;
             float required = (maxSize.x - n * intendedElementWidth) / (n - 1);
