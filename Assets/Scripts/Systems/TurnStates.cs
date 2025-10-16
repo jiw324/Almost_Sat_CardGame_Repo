@@ -11,7 +11,7 @@ public class PlayerTurnState : TurnStateBase
         Debug.Log("[TurnStates] 1. Enter Player Turn");
 
         // Subscribe to EndTurn input event (for testing)
-        turnManager.InputActions.Player.Attack.performed += OnEndTurn;
+        turnManager.InputActions.Player.NextTurn.performed += OnEndTurn;
     }
 
     public override void Update()
@@ -23,7 +23,7 @@ public class PlayerTurnState : TurnStateBase
     {
         Debug.Log("[TurnStates] 3. Exit Player Turn");
 
-        turnManager.InputActions.Player.Attack.performed -= OnEndTurn;
+        turnManager.InputActions.Player.NextTurn.performed -= OnEndTurn;
     }
 
     private void OnEndTurn(InputAction.CallbackContext ctx)

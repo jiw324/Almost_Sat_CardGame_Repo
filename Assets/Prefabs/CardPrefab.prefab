@@ -59,7 +59,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.39215687, g: 0, b: 0, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -225,8 +225,7 @@ GameObject:
   - component: {fileID: 3885564621967519628}
   - component: {fileID: 6654940998816880476}
   - component: {fileID: 8262876928696437792}
-  - component: {fileID: -567521643374779997}
-  - component: {fileID: -7550785499406591098}
+  - component: {fileID: 7085006722079742341}
   m_Layer: 5
   m_Name: CardPrefab
   m_TagString: Untagged
@@ -344,7 +343,7 @@ MonoBehaviour:
   titleText: {fileID: 2459532729403569765}
   descriptionText: {fileID: 3790526982692157739}
   costText: {fileID: 0}
---- !u!114 &-567521643374779997
+--- !u!114 &7085006722079742341
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -353,22 +352,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 5711857772937691287}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 27c9c196f47e72b45b574676de4a48e8, type: 3}
+  m_Script: {fileID: 11500000, guid: c83b15a0003f8e34f8a1d38408979dac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  demoTarget: {fileID: 0}
---- !u!114 &-7550785499406591098
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5711857772937691287}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6f01263cbc43446fbb8dc05a2422752, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  background: {fileID: 4627023100242469614}
+  border: {fileID: 1384948016565369065}
+  nameText: {fileID: 2459532729403569765}
+  costText: {fileID: 0}
+  descText: {fileID: 3790526982692157739}
+  selectedBorder: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  normalBorder: {r: 0.39215687, g: 0, b: 0, a: 1}
 --- !u!1 &8597891749332769850
 GameObject:
   m_ObjectHideFlags: 0
@@ -564,7 +557,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -638,8 +631,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9333334, g: 0.909804, b: 0.6666667, a: 1}
-  m_RaycastTarget: 0
+  m_Color: {r: 0.93333334, g: 0.909804, b: 0.6666667, a: 1}
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
