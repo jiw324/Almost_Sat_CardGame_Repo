@@ -58,10 +58,12 @@ public class BoardManager : MonoBehaviour
                 TryPlaceSelectedCard(slot);
                 return;
             }
-
-            // log other clicks
-            Debug.Log($"[BoardManager] Clicked something else: {hit.collider.name}");
         }
+    }
+
+    public bool IsSelectedCard(CardUIController card)
+    {
+        return selectedCard == card;
     }
 
     public void SelectCard(CardUIController card)
@@ -70,7 +72,18 @@ public class BoardManager : MonoBehaviour
             selectedCard.SetSelectedVisual(false);
 
         selectedCard = card;
-        selectedCard.SetSelectedVisual(true);
+
+        if (selectedCard != null)
+            selectedCard.SetSelectedVisual(true);
+    }
+
+    public void DeselectCard()
+    {
+        if (selectedCard != null)
+        {
+            selectedCard.SetSelectedVisual(false);
+            selectedCard = null;
+        }
     }
 
     public void TryPlaceSelectedCard(BoardSlot slot)

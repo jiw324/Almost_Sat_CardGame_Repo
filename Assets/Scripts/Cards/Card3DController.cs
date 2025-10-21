@@ -15,6 +15,7 @@ public class Card3DController : MonoBehaviour
     public void Initialize(CardInstance instance)
     {
         Instance = instance;
+        name = instance.Data.name;
         UpdateVisuals();
     }
 
