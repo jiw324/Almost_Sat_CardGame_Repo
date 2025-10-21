@@ -27,12 +27,14 @@ public class NodeFactory
 
         return nodeType switch
         {
-            NodeType.Loot   => new LootNode(def, nodeAnchor),
-            NodeType.Rest   => new RestNode(def, nodeAnchor),
-            NodeType.Shop   => new ShopNode(def, nodeAnchor),
-            NodeType.Event  => new EventNode(def, nodeAnchor),
+            NodeType.Loot => new LootNode(def, nodeAnchor),
+            NodeType.Rest => new RestNode(def, nodeAnchor),
+            NodeType.Shop => new ShopNode(def, nodeAnchor),
+            NodeType.Event => new EventNode(def, nodeAnchor),
             NodeType.Combat => new CombatNode(def, nodeAnchor),
-            _               => throw new System.ArgumentException("Invalid Node Type", nameof(nodeType))
+            _ => throw new System.ArgumentException("Invalid Node Type", nameof(nodeType))
         };
     }
+    
+    public NodeDefinition GetDefinition(NodeType type) => definitions[type];
 }

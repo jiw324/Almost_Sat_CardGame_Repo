@@ -1,16 +1,20 @@
 public abstract class NodeBase : INode
 {
-    public NodeDefinition nodeDefinition { get; }
+    public NodeDefinition nodeDefinition { get; private set; }
     public NodeAnchor nodeAnchor { get; }
-    public INode[] nextNodes { get; }
+    public INode[] nextNodes { get; } = new INode[3];
 
-    private const int maxNextNodes = 3;
+    public NodeType Type => nodeDefinition.nodeType;
 
-    protected NodeBase(NodeDefinition nodeDefinition, NodeAnchor nodeAnchor)
+    protected NodeBase(NodeDefinition def, NodeAnchor anchor)
     {
-        this.nodeDefinition = nodeDefinition;
-        this.nodeAnchor = nodeAnchor;
-        nextNodes = new INode[maxNextNodes];
+        nodeDefinition = def;
+        nodeAnchor = anchor;
+    }
+
+    public void ReassignDefinition(NodeDefinition newDefinition)
+    {
+        nodeDefinition = newDefinition;
     }
 
     public virtual void AddNextNode(INode node, int xDelta)
