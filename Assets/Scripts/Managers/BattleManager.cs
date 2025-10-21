@@ -19,12 +19,5 @@ public class BattleManager : MonoBehaviour
     void StartBattle()
     {
         boardManager.InitializeBoard();
-
-        var testCardData = Resources.Load<CardData>("TestData/Fireball");
-
-        var card = new CardInstance(testCardData, playerEntity);
-
-        var dummySlot = new BoardSlot { isRanged = true, isOccupied = false };
-        boardManager.TryPlaceCard(card, dummySlot);
     }
 }
