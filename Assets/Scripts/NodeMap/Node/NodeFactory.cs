@@ -1,21 +1,38 @@
+using System.Collections.Generic;
+using UnityEngine;
+
 public class NodeFactory
 {
-    public INode CreateNode(NodeDefinition nodeDefinition, int depthIndex, int pathDepth)
+    public Dictionary<NodeType, NodeDefinition> definitions { get; private set; } = new();
+
+    public NodeFactory()
     {
-        switch (nodeDefinition.nodeType)
+        NodeDefinition[] loadedDefs = Resources.LoadAll<NodeDefinition>("NodeDefinitions");
+
+        foreach (var def in loadedDefs)
         {
-            case NodeType.Loot:
-                return new LootNode(nodeDefinition, depthIndex, pathDepth);
-            case NodeType.Rest:
-                return new RestNode(nodeDefinition, depthIndex, pathDepth);
-            case NodeType.Shop:
-                return new ShopNode(nodeDefinition, depthIndex, pathDepth);
-            case NodeType.Event:
-                return new EventNode(nodeDefinition, depthIndex, pathDepth);
-            case NodeType.Combat:
-                return new CombatNode(nodeDefinition, depthIndex, pathDepth);
-            default:
-                throw new System.ArgumentException("Invalid Node Type", nameof(nodeDefinition.nodeType));
+            if (definitions.ContainsKey(def.nodeType))
+                Debug.LogWarning($"Overwriting duplicate NodeDefinition for {def.nodeType}");
+            
+            definitions[def.nodeType] = def;
         }
-    }   
+    }
+
+    public INode CreateNode(NodeType nodeType, NodeAnchor nodeAnchor)
+    {
+        if (!definitions.TryGetValue(nodeType, out var def))
+        {
+            throw new System.Exception($"No NodeDefinition found for type {nodeType}");
+        }
+
+        return nodeType switch
+        {
+            NodeType.Loot   => new LootNode(def, nodeAnchor),
+            NodeType.Rest   => new RestNode(def, nodeAnchor),
+            NodeType.Shop   => new ShopNode(def, nodeAnchor),
+            NodeType.Event  => new EventNode(def, nodeAnchor),
+            NodeType.Combat => new CombatNode(def, nodeAnchor),
+            _               => throw new System.ArgumentException("Invalid Node Type", nameof(nodeType))
+        };
+    }
 }
