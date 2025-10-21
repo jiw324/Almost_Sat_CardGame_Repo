@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.InputSystem.Controls;
-using UnityEngine.InputSystem.Haptics;
 
 public class NodeMap : MonoBehaviour
 {
@@ -18,7 +15,7 @@ public class NodeMap : MonoBehaviour
 
     public void Awake()
     {
-        _nodeGrid = new NodeGrid(5, 5);
+        _nodeGrid = new NodeGrid(7, 15);
         _nodes = new Dictionary<int, INode[]>();
         for(int y = 0; y < _nodeGrid.height; y++)
         {
@@ -32,7 +29,7 @@ public class NodeMap : MonoBehaviour
     public void Start()
     {
         GenerateNodes();
-        SpawnNodes(_nodeFactory);
+        SpawnNodes();
         //SpawnPaths();
     }
 
@@ -49,7 +46,7 @@ public class NodeMap : MonoBehaviour
         int firstX = 0;
         for (int i = 0; i < _maxNodesPerFloor; i++)
         {
-            int randomX = UnityEngine.Random.Range(0, _nodeGrid.width);
+            int randomX = Random.Range(0, _nodeGrid.width);
             if (i == 0)
             {
                 firstX = randomX;
@@ -58,7 +55,7 @@ public class NodeMap : MonoBehaviour
             {
                 while (randomX == firstX)
                 {
-                    randomX = UnityEngine.Random.Range(0, _nodeGrid.width);
+                    randomX = Random.Range(0, _nodeGrid.width);
                 }
             }
             _startNodeXVals.Add(randomX);
@@ -70,62 +67,56 @@ public class NodeMap : MonoBehaviour
         GameObject nodeAnchorParentObj = new GameObject("NodeAnchors");
         nodeAnchorParentObj.transform.position = Vector3.zero;
         nodeAnchorParentObj.transform.rotation = Quaternion.identity;
-        nodeAnchorParentObj.transform.parent = transform;        
+        nodeAnchorParentObj.transform.parent = transform;
 
         foreach(int gridX in _startNodeXVals)
         {
             int x = gridX;
+            _nodes[0][x] = _nodeFactory.CreateNode(NodeType.Combat, GetNodeAnchor(x, 0, nodeAnchorParentObj));
             int minDeltaX = gridX > 0 ? -1 : 0;
             int maxDeltaX = gridX < _nodeGrid.width - 1 ? 1 : 0;
 
-            INode startNode = _nodeFactory.CreateNode(NodeType.Combat, GetNodeAnchor(x, 0, nodeAnchorParentObj));
-
-            if(_nodes[0][gridX] == null)
-            {
-                _nodes[0][gridX] = startNode;
-            }
-
             for(int i = 0; i < _nodeGrid.height - 1; i++)
             {
-                if (i > 0)
-                {
-                    startNode = _nodeFactory.CreateNode(NodeType.Combat, GetNodeAnchor(x, i, nodeAnchorParentObj));
-                }
-
                 int randomDeltaX;
                 do
                 {
-                    randomDeltaX = UnityEngine.Random.Range(minDeltaX, maxDeltaX + 1);
+                    randomDeltaX = Random.Range(minDeltaX, maxDeltaX + 1);
                 } while (CheckForCrossPath(x, x + randomDeltaX, i));
 
-                GenerateNextNodeAndPath(startNode, x, x += randomDeltaX, i + 1, nodeAnchorParentObj);
+                INode nextNode = GenerateNextNode(x + randomDeltaX, i + 1, nodeAnchorParentObj);
+                _nodes[i][x].AddNextNode(nextNode, randomDeltaX);
+
+                x += randomDeltaX;
             }
         }
     }
 
-    private void GenerateNextNodeAndPath(INode startNode, int startX, int nextX, int nextY, GameObject parentObj)
+    private INode GenerateNextNode(int nextX, int nextY, GameObject parentObj)
     {
-        INode nextNode;
-        if (_nodes[nextY][nextX] == null)
+        if (_nodes[nextY][nextX] != null)
         {
-            nextNode = _nodeFactory.CreateNode(NodeType.Combat, GetNodeAnchor(nextX, nextY, parentObj));
-            _nodes[nextY][nextX] = nextNode;
-        }
-        else
-        {
-            nextNode = _nodes[nextY][nextX];
+            return _nodes[nextY][nextX];
         }
 
-        startNode.AddNextNode(nextNode, nextX - startX);
+        NodeAnchor nextAnchor = GetNodeAnchor(nextX, nextY, parentObj);
+        INode nextNode = _nodeFactory.CreateNode(NodeType.Combat, nextAnchor);
+        _nodes[nextY][nextX] = nextNode;
+        return nextNode;
     }
     
     private bool CheckForCrossPath(int startX, int endX, int y)
     {
+        if(endX < 0 || endX >= _nodeGrid.width)
+        {
+            return true;
+        }
         if(startX == endX)
         {
             return false;
         } else
         {
+            Debug.Log($"{startX} : {endX}");
             INode checkNode = _nodes[y][endX];
             if (checkNode != null)
             {
@@ -139,7 +130,7 @@ public class NodeMap : MonoBehaviour
         }
     }
 
-    private void SpawnNodes(NodeFactory nodeFactory)
+    private void SpawnNodes()
     {
         GameObject nodesParentObj = new GameObject("Nodes");
         nodesParentObj.transform.position = Vector3.zero;
@@ -149,9 +140,9 @@ public class NodeMap : MonoBehaviour
         foreach (var nodeData in _nodes)
         {
             GameObject floorParentObj = new GameObject($"Floor_{nodeData.Key + 1}");
-            nodesParentObj.transform.position = Vector3.zero;
-            nodesParentObj.transform.rotation = Quaternion.identity;
-            nodesParentObj.transform.parent = nodesParentObj.transform;
+            floorParentObj.transform.position = Vector3.zero;
+            floorParentObj.transform.rotation = Quaternion.identity;
+            floorParentObj.transform.parent = nodesParentObj.transform;
 
             for(int i = 0; i < nodeData.Value.Length; i++)
             {
@@ -159,7 +150,7 @@ public class NodeMap : MonoBehaviour
                 if(node != null)
                 {
                     GameObject nodeObj = Instantiate(node.nodeDefinition.prefab, node.nodeAnchor.transform.position,
-                    Quaternion.identity);
+                        Quaternion.identity);
                     nodeObj.transform.SetParent(floorParentObj.transform);
                     nodeObj.name = $"Node_{nodeData.Key + 1}_{i}";
                 }
@@ -193,8 +184,8 @@ public class NodeMap : MonoBehaviour
 
     private NodeAnchor GetNodeAnchor(int gridX, int gridY, GameObject parentObj)
     {
-        float xOffset = UnityEngine.Random.Range(-_maxXOffset, _maxXOffset);
-        float yOffset = UnityEngine.Random.Range(-_maxYOffset, _maxYOffset);
+        float xOffset = Random.Range(-_maxXOffset, _maxXOffset);
+        float yOffset = Random.Range(-_maxYOffset, _maxYOffset);
 
         var (anchorX, anchorY) = _nodeGrid.GetCoords(gridX, gridY);
         Vector3 nodeAnchorPos = new Vector3(anchorX + xOffset, 0.02f, anchorY + yOffset);

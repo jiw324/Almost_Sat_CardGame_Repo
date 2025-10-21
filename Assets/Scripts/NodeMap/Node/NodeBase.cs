@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Diagnostics;
-
 public abstract class NodeBase : INode
 {
     public NodeDefinition nodeDefinition { get; }
