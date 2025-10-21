@@ -13,6 +13,7 @@ public class BattleManager : MonoBehaviour
 
     void Start()
     {
+        SessionGrabber.getGameSession();
         StartBattle();
     }
 
