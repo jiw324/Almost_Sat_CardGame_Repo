@@ -16,13 +16,14 @@ public class NodeMap : MonoBehaviour
     {
         _nodeGrid = new NodeGrid(7, 15);
         _nodes = new Dictionary<int, INode[]>();
-        for(int y = 0; y < _nodeGrid.height; y++)
+        for (int y = 0; y < _nodeGrid.height; y++)
         {
             _nodes[y] = new INode[_nodeGrid.width];
         }
-        _startNodeXVals = new HashSet<int>();
+
         _nodeFactory = new NodeFactory();
         _maxNodesPerFloor = Mathf.RoundToInt(_nodeGrid.width * 0.75f);
+        _startNodeXVals = new HashSet<int>();
     }
 
     public void Start()
@@ -42,22 +43,11 @@ public class NodeMap : MonoBehaviour
 
     private void ChooseStartNodes()
     {
-        int firstX = 0;
-        for (int i = 0; i < _maxNodesPerFloor; i++)
+        _startNodeXVals.Clear();
+
+        while (_startNodeXVals.Count < _maxNodesPerFloor)
         {
-            int randomX = Random.Range(0, _nodeGrid.width);
-            if (i == 0)
-            {
-                firstX = randomX;
-            }
-            else if (i == 1)
-            {
-                while (randomX == firstX)
-                {
-                    randomX = Random.Range(0, _nodeGrid.width);
-                }
-            }
-            _startNodeXVals.Add(randomX);
+            _startNodeXVals.Add(Random.Range(0, _nodeGrid.width));
         }
     }
 
@@ -68,23 +58,35 @@ public class NodeMap : MonoBehaviour
         nodeAnchorParentObj.transform.rotation = Quaternion.identity;
         nodeAnchorParentObj.transform.parent = transform;
 
-        foreach(int gridX in _startNodeXVals)
+        foreach (int gridX in _startNodeXVals)
         {
             int x = gridX;
-            _nodes[0][x] = _nodeFactory.CreateNode(NodeType.Combat, GetNodeAnchor(x, 0, nodeAnchorParentObj));
-            int minDeltaX = gridX > 0 ? -1 : 0;
-            int maxDeltaX = gridX < _nodeGrid.width - 1 ? 1 : 0;
+            if (_nodes[0][x] == null)
+            {
+                _nodes[0][x] = _nodeFactory.CreateNode(NodeType.Combat, GetNodeAnchor(x, 0, nodeAnchorParentObj));
+            }
 
-            for(int i = 0; i < _nodeGrid.height - 1; i++)
+            int minDeltaX = x > 0 ? -1 : 0;
+            int maxDeltaX = x < _nodeGrid.width - 1 ? 1 : 0;
+
+            for (int y = 0; y < _nodeGrid.height - 1; y++)
             {
                 int randomDeltaX;
+                int attemptCount = 0;
+
                 do
                 {
                     randomDeltaX = Random.Range(minDeltaX, maxDeltaX + 1);
-                } while (CheckForCrossPath(x, x + randomDeltaX, i));
+                    attemptCount++;
+                    if (attemptCount > 10)
+                    {
+                        randomDeltaX = 0;
+                        break;
+                    }
+                } while (CheckForCrossPath(x, x + randomDeltaX, y));
 
-                INode nextNode = GenerateNextNode(x + randomDeltaX, i + 1, nodeAnchorParentObj);
-                _nodes[i][x].AddNextNode(nextNode, randomDeltaX);
+                INode nextNode = GenerateNextNode(x + randomDeltaX, y + 1, nodeAnchorParentObj);
+                _nodes[y][x].AddNextNode(nextNode, randomDeltaX);
 
                 x += randomDeltaX;
             }
@@ -103,29 +105,44 @@ public class NodeMap : MonoBehaviour
         _nodes[nextY][nextX] = nextNode;
         return nextNode;
     }
-    
+
     private bool CheckForCrossPath(int startX, int endX, int y)
     {
-        if(endX < 0 || endX >= _nodeGrid.width)
-        {
+        if (endX < 0 || endX >= _nodeGrid.width)
             return true;
-        }
-        if(startX == endX)
-        {
+
+        if (startX == endX)
             return false;
-        } else
+
+        for (int otherX = 0; otherX < _nodeGrid.width; otherX++)
         {
-            INode checkNode = _nodes[y][endX];
-            if (checkNode != null)
+            INode node = _nodes[y][otherX];
+            if (node == null) continue;
+
+            foreach (INode nextNode in node.nextNodes)
             {
-                if (checkNode.nextNodes[startX - endX + 1] == null)
-                {
-                    return false;
-                }
-                return true;
+                if (nextNode == null) continue;
+
+                int nextX = GetNodeXPosition(nextNode, y + 1);
+                if (nextX == -1) continue;
+
+                bool crosses = (otherX < startX && nextX > endX) || (otherX > startX && nextX < endX);
+                if (crosses) return true;
             }
-            return false;
         }
+
+        return false;
+    }
+
+    private int GetNodeXPosition(INode node, int floorY)
+    {
+        INode[] row = _nodes[floorY];
+        for (int x = 0; x < row.Length; x++)
+        {
+            if (row[x] == node)
+                return x;
+        }
+        return -1;
     }
 
     private void SpawnNodes()
@@ -147,8 +164,7 @@ public class NodeMap : MonoBehaviour
                 INode node = nodeData.Value[i];
                 if (node != null)
                 {
-                    GameObject nodeObj = Instantiate(node.nodeDefinition.prefab, node.nodeAnchor.transform.position,
-                        Quaternion.identity);
+                    GameObject nodeObj = Instantiate(node.nodeDefinition.prefab, node.nodeAnchor.transform.position, Quaternion.identity);
                     nodeObj.transform.SetParent(floorParentObj.transform);
                     nodeObj.name = $"Node_{nodeData.Key + 1}_{i}";
                 }
@@ -158,6 +174,11 @@ public class NodeMap : MonoBehaviour
 
     private void GeneratePaths()
     {
+        GameObject pathsParentObj = new GameObject("Paths");
+        pathsParentObj.transform.position = Vector3.zero;
+        pathsParentObj.transform.rotation = Quaternion.identity;
+        pathsParentObj.transform.parent = transform;
+
         GameObject pathPrefab = Resources.Load<GameObject>("Prefabs/NodeMap/NodePath");
 
         if (pathPrefab != null)
@@ -167,21 +188,14 @@ public class NodeMap : MonoBehaviour
                 for (int i = 0; i < nodeData.Value.Length; i++)
                 {
                     if (nodeData.Value[i] == null)
-                    {
                         continue;
-                    }
 
                     INode node = nodeData.Value[i];
 
-                    for (int n = 0; n < node.nextNodes.Length; n++)
+                    foreach (INode nextNode in node.nextNodes)
                     {
-                        INode nextNode = node.nextNodes[n];
-                        if (nextNode == null)
-                        {
-                            continue;
-                        }
-
-                        SpawnPath(node, nextNode, pathPrefab);
+                        if (nextNode == null) continue;
+                        SpawnPath(node, nextNode, pathPrefab, pathsParentObj);
                     }
                 }
             }
@@ -191,37 +205,36 @@ public class NodeMap : MonoBehaviour
             Debug.LogError("Path prefab not found");
         }
     }
-    
-    private GameObject SpawnPath(INode startNode, INode endNode, GameObject pathPrefab)
-    {    
-        GameObject pathsParentObj = new GameObject("Paths");
-        pathsParentObj.transform.position = Vector3.zero;
-        pathsParentObj.transform.rotation = Quaternion.identity;
-        pathsParentObj.transform.parent = transform;
 
+    private GameObject SpawnPath(INode startNode, INode endNode, GameObject pathPrefab, GameObject parentObj)
+    {
         Vector3 midpoint = new Vector3(
             (startNode.nodeAnchor.transform.position.x + endNode.nodeAnchor.transform.position.x) / 2,
             0.02f,
             (startNode.nodeAnchor.transform.position.z + endNode.nodeAnchor.transform.position.z) / 2
         );
 
-        Quaternion rotation = Quaternion.LookRotation((endNode.nodeAnchor.transform.position -
-            startNode.nodeAnchor.transform.position).normalized, Vector3.up);
+        Quaternion rotation = Quaternion.LookRotation(
+            (endNode.nodeAnchor.transform.position - startNode.nodeAnchor.transform.position).normalized,
+            Vector3.up
+        );
 
-        GameObject pathObj = Instantiate(pathPrefab, midpoint, rotation, pathsParentObj.transform);
+        GameObject pathObj = Instantiate(pathPrefab, midpoint, rotation, parentObj.transform);
         pathObj.AddComponent<NodeMapPath>();
 
-        float distance = Vector3.Distance(startNode.nodeAnchor.transform.position,
-            endNode.nodeAnchor.transform.position);
+        float distance = Vector3.Distance(
+            startNode.nodeAnchor.transform.position,
+            endNode.nodeAnchor.transform.position
+        );
+
         float scaleZ = (distance - NodeMapPath.PathNodeGap - NodeMapPath.NodeRadius) / NodeMapPath.PathLength;
 
         Vector3 newScale = pathObj.transform.localScale;
         newScale.z *= scaleZ;
         pathObj.transform.localScale = newScale;
 
-        pathObj.name = "Path"; 
-
-        return pathObj;    
+        pathObj.name = $"Path_{startNode.nodeAnchor.name}_to_{endNode.nodeAnchor.name}";
+        return pathObj;
     }
 
     private NodeAnchor GetNodeAnchor(int gridX, int gridY, GameObject parentObj)
