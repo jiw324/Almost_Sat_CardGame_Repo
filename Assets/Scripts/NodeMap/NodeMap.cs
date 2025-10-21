@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class NodeMap : MonoBehaviour
@@ -29,8 +28,7 @@ public class NodeMap : MonoBehaviour
     public void Start()
     {
         GenerateNodes();
-        SpawnNodes();
-        //SpawnPaths();
+        GeneratePaths();
     }
 
     private void GenerateNodes()
@@ -38,7 +36,8 @@ public class NodeMap : MonoBehaviour
         Debug.Log("Generating Nodes");
 
         ChooseStartNodes();
-        GeneratePaths();
+        CreateRoutes();
+        SpawnNodes();
     }
 
     private void ChooseStartNodes()
@@ -62,7 +61,7 @@ public class NodeMap : MonoBehaviour
         }
     }
 
-    private void GeneratePaths()
+    private void CreateRoutes()
     {
         GameObject nodeAnchorParentObj = new GameObject("NodeAnchors");
         nodeAnchorParentObj.transform.position = Vector3.zero;
@@ -116,7 +115,6 @@ public class NodeMap : MonoBehaviour
             return false;
         } else
         {
-            Debug.Log($"{startX} : {endX}");
             INode checkNode = _nodes[y][endX];
             if (checkNode != null)
             {
@@ -144,10 +142,10 @@ public class NodeMap : MonoBehaviour
             floorParentObj.transform.rotation = Quaternion.identity;
             floorParentObj.transform.parent = nodesParentObj.transform;
 
-            for(int i = 0; i < nodeData.Value.Length; i++)
+            for (int i = 0; i < nodeData.Value.Length; i++)
             {
                 INode node = nodeData.Value[i];
-                if(node != null)
+                if (node != null)
                 {
                     GameObject nodeObj = Instantiate(node.nodeDefinition.prefab, node.nodeAnchor.transform.position,
                         Quaternion.identity);
@@ -158,29 +156,73 @@ public class NodeMap : MonoBehaviour
         }
     }
 
-    // private void SpawnPaths()
-    // {
-    //     GameObject pathPrefab = Resources.Load<GameObject>("Prefabs/NodeMap/NodePath");
+    private void GeneratePaths()
+    {
+        GameObject pathPrefab = Resources.Load<GameObject>("Prefabs/NodeMap/NodePath");
 
-    //     if (pathPrefab != null)
-    //     {
-    //         GameObject pathsParentObj = new GameObject("Paths");
-    //         pathsParentObj.transform.position = Vector3.zero;
-    //         pathsParentObj.transform.rotation = Quaternion.identity;
-    //         pathsParentObj.transform.parent = transform;
+        if (pathPrefab != null)
+        {
+            foreach (var nodeData in _nodes)
+            {
+                for (int i = 0; i < nodeData.Value.Length; i++)
+                {
+                    if (nodeData.Value[i] == null)
+                    {
+                        continue;
+                    }
 
-    //         int index = 0;
-    //         foreach (var path in _nodeMapPaths.Values)
-    //         {
-    //             //path.Spawn(pathsParentObj, pathPrefab, index);
-    //             index++;
-    //         }
-    //     }
-    //     else
-    //     {
-    //         Debug.LogError("Path prefab not found");
-    //     }
-    // }
+                    INode node = nodeData.Value[i];
+
+                    for (int n = 0; n < node.nextNodes.Length; n++)
+                    {
+                        INode nextNode = node.nextNodes[n];
+                        if (nextNode == null)
+                        {
+                            continue;
+                        }
+
+                        SpawnPath(node, nextNode, pathPrefab);
+                    }
+                }
+            }
+        }
+        else
+        {
+            Debug.LogError("Path prefab not found");
+        }
+    }
+    
+    private GameObject SpawnPath(INode startNode, INode endNode, GameObject pathPrefab)
+    {    
+        GameObject pathsParentObj = new GameObject("Paths");
+        pathsParentObj.transform.position = Vector3.zero;
+        pathsParentObj.transform.rotation = Quaternion.identity;
+        pathsParentObj.transform.parent = transform;
+
+        Vector3 midpoint = new Vector3(
+            (startNode.nodeAnchor.transform.position.x + endNode.nodeAnchor.transform.position.x) / 2,
+            0.02f,
+            (startNode.nodeAnchor.transform.position.z + endNode.nodeAnchor.transform.position.z) / 2
+        );
+
+        Quaternion rotation = Quaternion.LookRotation((endNode.nodeAnchor.transform.position -
+            startNode.nodeAnchor.transform.position).normalized, Vector3.up);
+
+        GameObject pathObj = Instantiate(pathPrefab, midpoint, rotation, pathsParentObj.transform);
+        pathObj.AddComponent<NodeMapPath>();
+
+        float distance = Vector3.Distance(startNode.nodeAnchor.transform.position,
+            endNode.nodeAnchor.transform.position);
+        float scaleZ = (distance - NodeMapPath.PathNodeGap - NodeMapPath.NodeRadius) / NodeMapPath.PathLength;
+
+        Vector3 newScale = pathObj.transform.localScale;
+        newScale.z *= scaleZ;
+        pathObj.transform.localScale = newScale;
+
+        pathObj.name = "Path"; 
+
+        return pathObj;    
+    }
 
     private NodeAnchor GetNodeAnchor(int gridX, int gridY, GameObject parentObj)
     {
