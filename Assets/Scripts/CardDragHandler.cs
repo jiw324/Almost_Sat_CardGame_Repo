@@ -34,10 +34,26 @@ public class CardDragHandler : MonoBehaviour,
             canvasGroup.blocksRaycasts = false;
     }
 
+    //public void OnDrag(PointerEventData eventData)
+    //{
+    //    if (canvas == null) return;
+    //    rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
+    //}
+
     public void OnDrag(PointerEventData eventData)
     {
         if (canvas == null) return;
-        rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
+
+        Vector2 localPoint;
+        // Convert the screen mouse position to local position inside the canvas
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvas.transform as RectTransform,
+            eventData.position,
+            eventData.pressEventCamera,
+            out localPoint
+        );
+
+        rectTransform.localPosition = localPoint;
     }
 
     public void OnPointerUp(PointerEventData eventData)

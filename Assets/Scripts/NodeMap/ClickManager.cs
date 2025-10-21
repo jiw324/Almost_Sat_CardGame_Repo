@@ -65,7 +65,7 @@ public class ClickManager : MonoBehaviour
             NodeType nodeType = nodeBehaviour.definition.nodeType;
             string sceneName = nodeBehaviour.definition.nodeSceneName;
 
-            if (nodeType == NodeType.Combat)
+            if (nodeType == NodeType.Combat || nodeType == NodeType.Rest || nodeType == NodeType.Shop)
             {
                 sceneSwitch.SceneChanger(sceneName);
             }
