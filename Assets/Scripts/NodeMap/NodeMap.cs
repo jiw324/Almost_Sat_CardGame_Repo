@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class NodeMap : MonoBehaviour
@@ -13,14 +14,12 @@ public class NodeMap : MonoBehaviour
     private const float _maxYOffset = 0.3f;
     private int _maxNodesPerFloor = 0;
 
-    public int mapWidth  { get; private set; }
-    public int mapHeight { get; private set; }
+    public int mapWidth { get; private set; } = 5;
+    public int mapHeight { get; private set; } = 15;
 
     public void Awake()
     {
-        _nodeGrid = new NodeGrid(5, 15);
-        mapWidth  = _nodeGrid.width;
-        mapHeight = _nodeGrid.height;
+        _nodeGrid = new NodeGrid(mapWidth, mapHeight);
 
         nodes = new Dictionary<int, INode[]>();
         for (int y = 0; y < mapHeight; y++)
