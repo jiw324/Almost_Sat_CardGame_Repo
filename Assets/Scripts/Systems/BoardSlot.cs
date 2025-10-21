@@ -51,6 +51,8 @@ public class BoardSlot : MonoBehaviour
         }
 
         GameObject cardObject = Instantiate(prefab, spawnPos, Quaternion.identity, transform);
+        cardObject.name = card.Data.name;
+        Debug.Log($"**** Assigned name: {card.Data.name}");
 
         // Initialize its visual info
         var controller = cardObject.GetComponent<Card3DController>();

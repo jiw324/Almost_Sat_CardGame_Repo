@@ -13,6 +13,7 @@ public class DrawCard : MonoBehaviour, IPointerClickHandler
     private void SpawnTestCard(string name)
     {
         var go = Instantiate(cardUIPrefab, handArea);
+        go.name = name;
         var controller = go.GetComponent<CardUIController>();
         var rt = (RectTransform)go.transform;
 
