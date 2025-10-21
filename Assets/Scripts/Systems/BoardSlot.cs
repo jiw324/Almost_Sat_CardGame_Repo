@@ -3,6 +3,7 @@ using UnityEngine;
 public class BoardSlot : MonoBehaviour
 {
     [SerializeField] public bool isRanged;
+    [SerializeField] private Transform pedestal;
     public bool isOccupied;
     public CardInstance currentCard;
 
@@ -23,22 +24,20 @@ public class BoardSlot : MonoBehaviour
 
         currentCard = card;
         isOccupied = true;
-
-        Transform pillar = transform.Find("Pillar");
         Vector3 spawnPos = transform.position;
 
-        if (pillar != null)
+        if (pedestal != null)
         {
-            // Get the top of the pillar using its collider bounds
-            if (pillar.TryGetComponent(out Collider col))
+            // Get the top of the pedestal using its collider bounds
+            if (pedestal.TryGetComponent(out Collider col))
             {
                 float pillarTopY = col.bounds.max.y;
-                spawnPos = new Vector3(pillar.position.x, pillarTopY + 0.05f, pillar.position.z);
+                spawnPos = new Vector3(pedestal.position.x, pillarTopY + 0.05f, pedestal.position.z);
             }
             else
             {
-                // fallback: just place slightly above pillar transform
-                spawnPos = pillar.position + pillar.up * 0.5f;
+                // fallback: just place slightly above pedestal transform
+                spawnPos = pedestal.position + pedestal.up * 0.5f;
             }
         }
 
