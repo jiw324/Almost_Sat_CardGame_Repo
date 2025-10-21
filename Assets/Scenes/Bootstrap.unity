@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 5233794}
   m_Layer: 0
   m_Name: GameSession
-  m_TagString: Untagged
+  m_TagString: GameSession
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -164,10 +164,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameSessionData:
-    health: 5
-    mana: 1
-    gold: 10
-    cards: []
+    sessionPlayerData:
+      health: 10
+      mana: 1
+      gold: 5
+      cards: []
+    sessionNodeMapData:
+      currentNodeType: 4
+      currentNodeJson: 
 --- !u!1 &488151005
 GameObject:
   m_ObjectHideFlags: 0
