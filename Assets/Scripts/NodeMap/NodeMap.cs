@@ -8,13 +8,13 @@ public class NodeMap : MonoBehaviour
     private HashSet<int> _startNodeXVals;
     private NodeFactory _nodeFactory;
 
-    private const float _maxXOffset = 0.25f;
-    private const float _maxYOffset = 0.25f;
+    private const float _maxXOffset = 0.3f;
+    private const float _maxYOffset = 0.3f;
     private int _maxNodesPerFloor = 0;
 
     public void Awake()
     {
-        _nodeGrid = new NodeGrid(7, 15);
+        _nodeGrid = new NodeGrid(8, 15);
         _nodes = new Dictionary<int, INode[]>();
         for (int y = 0; y < _nodeGrid.height; y++)
         {
