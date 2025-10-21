@@ -6,12 +6,19 @@ public class BoardSlot : MonoBehaviour
     public bool isOccupied;
     public CardInstance currentCard;
 
-    public void PlaceCard(CardInstance card)
+    public bool PlaceCard(CardInstance card)
     {
         if (card == null)
         {
             Debug.LogError("[BoardSlot] Tried to place a null CardInstance!");
-            return;
+            return false;
+        }
+        if (card.Data.isRanged != isRanged)
+        {
+            Debug.LogError($"[BoardSlot] Tried to place a " +
+                $"{(card.Data.isRanged ? "ranged" : "melee")} card in a " +
+                $"{(isRanged ? "ranged" : "melee")} slot!");
+            return false;
         }
 
         currentCard = card;
@@ -40,14 +47,10 @@ public class BoardSlot : MonoBehaviour
         if (prefab == null)
         {
             Debug.LogError("[BoardSlot] No 3D card prefab assigned in BoardManager!");
-            return;
+            return false;
         }
 
         GameObject cardObject = Instantiate(prefab, spawnPos, Quaternion.identity, transform);
-
-        // face toward camera (so the player can see the card front)
-        cardObject.transform.LookAt(Camera.main.transform);
-        cardObject.transform.rotation = Quaternion.Euler(0, cardObject.transform.eulerAngles.y, 0);
 
         // Initialize its visual info
         var controller = cardObject.GetComponent<Card3DController>();
@@ -57,5 +60,6 @@ public class BoardSlot : MonoBehaviour
             Debug.LogWarning("[BoardSlot] 3D card prefab missing Card3DController component!");
 
         Debug.Log($"[BoardSlot] Placed {card.Data.cardName} on {(isRanged ? "ranged" : "melee")} row.");
+        return true;
     }
 }

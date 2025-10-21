@@ -43,7 +43,6 @@ public class BoardManager : MonoBehaviour
     public void InitializeBoard()
     {
         Debug.Log("[BoardManager] Board initialized.");
-        // Eventually populate rows dynamically or via inspector
     }
 
     private void OnClickPerformed(InputAction.CallbackContext ctx)
@@ -88,8 +87,10 @@ public class BoardManager : MonoBehaviour
             return;
         }
 
-        slot.PlaceCard(selectedCard.Instance);
-        Destroy(selectedCard.gameObject); // remove from hand
-        selectedCard = null;
+        if (slot.PlaceCard(selectedCard.Instance))
+        {
+            Destroy(selectedCard.gameObject); // remove from hand
+            selectedCard = null;
+        }
     }
 }
