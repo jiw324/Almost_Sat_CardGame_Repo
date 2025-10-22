@@ -6,6 +6,7 @@ public class BoardManager : MonoBehaviour
     public static BoardManager Instance { get; private set; }
     [SerializeField] public GameObject cardPrefab3D;
     [SerializeField] private Camera mainCamera;
+    [SerializeField] private GameObject reactionMinigamePrefab;
 
     private CardUIController selectedCard;
     private InputSystem_Actions inputActions;
@@ -32,11 +33,13 @@ public class BoardManager : MonoBehaviour
     {
         inputActions.Enable();
         inputActions.Player.Click.performed += OnClickPerformed;
+        inputActions.Player.Minigame.performed += OnTestMinigame;
     }
 
     private void OnDisable()
     {
         inputActions.Player.Click.performed -= OnClickPerformed;
+        inputActions.Player.Minigame.performed -= OnTestMinigame;
         inputActions.Disable();
     }
 
@@ -59,6 +62,23 @@ public class BoardManager : MonoBehaviour
                 return;
             }
         }
+    }
+
+    private void OnTestMinigame(InputAction.CallbackContext ctx)
+    {
+        if (MinigameManager.Instance == null)
+        {
+            Debug.LogWarning("[BoardManager] No MinigameManager instance found!");
+            return;
+        }
+
+        Debug.Log("[BoardManager] Launching Reaction Minigame!");
+        MinigameManager.Instance.StartMinigame(
+            reactionMinigamePrefab,
+            result =>
+            {
+                Debug.Log($"[BoardManager] Minigame complete. Score: {result:F2}");
+            });
     }
 
     public bool IsSelectedCard(CardUIController card)
