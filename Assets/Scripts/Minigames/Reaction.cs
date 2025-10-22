@@ -67,6 +67,17 @@ public class Reaction : MonoBehaviour, IMinigame, IPointerClickHandler
                 }
             }
         }
+        else
+        {
+            gameText.text = $"{Time.time - timeAtChange:F2}s";
+        }
+
+        if (colorChanged && Time.time > timeAtChange + worstReactionTime)
+        {
+            clicks = 1;
+            elapsed = 0f;
+            HandleReaction();
+        }
     }
 
     public void OnPointerClick(PointerEventData eventData)
