@@ -10,6 +10,8 @@ public class PlayerTurnState : TurnStateBase
     {
         Debug.Log("[TurnStates] 1. Enter Player Turn");
 
+        turnManager.turnBanner.ShowPlayerTurnBanner();
+
         // Subscribe to EndTurn input event (for testing)
         turnManager.InputActions.Player.NextTurn.performed += OnEndTurn;
     }
@@ -41,6 +43,9 @@ public class EnemyTurnState : TurnStateBase
     public override void Enter()
     {
         Debug.Log("[TurnStates] 4. Enemy turn started...");
+
+        turnManager.turnBanner.ShowEnemyTurnBanner();
+
         // Call to enemy action
         turnManager.StartCoroutine(EnemyActionRoutine());
     }

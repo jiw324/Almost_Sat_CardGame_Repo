@@ -39,8 +39,25 @@ public class TurnBanner : MonoBehaviour
         StartCoroutine(ShowBannerRoutine("enemy"));
     }
 
+    public IEnumerator ShowIntroBannerEnumerator()
+    {
+        yield return ShowBannerRoutine("intro");
+    }
+
+    public IEnumerator ShowPlayerTurnBannerEnumerator()
+    {
+        yield return ShowBannerRoutine("player");
+    }
+
+    public IEnumerator ShowEnemyTurnBannerEnumerator()
+    {
+        yield return ShowBannerRoutine("enemy");
+    }
+
+
     private IEnumerator ShowBannerRoutine(string type)
     {
+        Debug.Log($"[TurnBanner] Showing banner type: {type}");
         if (isShowing)
             yield break;
 
@@ -57,6 +74,7 @@ public class TurnBanner : MonoBehaviour
             case "intro":
                 if (battleStartText)
                 {
+                    Debug.Log("[TurnBanner] Battle start active");
                     battleStartText.SetActive(true);
                     turnText.gameObject.SetActive(false);
                 }
@@ -65,6 +83,7 @@ public class TurnBanner : MonoBehaviour
             case "player":
                 if (turnText)
                 {
+                    Debug.Log("[TurnBanner] Player turn active");
                     turnText.gameObject.SetActive(true);
                     turnText.text = "Player Turn";
                     battleStartText.SetActive(false);
@@ -74,6 +93,7 @@ public class TurnBanner : MonoBehaviour
             case "enemy":
                 if (turnText)
                 {
+                    Debug.Log("[TurnBanner] Enemy turn active");
                     turnText.gameObject.SetActive(true);
                     turnText.text = "Enemy Turn";
                     battleStartText.SetActive(false);
@@ -81,10 +101,7 @@ public class TurnBanner : MonoBehaviour
                 break;
         }
 
-        yield return new WaitUntil(() =>
-            animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f &&
-            !animator.IsInTransition(0)
-        );
+        yield return new WaitForSecondsRealtime(1.6f);
 
         // Hide everything
         if (background) background.SetActive(false);
