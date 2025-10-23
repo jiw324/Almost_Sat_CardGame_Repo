@@ -60,7 +60,7 @@ public class EndTurnButton : MonoBehaviour
 
     private IEnumerator FadeRoutine(float targetAlpha, bool interactable)
     {
-        float duration = 0.3f;
+        float duration = 0.5f;
         float startAlpha = canvasGroup.alpha;
         float time = 0f;
 
