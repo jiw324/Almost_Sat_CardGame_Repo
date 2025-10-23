@@ -1,21 +1,36 @@
-using TMPro;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    public GameObject player;
-    public GameObject enemy;
+    public AvatarUI playerUI;
+    public AvatarUI enemyUI;
     public BoardManager boardManager;
 
-    void Start()
+    public void InitializeUI(int playerHealth, int playerMana, int enemyHealth, int enemyMana)
     {
- //       TMP_Text x = player.transform.Find("Health").Find("Text");
-
+        playerUI.SetHealth(playerHealth);
+        playerUI.SetMana(playerMana);
+        enemyUI.SetHealth(enemyHealth);
+        enemyUI.SetMana(enemyMana);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void UpdatePlayerHealth(int newHealth)
     {
-        
+        playerUI.SetHealth(newHealth);
+    }
+
+    public void UpdatePlayerMana(int newMana)
+    {
+        playerUI.SetMana(newMana);
+    }
+
+    public void UpdateEnemyHealth(int newHealth)
+    {
+        enemyUI.SetHealth(newHealth);
+    }
+
+    public void UpdateEnemyMana(int newMana)
+    {
+        enemyUI.SetMana(newMana);
     }
 }

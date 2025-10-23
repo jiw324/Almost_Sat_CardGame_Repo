@@ -99,22 +99,22 @@ public class PauseMenu : MonoBehaviour
     public void OpenOptions()
     {
         animator.SetTrigger(FlipAndExpand);
-        StartCoroutine(PanelAfterDelay(0.2f, buttonsPanel, false));
+        StartCoroutine(PanelAfterDelay(0.3f, buttonsPanel, false));
         optionsPanel.SetActive(true);
     }
 
     public void OpenExit()
     {
         animator.SetTrigger(FlipAndExpand);
-        StartCoroutine(PanelAfterDelay(0.2f, buttonsPanel, false));
-        exitPanel.SetActive(true);
+        StartCoroutine(PanelAfterDelay(0.3f, buttonsPanel, false));
+        StartCoroutine(PanelAfterDelay(0.3f, exitPanel, true));
     }
 
     public void BackToMainButtons()
     {
         animator.SetTrigger(BackToIdle);
-        optionsPanel.SetActive(false);
-        exitPanel.SetActive(false);
+        StartCoroutine(PanelAfterDelay(0.15f, optionsPanel, false));
+        StartCoroutine(PanelAfterDelay(0.15f, exitPanel, false));
         StartCoroutine(PanelAfterDelay(0.2f, buttonsPanel, true));
     }
 

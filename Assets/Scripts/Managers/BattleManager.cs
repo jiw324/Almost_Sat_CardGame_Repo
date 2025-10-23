@@ -20,16 +20,20 @@ public class BattleManager : MonoBehaviour
     {
         uiManager.boardManager = boardManager;
         GameSession session = SessionGrabber.getGameSession();
-        playerHealth = session.gameSessionData.sessionPlayerData.health;
-        playerMana = session.gameSessionData.sessionPlayerData.mana;
-        enemyHealth = 10;       // Temporary before enemy loading code is written
-        enemyMana = 1;
+        if (session != null)
+        {
+            playerHealth = session.gameSessionData.sessionPlayerData.health;
+            playerMana = session.gameSessionData.sessionPlayerData.mana;
+            enemyHealth = 10;       // Temporary before enemy loading code is written
+            enemyMana = 1;
+        }
 
         StartBattle();
     }
 
     void StartBattle()
     {
+        uiManager.InitializeUI(playerHealth, playerMana, enemyHealth, enemyMana);
         boardManager.InitializeBoard();
     }
 }
