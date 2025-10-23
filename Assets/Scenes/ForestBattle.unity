@@ -4704,7 +4704,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Progress made during this node will be lost
+  m_text: Progress made during this encouter will be lost
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 58e47351857a9af42a9f550e59a8a594, type: 2}
   m_sharedMaterial: {fileID: -4828513942605343922, guid: 58e47351857a9af42a9f550e59a8a594, type: 2}
@@ -4731,7 +4731,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 53
+  m_fontSize: 47.9
   m_fontSizeBase: 165
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -6877,14 +6877,14 @@ RectTransform:
   m_GameObject: {fileID: 2120884247}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.03125, y: 1.03125, z: 1.03125}
+  m_LocalScale: {x: 0.7, y: 0.7, z: 1.03125}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 339591127}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 111}
+  m_AnchoredPosition: {x: 0, y: 118}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2120884249
@@ -6899,9 +6899,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd16f541004825d4cafa88de467d7ffb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSize: {x: 1300, y: 300}
+  maxSize: {x: 1600, y: 300}
   intendedElementWidth: 200
-  defaultSpacing: -40
+  defaultSpacing: 20
 --- !u!114 &2120884250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6934,7 +6934,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 4
-  m_Spacing: -40
+  m_Spacing: 20
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
