@@ -3620,6 +3620,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f209dc55372b55b4a813e98f578c6293, type: 2}
   - {fileID: 11400000, guid: 0fd1590f934da144aa16d5ba213bfe5e, type: 2}
   - {fileID: 11400000, guid: 2dc3c9b5a2a374f48bcc8c25a5586a0a, type: 2}
+  - {fileID: 11400000, guid: de4747a67ec301a4aa7a275875b69ac3, type: 2}
   asFirstSibling: 0
 --- !u!4 &1751971104 stripped
 Transform:

@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Minion
   m_EditorClassIdentifier: 
   id: 
-  cardName: 
+  cardName: Minion
   cost: 0
   description: 
   type: 
   artwork: {fileID: 0}
   isRanged: 0
   effect: {fileID: 0}
-  isMinion: 0
+  isMinion: 1
   minionAttack: 2
   minionHealth: 5
