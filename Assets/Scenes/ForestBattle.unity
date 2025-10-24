@@ -274,7 +274,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardPrefab3D: {fileID: 4499290523609096157, guid: bf43d89f1ed2cf2429da064191f3dc1f, type: 3}
   mainCamera: {fileID: 1041062196}
-  reactionMinigamePrefab: {fileID: 2256166515153550790, guid: 044fc6e1ba7434e01b769b833fe07355, type: 3}
+  reactionMinigamePrefab: {fileID: 2256166515153550790, guid: 82be00eb0f06b9747a77ebd19b9e620c, type: 3}
 --- !u!1 &42921930
 GameObject:
   m_ObjectHideFlags: 0
