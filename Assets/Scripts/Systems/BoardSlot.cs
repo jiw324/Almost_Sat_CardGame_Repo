@@ -6,7 +6,7 @@ public class BoardSlot : MonoBehaviour
     [SerializeField] private Transform pedestal;
     public bool isOccupied;
     public CardInstance currentCard;
-
+    private GameObject spawnedObject;
     public bool PlaceCard(CardInstance card)
     {
         if (card == null)
@@ -54,30 +54,49 @@ public class BoardSlot : MonoBehaviour
             return false;
         }
 
-        GameObject cardObject = Instantiate(prefab, spawnPos, Quaternion.identity, transform);
-        cardObject.name = card.Data.name;
+        spawnedObject = Instantiate(prefab, spawnPos, Quaternion.identity, transform);
+        spawnedObject.name = card.Data.name;
         Debug.Log($"**** Assigned name: {card.Data.name}");
 
-        // Initialize its visual info
-        var controller = cardObject.GetComponent<Card3DController>();
-        if (controller != null)
-            controller.Initialize(card);
-        else
-            Debug.LogWarning("[BoardSlot] 3D card prefab missing Card3DController component!");
+        var controller = spawnedObject.GetComponent<Card3DController>();
+        if (controller != null) controller.Initialize(card);
+        else Debug.LogWarning("[BoardSlot] 3D card prefab missing Card3DController component!");
 
+        if (card.IsMinion)
+        {
+            var mb = spawnedObject.GetComponent<MinionBehaviour>();
+            if (!mb) mb = spawnedObject.AddComponent<MinionBehaviour>();
+            mb.Initialize(this, card);
+
+            var bm = BattleManager.Instance;
+            var caster = bm ? bm.player : null;
+            var target = (bm != null && bm.enemies.Count > 0) ? bm.enemies[0] : null;
+            card.ResolveEffect(caster, target); // optional battlecry
+
+            Debug.Log($"[BoardSlot] Summoned minion {card.Data.cardName} (ATK {card.Attack}/{card.CurrentHP} HP).");
+            return true; // stays
+        }
+
+        // spell/one-shot: resolve then clean up
         var player = FindFirstObjectByType<PlayerEntity>();
         var enemy = FindFirstObjectByType<EnemyEntity>();
-
-        // Play & resolve effect
         card.ResolveEffect(player, enemy);
 
-        // Cleanup: destroy the 3D card and free the slot
-        if (cardObject != null)
-            Destroy(cardObject);
-
+        if (spawnedObject != null) Destroy(spawnedObject);
+        spawnedObject = null;
         currentCard = null;
         isOccupied = false;
+
+
         Debug.Log($"[BoardSlot] Placed {card.Data.cardName} on {(isRanged ? "ranged" : "melee")} row.");
         return true;
+    }
+
+    public void ClearSlotAndDestroy()
+    {
+        if (spawnedObject) Destroy(spawnedObject);
+        spawnedObject = null;
+        currentCard = null;
+        isOccupied = false;
     }
 }

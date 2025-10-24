@@ -51,16 +51,22 @@ public class BoardManager : MonoBehaviour
     private void OnClickPerformed(InputAction.CallbackContext ctx)
     {
         Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        if (!Physics.Raycast(ray, out RaycastHit hit)) return;
 
-        if (Physics.Raycast(ray, out RaycastHit hit))
+        // If a hand card is selected, try to place it on a slot (existing behavior)
+        var slot = hit.collider.GetComponentInParent<BoardSlot>();
+        if (selectedCard != null && slot != null)
         {
-            var slot = hit.collider.GetComponentInParent<BoardSlot>();
-            if (slot != null)
-            {
-                Debug.Log($"[BoardManager] Clicked pillar: {slot.name} of {slot.transform.parent.name}");
-                TryPlaceSelectedCard(slot);
-                return;
-            }
+            TryPlaceSelectedCard(slot);
+            return;
+        }
+
+        // No card selected: clicking a minion triggers its attack
+        var minion = hit.collider.GetComponentInParent<MinionBehaviour>();
+        if (minion != null)
+        {
+            minion.AttackEnemy();
+            return;
         }
     }
 

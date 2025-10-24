@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: AOE
   m_EditorClassIdentifier: 
   id: 
-  cardName: 
+  cardName: AOE
   cost: 0
   description: 
   type: 
   artwork: {fileID: 0}
   isRanged: 0
-  effect: {fileID: 0}
+  effect: {fileID: 11400000, guid: 1e03532fc5918e5478b537253e470b6a, type: 2}

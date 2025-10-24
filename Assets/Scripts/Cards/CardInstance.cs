@@ -17,6 +17,10 @@ public class CardInstance
     public event Action OnCardPlayed;
     public event Action OnCardDestroyed;
 
+    public bool IsMinion => Data != null && Data.isMinion;
+    public int CurrentHP { get; private set; }
+    public int Attack => Data != null ? Data.minionAttack : 0;
+
     public CardInstance(CardData data, EntityBase owner)
     {
         Data = data;
@@ -24,6 +28,9 @@ public class CardInstance
         CurrentCost = data.cost;
         IsInHand = true;
         IsOnBoard = false;
+
+        if (IsMinion)
+            CurrentHP = Data.minionHealth;
     }
 
     public void PlayCard(BoardSlot targetSlot)
@@ -61,6 +68,16 @@ public class CardInstance
             Debug.LogWarning($"[CardInstance] {Data.cardName} has no effect assigned.");
         }
     }
+
+    public void TakeDamage(int amount)
+    {
+        if (!IsMinion) return;
+        amount = Mathf.Max(0, amount);
+        CurrentHP -= amount;
+        Debug.Log($"{Data.cardName} took {amount} dmg. HP={CurrentHP}");
+    }
+
+    public bool IsDead() => IsMinion && CurrentHP <= 0;
 
     public void DestroyCard()
     {
