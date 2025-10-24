@@ -15,6 +15,7 @@ public class HandManager : MonoBehaviour
         }
     }
 
+<<<<<<< Updated upstream
     public void SpawnCard(CardData cardData)
     {
         GameObject cardObj = Instantiate(cardPrefab, handArea);
@@ -25,5 +26,12 @@ public class HandManager : MonoBehaviour
         {
             pc.ownerTeam = ownerTeam; 
         }
+=======
+	public void SpawnCard(CardData cardData)
+	{
+		GameObject cardObj = Instantiate(cardPrefab, handArea);
+		CardUI cardUI = cardObj.GetComponent<CardUI>();
+		cardUI.Initialize(cardData);
+>>>>>>> Stashed changes
     }
 }

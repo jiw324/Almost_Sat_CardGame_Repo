@@ -9,7 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdc5bb5dda4a3504e853fd3f6adf4e6c, type: 3}
-  m_Name: Shield5
+  m_Script: {fileID: 11500000, guid: 100d6f421932325429fc5043ddfc5b43, type: 3}
+  m_Name: Strike
   m_EditorClassIdentifier: 
-  amount: 5
+  cardName: Strike
+  cost: 0
+  description: 
+  artwork: {fileID: 0}
+  isRanged: 0
+  effect: {fileID: 11400000, guid: 14d982f2d3ba1ad499cec419c8974186, type: 2}

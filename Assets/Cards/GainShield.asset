@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18e184ccc326e7642ab183669971b6ff, type: 3}
-  m_Name: damage5
+  m_Script: {fileID: 11500000, guid: 6fd22689ba9dae0448cf7e56c7a4e929, type: 3}
+  m_Name: GainShield
   m_EditorClassIdentifier: 
-  amount: 6
+  amount: 5

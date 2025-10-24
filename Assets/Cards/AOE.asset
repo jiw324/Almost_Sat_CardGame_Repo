@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+<<<<<<< Updated upstream:Assets/Cards/Fireball/AOE.asset
+<<<<<<<< Updated upstream:Assets/Cards/AOE.asset
+  m_Script: {fileID: 11500000, guid: 18e184ccc326e7642ab183669971b6ff, type: 3}
+  m_Name: AOE
+========
+  m_Script: {fileID: 11500000, guid: 7350c41a9a573ef47a760ac2b8a4dd3c, type: 3}
+  m_Name: Damage
+>>>>>>>> Stashed changes:Assets/Cards/Damage.asset
+  m_EditorClassIdentifier: 
+  isAOE: 1
+  amount: 5
+=======
+  m_Script: {fileID: 11500000, guid: 100d6f421932325429fc5043ddfc5b43, type: 3}
+  m_Name: AOE
+  m_EditorClassIdentifier: 
+  cardName: AOE
+  cost: 0
+  description: 
+  artwork: {fileID: 0}
+  isRanged: 0
+  effect: {fileID: 11400000, guid: 4fbc7b9b7e2c4574ea5e5f1d5e5b5d93, type: 2}
+>>>>>>> Stashed changes:Assets/Cards/AOE.asset

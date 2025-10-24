@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<< Updated upstream:Assets/Cards/Fireball/AOE.asset.meta
+guid: 4fbc7b9b7e2c4574ea5e5f1d5e5b5d93
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+=======
+guid: da9891cf820f4614794f8e8145266fb8
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+>>>>>>> Stashed changes:Assets/Cards/AOE.asset.meta
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

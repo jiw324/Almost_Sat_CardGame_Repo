@@ -22,8 +22,5 @@ public class DropZone : MonoBehaviour, IDropHandler
         cardRect.anchorMin = cardRect.anchorMax = new Vector2(0.5f, 0.5f);
         cardRect.pivot = new Vector2(0.5f, 0.5f);
         cardRect.anchoredPosition = Vector2.zero;
-
-        var playable = card.GetComponent<PlayableCard>();
-        playable?.Play();
     }
 }
