@@ -367,7 +367,7 @@ MonoBehaviour:
   wordPanelTemplate: {fileID: 154595011407995996}
   inputText: {fileID: 5630583674150491155}
   timerText: {fileID: 6099816131595502299}
-  totalWords: 3
+  totalWords: 6
   totalTime: 5
   autoFillOnStart: 1
 --- !u!1 &3170869746726489683
