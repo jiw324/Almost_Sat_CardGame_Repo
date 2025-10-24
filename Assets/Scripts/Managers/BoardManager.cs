@@ -15,6 +15,7 @@ public class BoardManager : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
+            Debug.Log("[BoardManager] Duplicate instance found, destroying this one.");
             Destroy(gameObject);
             return;
         }
@@ -38,6 +39,7 @@ public class BoardManager : MonoBehaviour
 
     private void OnDisable()
     {
+        Debug.Log("[BoardManager] OnDisable called.");
         inputActions.Player.Click.performed -= OnClickPerformed;
         inputActions.Player.Minigame.performed -= OnTestMinigame;
         inputActions.Disable();
