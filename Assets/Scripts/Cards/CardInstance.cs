@@ -44,6 +44,11 @@ public class CardInstance
         OnCardPlayed?.Invoke();
     }
 
+    public void ResolveEffect(EntityBase caster, EntityBase target)
+    {
+        if (Data != null && Data.effect != null)
+            Data.effect.Execute(caster, target);
+    }
     public void ResolveEffect(BoardSlot targetSlot)
     {
         if (Data.effect != null)

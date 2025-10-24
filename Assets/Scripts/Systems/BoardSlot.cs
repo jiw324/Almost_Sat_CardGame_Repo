@@ -65,6 +65,18 @@ public class BoardSlot : MonoBehaviour
         else
             Debug.LogWarning("[BoardSlot] 3D card prefab missing Card3DController component!");
 
+        var player = FindFirstObjectByType<PlayerEntity>();
+        var enemy = FindFirstObjectByType<EnemyEntity>();
+
+        // Play & resolve effect
+        card.ResolveEffect(player, enemy);
+
+        // Cleanup: destroy the 3D card and free the slot
+        if (cardObject != null)
+            Destroy(cardObject);
+
+        currentCard = null;
+        isOccupied = false;
         Debug.Log($"[BoardSlot] Placed {card.Data.cardName} on {(isRanged ? "ranged" : "melee")} row.");
         return true;
     }

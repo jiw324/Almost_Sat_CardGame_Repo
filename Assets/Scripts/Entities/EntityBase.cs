@@ -8,12 +8,12 @@ public abstract class EntityBase : MonoBehaviour
 
     public virtual void TakeDamage(int amount)
     {
-        currentHealth -= amount;
-        Debug.Log($"[{entityName}] HP: {currentHealth}/{maxHealth}");
+        currentHealth -= Mathf.Max(0, amount);
+        Debug.Log($"{name} took {amount} damage. HP = {currentHealth}");
         if (currentHealth <= 0) Die();
     }
 
-    protected virtual void Die()
+    public virtual void Die()
     {
         Debug.Log($"[EntityBase] {entityName} has been destroyed.");
     }
