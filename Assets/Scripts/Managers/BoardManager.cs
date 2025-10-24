@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,14 +16,14 @@ public class BoardManager : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
-            Debug.Log("[BoardManager] Duplicate instance found, destroying this one.");
-            Destroy(gameObject);
+            Debug.LogWarning($"[BoardManager] Duplicate BoardManager found on {gameObject.name} in scene {gameObject.scene.name}. Destroying.");
+            DestroyImmediate(gameObject);
             return;
         }
         Instance = this;
-
         inputActions = new InputSystem_Actions();
     }
+
 
     private void Start()
     {
