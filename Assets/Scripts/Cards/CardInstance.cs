@@ -53,15 +53,24 @@ public class CardInstance
 
     public void ResolveEffect(EntityBase caster, EntityBase target)
     {
-        if (Data != null && Data.effect != null)
-            Data.effect.Execute(caster, target);
+        if (Data == null || Data.effects == null || Data.effects.Count == 0)
+        {
+            Debug.LogWarning($"[CardInstance] {Data?.cardName} has no effects assigned.");
+            return;
+        }
+
+        foreach (var binding in Data.effects)
+        {
+            if (binding?.effect == null) continue;
+            binding.effect.Execute(caster, target, binding.value);
+        }
     }
     public void ResolveEffect(BoardSlot targetSlot)
     {
         if (Data.effect != null)
         {
             EntityBase target = targetSlot?.currentCard?.Owner; // example target logic
-            Data.effect.Execute(Owner, target);
+            ResolveEffect(Owner, target);
         }
         else
         {

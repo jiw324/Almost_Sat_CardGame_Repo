@@ -5,8 +5,9 @@ public class DamageEnemyEffect : CardEffect
 {
     [SerializeField] private int amount = 5;
 
-    public override void Execute(EntityBase caster, EntityBase target)
+    public override void Execute(EntityBase caster, EntityBase target, int value)
     {
-        if (target != null) target.TakeDamage(amount);
+        int dmg = value > 0 ? value : amount;
+        if (target != null) target.TakeDamage(dmg);
     }
 }

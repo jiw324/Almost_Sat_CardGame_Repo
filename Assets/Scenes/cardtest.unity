@@ -3614,14 +3614,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cdd2efc16fd64954a15a4f72a3703d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardUIPrefab: {fileID: 5711857772937691287, guid: ed3c4352dc3314b1485dac1986877944, type: 3}
-  handArea: {fileID: 2031058405}
-  drawPool:
-  - {fileID: 11400000, guid: f209dc55372b55b4a813e98f578c6293, type: 2}
-  - {fileID: 11400000, guid: 0fd1590f934da144aa16d5ba213bfe5e, type: 2}
-  - {fileID: 11400000, guid: 2dc3c9b5a2a374f48bcc8c25a5586a0a, type: 2}
-  - {fileID: 11400000, guid: de4747a67ec301a4aa7a275875b69ac3, type: 2}
-  asFirstSibling: 0
+  handManager: {fileID: 1218048952}
+--- !u!1 &1724823684
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1724823686}
+  - component: {fileID: 1724823685}
+  m_Layer: 0
+  m_Name: EffectRegistry
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1724823685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1724823684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f65b97641f31b04e8845fe223ed864d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageEnemyEffect: {fileID: 0}
+  aoeDamageEffect: {fileID: 0}
+  gainShieldEffect: {fileID: 0}
+--- !u!4 &1724823686
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1724823684}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1751971104 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7533795812152726194, guid: 1a6d89347d5a6b24f8189f69acebbd1b, type: 3}
@@ -4188,3 +4228,4 @@ SceneRoots:
   - {fileID: 26866028}
   - {fileID: 291683229}
   - {fileID: 444330996}
+  - {fileID: 1724823686}

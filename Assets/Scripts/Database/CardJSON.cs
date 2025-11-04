@@ -7,5 +7,16 @@ public class CardJSON
     public int cost;
     public string type;
     public bool isRanged;
+
+    public string effectId;      
+    public int effectValue;      
+
+    public CardJSONEffectEntry[] effects;
+}
+
+[System.Serializable]
+public class CardJSONEffectEntry
+{
     public string effectId;
+    public int effectValue;
 }
