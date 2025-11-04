@@ -3,7 +3,7 @@
         {
             "id": "fireball",
             "cardName": "Fireball",
-            "description": "Deal 8 damage to an enemy.",
+            "description": "Deal 8 damage to all enemy.",
             "cost": 3,
             "type": "spell",
             "isRanged": true,
