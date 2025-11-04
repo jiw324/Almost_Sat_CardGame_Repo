@@ -12,7 +12,11 @@ public class NodeMap : MonoBehaviour
 
     private const float _maxXOffset = 0.3f;
     private const float _maxYOffset = 0.3f;
-    private int _maxNodesPerFloor = 0;
+
+    private int _maxStartNodes = 0;
+    private const float _startNodesMult = 0.6f;
+    private int _maxNumPaths = 0;
+    private const float _numPathsMult = 3.5f;
 
     public int mapWidth { get; private set; } = 5;
     public int mapHeight { get; private set; } = 15;
@@ -26,8 +30,9 @@ public class NodeMap : MonoBehaviour
             nodes[y] = new INode[mapWidth];
 
         _nodeFactory       = new NodeFactory();
-        _nodeMapValidator  = new NodeMapValidator(this, _nodeFactory);
-        _maxNodesPerFloor  = Mathf.RoundToInt(mapWidth * 0.75f);
+        _nodeMapValidator = new NodeMapValidator(this, _nodeFactory);
+        _maxStartNodes = Mathf.RoundToInt(mapWidth * _startNodesMult);
+        _maxNumPaths = Mathf.RoundToInt(mapWidth * _numPathsMult);
         _startNodeXVals    = new HashSet<int>();
     }
 
@@ -53,10 +58,11 @@ public class NodeMap : MonoBehaviour
 
         GameObject nodeAnchorParentObj = new GameObject("NodeAnchors");
         nodeAnchorParentObj.transform.SetParent(transform, false);
-
-        foreach (int gridX in _startNodeXVals)
+        
+        for (int pathIndex = 0; pathIndex < _maxNumPaths; pathIndex++)
         {
-            int x = gridX;
+            int startX = GetRandomStartX();
+            int x = startX;
 
             if (nodes[0][x] == null)
                 nodes[0][x] = _nodeFactory.CreateNode(
@@ -88,12 +94,20 @@ public class NodeMap : MonoBehaviour
                 x += randomDeltaX;
             }
         }
+
+    }
+
+    private int GetRandomStartX()
+    {
+        int[] startXs = new int[_startNodeXVals.Count];
+        _startNodeXVals.CopyTo(startXs);
+        return startXs[Random.Range(0, startXs.Length)];
     }
 
     private void ChooseStartNodes()
     {
         _startNodeXVals.Clear();
-        while (_startNodeXVals.Count < _maxNodesPerFloor)
+        while (_startNodeXVals.Count < Mathf.Min(_maxStartNodes, mapWidth))
             _startNodeXVals.Add(Random.Range(0, mapWidth));
     }
 

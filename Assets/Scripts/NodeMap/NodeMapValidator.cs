@@ -139,7 +139,7 @@ public class NodeMapValidator
             int changesMadeThisPass = 0;
             HashSet<INode> checkedNodesThisPass = new();
 
-            // ---------- Phase 1: Placement rules ----------
+            // Placement rules
             for (int floorIndex = 0; floorIndex < _nodeMap.mapHeight; floorIndex++)
             {
                 var floorNodes = _nodeMap.nodes[floorIndex];
@@ -180,7 +180,7 @@ public class NodeMapValidator
                 }
             }
 
-            // ---------- Phase 2: Consecutive identical Shop/Rest nodes ----------
+            // No consecutive identical Shop/Rest nodes
             for (int floorIndex = 0; floorIndex < _nodeMap.mapHeight - 1; floorIndex++)
             {
                 var floorNodes = _nodeMap.nodes[floorIndex];
@@ -226,7 +226,7 @@ public class NodeMapValidator
                 }
             }
 
-            // ---------- Phase 3: Prevent duplicate neighbor types per parent ----------
+            // Prevent duplicate neighbor types per parent
             for (int floorIndex = 0; floorIndex < _nodeMap.mapHeight - 1; floorIndex++)
             {
                 var floorNodes = _nodeMap.nodes[floorIndex];
@@ -285,7 +285,7 @@ public class NodeMapValidator
                 }
             }
 
-            // --- Final cleanup: enforce Rest restriction on 2nd-to-last floor ---
+            // Rest restriction on 2nd-to-last floor
             int secondToLastFloor = _nodeMap.mapHeight - 2;
             var secondToLastFloorNodes = _nodeMap.nodes[secondToLastFloor];
             if (secondToLastFloorNodes != null)
