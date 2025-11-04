@@ -7,7 +7,8 @@
             "cost": 3,
             "type": "spell",
             "isRanged": true,
-            "effectId": "damage"
+            "effectId": "aoe_damage",
+            "effectValue": "8"
         },
         {
             "id": "slash",
@@ -16,7 +17,8 @@
             "cost": 1,
             "type": "spell",
             "isRanged": true,
-            "effectId": "damage"
+            "effectId": "damage_enemy",
+            "effectValue": "4"
         },
         {
             "id": "healinghands",
@@ -25,7 +27,8 @@
             "cost": 2,
             "type": "spell",
             "isRanged": true,
-            "effectId": "heal"
+            "effectId": "gain_shield",
+            "effectValue": "5"
         },
         {
             "id": "warrior",

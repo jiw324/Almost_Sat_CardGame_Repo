@@ -14,11 +14,11 @@ public class BoardSlot : MonoBehaviour
             Debug.LogError("[BoardSlot] Tried to place a null CardInstance!");
             return false;
         }
-        if (card.Data.type == "spell")
-        {
-            Debug.LogError($"[BoardSlot] You can't place spell cards on the board!");
-            return false;
-        }
+        //if (card.Data.type == "spell")
+        //{
+        //    Debug.LogError($"[BoardSlot] You can't place spell cards on the board!");
+        //    return false;
+        //}
         if (card.Data.isRanged != isRanged)
         {
             Debug.LogError($"[BoardSlot] Tried to place a " +
