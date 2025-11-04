@@ -18,7 +18,7 @@ public class CardData : ScriptableObject
     public class EffectBinding
     {
         public CardEffect effect;
-        public int value; // effectValue from JSON
+        public int value; 
     }
 
     public List<EffectBinding> effects = new List<EffectBinding>();
@@ -27,6 +27,8 @@ public class CardData : ScriptableObject
     public bool isMinion = false;
     public int minionAttack = 2;
     public int minionHealth = 5;
+    public List<EffectBinding> onSummonBindings = new List<EffectBinding>();
+    public List<EffectBinding> onDeathBindings = new List<EffectBinding>();
     public string PrintCard()
     {
         return $"id: [{id}], name: [{cardName}], cost: [{cost}], type: [{type}], ranged: [{isRanged}], effects: [{effects?.Count ?? 0}]\ndescritpion: [{description}]";

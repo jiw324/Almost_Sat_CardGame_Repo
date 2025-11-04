@@ -20,46 +20,37 @@ public static class CardFactory
         cardData.cost = data.cost;
         cardData.type = data.type;
         cardData.isRanged = data.isRanged;
- 
-        var bindings = new List<CardData.EffectBinding>();
 
-        if (data.effects != null && data.effects.Length > 0)
+        static void Fill(CardJSONEffectEntry[] src, List<CardData.EffectBinding> dst, string cardId)
         {
-            foreach (var e in data.effects)
+            if (src == null) return;
+            foreach (var e in src)
             {
-                if (string.IsNullOrEmpty(e.effectId)) continue;
-                var eff = CardEffectLibrary.GetEffectById(e.effectId);
-                if (eff == null)
-                {
-                    Debug.LogWarning($"[CardFactory] Unknown effectId '{e.effectId}' in card '{data.id}'");
-                    continue;
-                }
-
-                bindings.Add(new CardData.EffectBinding
-                {
-                    effect = eff,
-                    value = e.effectValue
-                });
-            }
-        }
-        else if (!string.IsNullOrEmpty(data.effectId))
-        {
-            var eff = CardEffectLibrary.GetEffectById(data.effectId);
-            if (eff == null)
-            {
-                Debug.LogWarning($"[CardFactory] Unknown effectId '{data.effectId}' in card '{data.id}'");
-            }
-            else
-            {
-                bindings.Add(new CardData.EffectBinding
-                {
-                    effect = eff,
-                    value = data.effectValue
-                });
+                if (e == null || string.IsNullOrEmpty(e.effectId)) continue;
+                var so = CardEffectLibrary.GetEffectById(e.effectId);
+                if (so == null) { Debug.LogWarning($"[CardFactory] Unknown effectId '{e.effectId}' on '{cardId}'"); continue; }
+                dst.Add(new CardData.EffectBinding { effect = so, value = e.effectValue });
             }
         }
 
-        cardData.effects = bindings;
+        if (!data.isMinion)
+        {
+            // SPELL PATH ONLY: populate 'effects'; ignore minion fields entirely
+            if (data.effects != null && data.effects.Length > 0)
+                Fill(data.effects, cardData.effects, data.id);
+            else if (!string.IsNullOrEmpty(data.effectId))
+                Fill(new[] { new CardJSONEffectEntry { effectId = data.effectId, effectValue = data.effectValue } }, cardData.effects, data.id);
+
+            cardData.isMinion = false;
+            return new CardInstance(cardData, owner);
+        }
+
+        // MINION PATH ONLY: populate stats + triggers; do NOT populate 'effects'
+        cardData.isMinion = true;
+        cardData.minionAttack = data.minionAttack;
+        cardData.minionHealth = data.minionHealth;
+        Fill(data.onSummon, cardData.onSummonBindings, data.id);
+        Fill(data.onDeath, cardData.onDeathBindings, data.id);
 
         // Wrap it in a CardInstance
         return new CardInstance(cardData, owner);

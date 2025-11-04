@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
@@ -47,36 +48,54 @@ public class CardInstance
 
         // Maybe minigame play goes here
 
-        ResolveEffect(targetSlot);
+        if (!IsMinion) // SPELLS: execute spell effects only
+            ResolveSpellEffects(Owner, targetSlot?.currentCard?.Owner);
         OnCardPlayed?.Invoke();
     }
 
-    public void ResolveEffect(EntityBase caster, EntityBase target)
-    {
-        if (Data == null || Data.effects == null || Data.effects.Count == 0)
-        {
-            Debug.LogWarning($"[CardInstance] {Data?.cardName} has no effects assigned.");
-            return;
-        }
 
-        foreach (var binding in Data.effects)
-        {
-            if (binding?.effect == null) continue;
-            binding.effect.Execute(caster, target, binding.value);
-        }
-    }
-    public void ResolveEffect(BoardSlot targetSlot)
+    // SPELLS ONLY
+    public void ResolveSpellEffects(EntityBase caster, EntityBase target)
+        => Execute(Data?.effects, caster, target);
+
+    // MINIONS ONLY
+    public void ResolveMinionSummonEffects(EntityBase caster, EntityBase target)
+        => Execute(Data?.onSummonBindings, caster, target);
+
+    public void ResolveMinionDeathEffects()
+        => Execute(Data?.onDeathBindings, Owner, null);
+
+    private void Execute(List<CardData.EffectBinding> list, EntityBase caster, EntityBase target)
     {
-        if (Data.effect != null)
-        {
-            EntityBase target = targetSlot?.currentCard?.Owner; // example target logic
-            ResolveEffect(Owner, target);
-        }
-        else
-        {
-            Debug.LogWarning($"[CardInstance] {Data.cardName} has no effect assigned.");
-        }
+        if (list == null || list.Count == 0) return;
+        foreach (var b in list) if (b?.effect != null) b.effect.Execute(caster, target, b.value);
     }
+    //public void ResolveEffect(EntityBase caster, EntityBase target)
+    //{
+    //    if (Data == null || Data.effects == null || Data.effects.Count == 0)
+    //    {
+    //        Debug.LogWarning($"[CardInstance] {Data?.cardName} has no effects assigned.");
+    //        return;
+    //    }
+
+    //    foreach (var binding in Data.effects)
+    //    {
+    //        if (binding?.effect == null) continue;
+    //        binding.effect.Execute(caster, target, binding.value);
+    //    }
+    //}
+    //public void ResolveEffect(BoardSlot targetSlot)
+    //{
+    //    if (Data.effect != null)
+    //    {
+    //        EntityBase target = targetSlot?.currentCard?.Owner; // example target logic
+    //        ResolveEffect(Owner, target);
+    //    }
+    //    else
+    //    {
+    //        Debug.LogWarning($"[CardInstance] {Data.cardName} has no effect assigned.");
+    //    }
+    //}
 
     public void TakeDamage(int amount)
     {

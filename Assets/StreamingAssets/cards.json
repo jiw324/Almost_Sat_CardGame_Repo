@@ -7,8 +7,16 @@
             "cost": 3,
             "type": "spell",
             "isRanged": true,
-            "effectId": "aoe_damage",
-            "effectValue": "8"
+            "effects": [
+                {
+                    "effectId": "aoe_damage",
+                    "effectValue": "8"
+                },
+                {
+                    "effectId": "damage_enemy",
+                    "effectValue": "4"
+                }
+            ]
         },
         {
             "id": "slash",
@@ -37,7 +45,15 @@
             "cost": 1,
             "type": "minion",
             "isRanged": false,
-            "effectId": "damage"
+            "isMinion": true,
+            "minionAttack": 2,
+            "minionHealth": 6,
+            "onSummon": [
+                {
+                    "effectId": "gain_shield",
+                    "effectValue": 5
+                }
+            ]
         },
         {
             "id": "archer",
@@ -46,7 +62,15 @@
             "cost": 2,
             "type": "minion",
             "isRanged": true,
-            "effectId": "damage"
+            "isMinion": true,
+            "minionAttack": 2,
+            "minionHealth": 6,
+            "onSummon": [
+                {
+                    "effectId": "damage_enemy",
+                    "effectValue": 5
+                }
+            ]
         }
     ]
 }

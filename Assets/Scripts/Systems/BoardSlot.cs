@@ -71,7 +71,7 @@ public class BoardSlot : MonoBehaviour
             var bm = BattleManager.Instance;
             var caster = bm ? bm.player : null;
             var target = (bm != null && bm.enemies.Count > 0) ? bm.enemies[0] : null;
-            card.ResolveEffect(caster, target); // optional battlecry
+            card.ResolveMinionSummonEffects(caster, target);
 
             Debug.Log($"[BoardSlot] Summoned minion {card.Data.cardName} (ATK {card.Attack}/{card.CurrentHP} HP).");
             return true; // stays
@@ -80,7 +80,7 @@ public class BoardSlot : MonoBehaviour
         // spell/one-shot: resolve then clean up
         var player = FindFirstObjectByType<PlayerEntity>();
         var enemy = FindFirstObjectByType<EnemyEntity>();
-        card.ResolveEffect(player, enemy);
+        card.ResolveSpellEffects(player, enemy);
 
         if (spawnedObject != null) Destroy(spawnedObject);
         spawnedObject = null;

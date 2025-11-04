@@ -45,6 +45,7 @@ public class MinionBehaviour : MonoBehaviour
 
     public void Die()
     {
+        instance.ResolveMinionDeathEffects();
         Debug.Log($"{instance.Data.cardName} died.");
         slot.ClearSlotAndDestroy();
     }
