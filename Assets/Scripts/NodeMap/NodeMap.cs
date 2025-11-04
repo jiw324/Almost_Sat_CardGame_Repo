@@ -12,6 +12,7 @@ public class NodeMap : MonoBehaviour
 
     private const float _maxXOffset = 0.3f;
     private const float _maxYOffset = 0.3f;
+    private const int _maxNodeGenAttempts = 10;
 
     private int _maxStartNodes = 0;
     private const float _startNodesMult = 0.6f;
@@ -81,7 +82,7 @@ public class NodeMap : MonoBehaviour
                 {
                     randomDeltaX = Random.Range(minDeltaX, maxDeltaX + 1);
                     attemptCount++;
-                    if (attemptCount > 10)
+                    if (attemptCount > _maxNodeGenAttempts)
                     {
                         randomDeltaX = 0;
                         break;
