@@ -7,6 +7,7 @@ public class BattleManager : MonoBehaviour
     public UIManager uiManager;
     public PlayerEntity playerEntity;
     public EnemyEntity enemyEntity;
+    [SerializeField] private HandManager playerHandManager;
 
     public int playerHealth;
     public int playerMana;
@@ -33,5 +34,13 @@ public class BattleManager : MonoBehaviour
     {
         uiManager.InitializeUI(playerHealth, playerMana, enemyHealth, enemyMana);
         BoardManager.Instance.InitializeBoard();
+        if (playerHandManager != null)
+        {
+            playerHandManager.PrepareForBattle();
+        }
+        else
+        {
+            Debug.LogWarning("[BattleManager] Player hand manager reference not assigned.");
+        }
     }
 }
