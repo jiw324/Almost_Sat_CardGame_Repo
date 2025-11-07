@@ -6,6 +6,7 @@ public class GameSession : MonoBehaviour
     public static GameSession Instance { get; private set; }
 
     public GameSessionData gameSessionData;
+    [SerializeField] private DeckDefinition startingPlayerDeck;
 
     private void Awake()
     {
@@ -16,6 +17,7 @@ public class GameSession : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        EnsurePlayerDeckInitialized();
     }
 
     //-------Temporary for testing Reset/Save/Load - Need to hook up to pause menu--------------------
@@ -48,7 +50,8 @@ public class GameSession : MonoBehaviour
 
     public void ResetGameSessionData()
     {
-        gameSessionData.ResetSessionData();
+        gameSessionData.ResetSessionData(startingPlayerDeck);
+        EnsurePlayerDeckInitialized();
         Debug.Log("Game Session Reset");
     }
 
@@ -59,9 +62,28 @@ public class GameSession : MonoBehaviour
         if(loadedData != null)
         {
             gameSessionData = loadedData;
+            EnsurePlayerDeckInitialized();
         } else
         {
             Debug.Log("Failed to Load Save Data: Null Session Data");
+        }
+    }
+
+    private void EnsurePlayerDeckInitialized()
+    {
+        if (gameSessionData == null || gameSessionData.sessionPlayerData == null)
+            return;
+
+        var playerData = gameSessionData.sessionPlayerData;
+        if (playerData.deck == null || playerData.deck.Cards == null)
+        {
+            playerData.deck = startingPlayerDeck != null
+                ? new DeckInstance(startingPlayerDeck.CardIds)
+                : new DeckInstance();
+        }
+        else if (playerData.deck.Cards.Count == 0 && startingPlayerDeck != null)
+        {
+            playerData.deck = new DeckInstance(startingPlayerDeck.CardIds);
         }
     }
 }

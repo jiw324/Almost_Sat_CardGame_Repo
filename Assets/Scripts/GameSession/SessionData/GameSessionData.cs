@@ -6,9 +6,9 @@ public class GameSessionData
     public SessionPlayerData sessionPlayerData;
     public SessionNodeMapData sessionNodeMapData;
 
-    public void ResetSessionData()
+    public void ResetSessionData(DeckDefinition defaultDeck = null)
     {
-        sessionPlayerData.ResetSessionData();
+        sessionPlayerData.ResetSessionData(defaultDeck);
         sessionNodeMapData.ResetSessionData();
     }
 }
