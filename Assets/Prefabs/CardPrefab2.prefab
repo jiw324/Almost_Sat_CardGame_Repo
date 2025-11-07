@@ -747,6 +747,7 @@ GameObject:
   - component: {fileID: 4804000525452117144}
   - component: {fileID: 5869372970025929471}
   - component: {fileID: 8031196186663791315}
+  - component: {fileID: 6613250885782701487}
   m_Layer: 5
   m_Name: CardPrefab2
   m_TagString: Untagged
@@ -820,6 +821,27 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6613250885782701487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3072006593040025153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c83b15a0003f8e34f8a1d38408979dac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 0}
+  border: {fileID: 0}
+  nameText: {fileID: 2682836567760876142}
+  costText: {fileID: 8625675801558965832}
+  descText: {fileID: 3081412276018853307}
+  selectedBorder: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  normalBorder: {r: 0, g: 0, b: 0, a: 0}
+  hoverScale: 1.1
+  hoverHeight: 50
 --- !u!1 &3412092526146510705
 GameObject:
   m_ObjectHideFlags: 0
@@ -2185,6 +2207,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9d98ecd52227843ea9a903c9d97f4967, type: 3}
+--- !u!114 &2682836567760876142 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8933469559445704126, guid: 9d98ecd52227843ea9a903c9d97f4967, type: 3}
+  m_PrefabInstance: {fileID: 6827833752938774480}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &3424194838333386929 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8161782080892571489, guid: 9d98ecd52227843ea9a903c9d97f4967, type: 3}

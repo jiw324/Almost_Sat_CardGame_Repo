@@ -1639,7 +1639,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &470113671
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3875,7 +3875,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   handArea: {fileID: 2120884248}
-  cardUIPrefab: {fileID: 5711857772937691287, guid: ed3c4352dc3314b1485dac1986877944, type: 3}
+  cardUIPrefab: {fileID: 3072006593040025153, guid: b39f880c06d5dde4cbd4e5c1265341d2, type: 3}
   owner: {fileID: 229261168}
   maxHandSize: 10
 --- !u!4 &1060245582
@@ -5066,7 +5066,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1537547835
 RectTransform:
   m_ObjectHideFlags: 0
