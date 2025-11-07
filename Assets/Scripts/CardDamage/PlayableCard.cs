@@ -6,7 +6,7 @@ public class PlayableCard : MonoBehaviour
     private CardUI ui;
     private CardData data;
 
-    public Actor demoTarget; // Assign in inspector (enemy placeholder)
+    public EntityBase demoTarget; // Assign in inspector (enemy placeholder)
 
     private void Awake()
     {
@@ -20,12 +20,9 @@ public class PlayableCard : MonoBehaviour
 
     public void Play()
     {
-        if (data == null || data.effects == null) return;
+        if (data == null || data.effect == null) return;
 
-        foreach (var effect in data.effects)
-        {
-            effect.Execute(demoTarget);
-        }
+        data.effect.Execute(null, demoTarget); // null as owner for demo
 
         // After playing, remove the card from hand
         Destroy(gameObject);

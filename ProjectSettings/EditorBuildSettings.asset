@@ -30,5 +30,6 @@ EditorBuildSettings:
     path: Assets/Scenes/ForestShop.unity
     guid: a20d886556946a243b9ae343177bc7c6
   m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: ded5a4a45fcb5064d848d4d0b841e30d, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
