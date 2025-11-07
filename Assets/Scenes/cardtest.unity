@@ -2072,7 +2072,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityName: Enemy2
   maxHealth: 20
-  currentHealth: 20
+  currentHealth: 0
 --- !u!1001 &909489909
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2287,7 +2287,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityName: Enemy1
   maxHealth: 20
-  currentHealth: 20
+  currentHealth: 0
 --- !u!1001 &1209827924
 PrefabInstance:
   m_ObjectHideFlags: 0

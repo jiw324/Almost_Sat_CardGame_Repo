@@ -11,6 +11,10 @@
                 {
                     "effectId": "aoe_damage",
                     "effectValue": "4"
+                },
+                {
+                    "effectId": "damage_enemy",
+                    "effectValue": "6"
                 }
             ]
         },
