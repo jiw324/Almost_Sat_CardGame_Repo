@@ -12,4 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9932afd7cb1bc4970b7195c6627b70c1, type: 3}
   m_Name: TestPlayerDeck
   m_EditorClassIdentifier: 
-  cardIds: []
+  cardIds:
+  - slash
+  - slash
+  - slash
+  - fireball
+  - fireball
+  - fireball
+  - warrior
+  - warrior
+  - warrior
+  - warrior
+  - archer
+  - archer
+  - archer
+  - healinghands
+  - healinghands

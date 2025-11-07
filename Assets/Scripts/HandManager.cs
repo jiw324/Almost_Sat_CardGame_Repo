@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HandManager : MonoBehaviour
 {
@@ -8,10 +9,12 @@ public class HandManager : MonoBehaviour
     [SerializeField] private GameObject cardUIPrefab;
     [SerializeField] private PlayerEntity owner;     // who this hand belongs to
     [SerializeField] private DeckDefinition startingDeck;
+    [SerializeField] private MulliganOverlay mulliganOverlay;
 
     [Header("Settings")]
     [SerializeField] private int maxHandSize = 10;
-    [SerializeField] private int openingHandSize = 5;
+    [SerializeField] private int openingHandSize = 4;
+    [SerializeField] private int mulliganSampleSize = 8;
 
     private readonly List<CardInstance> cardsInHand = new();
     private readonly Queue<string> drawPile = new();
@@ -27,6 +30,8 @@ public class HandManager : MonoBehaviour
             Debug.LogWarning("[HandManager] Owner not set — using PlayerEntity in scene?");
         if (startingDeck == null)
             Debug.LogWarning("[HandManager] No starting deck assigned. Drawing will fall back to database random draws.");
+        if (mulliganOverlay == null)
+            Debug.Log("[HandManager] No mulligan overlay assigned. Opening hand will draw automatically.");
     }
 
     // ---- Public methods ----
@@ -46,14 +51,7 @@ public class HandManager : MonoBehaviour
             return false;
         }
 
-        string cardId = GetNextCardIdFromDeck();
-        if (string.IsNullOrEmpty(cardId))
-        {
-            Debug.LogWarning("[HandManager] Deck is empty. No card drawn.");
-            return false;
-        }
-
-        CardInstance newCard = CardFactory.CreateCard(cardId, owner);
+        CardInstance newCard = TakeCardFromDeck();
         if (newCard == null)
             return false;
 
@@ -64,7 +62,14 @@ public class HandManager : MonoBehaviour
     public void PrepareForBattle()
     {
         InitializeDeck();
-        DrawOpeningHand();
+        if (mulliganOverlay != null)
+        {
+            if (!mulliganOverlay.gameObject.activeSelf)
+                mulliganOverlay.gameObject.SetActive(true);
+            BeginMulligan();
+        }
+        else
+            DrawOpeningHand();
     }
 
     public void InitializeDeck()
@@ -107,6 +112,75 @@ public class HandManager : MonoBehaviour
         }
     }
 
+    private void BeginMulligan()
+    {
+        int sampleCount = mulliganSampleSize > 0 ? mulliganSampleSize : openingHandSize;
+        if (sampleCount <= 0)
+        {
+            DrawOpeningHand();
+            return;
+        }
+
+        List<CardInstance> sample = DrawCardsForMulligan(sampleCount);
+        if (sample.Count == 0)
+        {
+            Debug.LogWarning("[HandManager] Unable to draw cards for mulligan. Falling back to automatic draw.");
+            DrawOpeningHand();
+            return;
+        }
+
+        int requiredSelection = Mathf.Clamp(openingHandSize, 0, sample.Count);
+        mulliganOverlay.Show(sample, requiredSelection, OnMulliganComplete);
+    }
+
+    private List<CardInstance> DrawCardsForMulligan(int count)
+    {
+        List<CardInstance> cards = new();
+        for (int i = 0; i < count; i++)
+        {
+            CardInstance card = TakeCardFromDeck();
+            if (card == null)
+                break;
+            cards.Add(card);
+        }
+
+        return cards;
+    }
+
+    private void OnMulliganComplete(List<CardInstance> selected, List<CardInstance> unselected)
+    {
+        int added = 0;
+
+        if (selected != null)
+        {
+            foreach (var card in selected)
+            {
+                AddCardToHand(card);
+                added++;
+            }
+        }
+
+        if (added < openingHandSize)
+        {
+            Debug.LogWarning($"[HandManager] Mulligan selection returned {added} cards, expected {openingHandSize}. Drawing additional cards to compensate.");
+        }
+
+        if (unselected != null)
+        {
+            ReturnCardsToDeck(unselected);
+        }
+
+        for (int i = added; i < openingHandSize; i++)
+        {
+            if (!DrawCardFromDeck())
+                break;
+        }
+
+        var handRect = handArea as RectTransform;
+        if (handRect != null)
+            LayoutRebuilder.ForceRebuildLayoutImmediate(handRect);
+        }
+
     public void AddCardToHand(CardInstance card)
     {
         if (card == null) return;
@@ -146,6 +220,44 @@ public class HandManager : MonoBehaviour
         cardsInHand.Clear();
         foreach (Transform child in handArea)
             Destroy(child.gameObject);
+    }
+
+    private CardInstance TakeCardFromDeck()
+    {
+        string cardId = GetNextCardIdFromDeck();
+        if (string.IsNullOrEmpty(cardId))
+        {
+            Debug.LogWarning("[HandManager] Deck is empty. No card drawn.");
+            return null;
+        }
+
+        CardInstance newCard = CardFactory.CreateCard(cardId, owner);
+        if (newCard == null)
+            return null;
+
+        return newCard;
+    }
+
+    private void ReturnCardsToDeck(IEnumerable<CardInstance> cards)
+    {
+        if (cards == null)
+            return;
+
+        List<string> combined = new(drawPile);
+
+        foreach (var card in cards)
+        {
+            if (card?.Data == null)
+                continue;
+            combined.Add(card.Data.id);
+        }
+
+        Shuffle(combined);
+        drawPile.Clear();
+        foreach (var id in combined)
+        {
+            drawPile.Enqueue(id);
+        }
     }
 
     private string GetNextCardIdFromDeck()
