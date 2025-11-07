@@ -36,6 +36,16 @@ public class MinionBehaviour : MonoBehaviour
         Debug.Log($"{instance.Data.cardName} attacked {target.name} for {atk}");
     }
 
+    // Called by BoardManager when player has selected this minion and chosen a target EntityBase
+    public void AttackTarget(EntityBase target)
+    {
+        if (instance == null || target == null) return;
+        int atk = instance.Attack;
+        target.TakeDamage(atk);
+        //instance.ResolveAttackEffects(target); // if you later add attack triggers
+        Debug.Log($"{instance.Data.cardName} attacked {target.name} for {atk}");
+    }
+
     public void ReceiveDamage(int amount)
     {
         instance.TakeDamage(amount);

@@ -9,7 +9,11 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private GameObject reactionMinigamePrefab;
 
     private CardUIController selectedCard;
+    private MinionBehaviour selectedMinion;
     private InputSystem_Actions inputActions;
+
+    private BoardSlot pendingSummonSlot;
+    private CardInstance pendingSummonCard;
 
     private void Awake()
     {
@@ -53,21 +57,83 @@ public class BoardManager : MonoBehaviour
         Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
         if (!Physics.Raycast(ray, out RaycastHit hit)) return;
 
-        // If a hand card is selected, try to place it on a slot (existing behavior)
-        var slot = hit.collider.GetComponentInParent<BoardSlot>();
-        if (selectedCard != null && slot != null)
+        // 1) If we are waiting for a summon target right after placing a minion
+        if (pendingSummonCard != null && pendingSummonSlot != null)
         {
-            TryPlaceSelectedCard(slot);
+            var target = ResolveClickToEntityOrNearest(hit);
+            var bm = BattleManager.Instance;
+            var caster = bm ? bm.player : null;
+            pendingSummonCard.ResolveMinionSummonEffects(caster, target);
+            pendingSummonCard = null;
+            pendingSummonSlot = null;
             return;
         }
 
-        // No card selected: clicking a minion triggers its attack
-        var minion = hit.collider.GetComponentInParent<MinionBehaviour>();
-        if (minion != null)
+        // 2) If a hand card is selected
+        if (selectedCard != null)
         {
-            minion.AttackEnemy();
+            var inst = selectedCard.Instance;
+
+            // 2a) MINION CARD: placing on a slot
+            var slot = hit.collider.GetComponentInParent<BoardSlot>();
+            if (inst.IsMinion)
+            {
+                if (slot != null)
+                {
+                    // Try place; if success, optionally prompt for summon target
+                    if (TryPlaceSelectedCard(slot))
+                    {
+                        // If this minion has on-summon effects, defer and wait for target selection
+                        if (inst.Data.onSummonBindings != null && inst.Data.onSummonBindings.Count > 0)
+                        {
+                            pendingSummonCard = slot.currentCard;  // just placed card
+                            pendingSummonSlot = slot;
+                        }
+                    }
+                }
+                // clicks elsewhere while minion card is selected: ignore
+                return;
+            }
+
+            // 2b) SPELL CARD: second click chooses the target (entity or empty slot ¡ú nearest)
+            var targetEntity = ResolveClickToEntityOrNearest(hit);
+            if (targetEntity != null)
+            {
+                var bm = BattleManager.Instance;
+                var caster = bm ? bm.player : null;
+                inst.ResolveSpellEffects(caster, targetEntity);
+                var hm = FindFirstObjectByType<HandManager>();
+                if (hm != null) hm.RemoveByInstance(inst);
+                // destroy hand UI and clear selection
+                Destroy(selectedCard.gameObject);
+                DeselectCard();
+            }
             return;
         }
+
+        // 3) If an on-board minion is selected, second click chooses the target to attack/effect
+        if (selectedMinion != null)
+        {
+            var target = ResolveClickToEntityOrNearest(hit);
+            if (target != null)
+            {
+                selectedMinion.AttackTarget(target);
+                selectedMinion = null; // done
+            }
+            return;
+        }
+
+        // 4) Nothing selected yet: first click on a minion selects it (for directed attack)
+        {
+            var clickedMinion = hit.collider.GetComponentInParent<MinionBehaviour>();
+            if (clickedMinion != null)
+            {
+                selectedMinion = clickedMinion; // first click selects; no immediate attack
+                return;
+            }
+        }
+
+        // Otherwise: click on empty / unrelated ¡ª no action
     }
 
     private void OnTestMinigame(InputAction.CallbackContext ctx)
@@ -101,6 +167,8 @@ public class BoardManager : MonoBehaviour
 
         if (selectedCard != null)
             selectedCard.SetSelectedVisual(true);
+
+        selectedMinion = null;
     }
 
     public void DeselectCard()
@@ -112,24 +180,87 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    public void TryPlaceSelectedCard(BoardSlot slot)
+    private bool TryPlaceSelectedCard(BoardSlot slot)
     {
-        if (selectedCard == null)
+        if (selectedCard == null) 
         {
-            Debug.Log("[BoardManager] No card selected.");
-            return;
+            Debug.Log("[BoardManager] No card selected."); 
+            return false;
+        }
+        if (slot.isOccupied) 
+        { 
+            Debug.Log("[BoardManager] Slot already occupied."); 
+            return false; 
         }
 
-        if (slot.isOccupied)
+        var inst = selectedCard.Instance;
+        if (slot.PlaceCard(inst))
         {
-            Debug.Log("[BoardManager] Slot already occupied.");
-            return;
-        }
-
-        if (slot.PlaceCard(selectedCard.Instance))
-        {
-            Destroy(selectedCard.gameObject); // remove from hand
+            var hm = FindFirstObjectByType<HandManager>();
+            if (hm != null) hm.RemoveByInstance(selectedCard.Instance);
+            Destroy(selectedCard.gameObject); // remove from hand UI
             selectedCard = null;
+            return true;
         }
+        return false;
+    }
+
+    // Convert a click to an EntityBase target. If the click is an empty slot, choose nearest unit (minion or enemy).
+    private EntityBase ResolveClickToEntityOrNearest(RaycastHit hit)
+    {
+        // Direct hits: enemy or minion-entity
+        var ee = hit.collider.GetComponentInParent<EnemyEntity>();
+        if (ee != null) return ee;
+
+        var me = hit.collider.GetComponentInParent<MinionEntity>();
+        if (me != null) return me;
+
+        // Empty slot? pick nearest unit to that slot
+        var slot = hit.collider.GetComponentInParent<BoardSlot>();
+        if (slot != null && !slot.isOccupied)
+        {
+            return FindNearestUnit(slot.transform.position);
+        }
+
+        // If none matched, try nearest to hit point (safety)
+        return FindNearestUnit(hit.point);
+    }
+
+    private EntityBase FindNearestUnit(Vector3 from)
+    {
+        EntityBase best = null;
+        float bestSqr = float.PositiveInfinity;
+
+        // All minion entities
+        var minions = FindObjectsOfType<MinionEntity>();
+        foreach (var m in minions)
+        {
+            float d = (m.transform.position - from).sqrMagnitude;
+            if (d < bestSqr) { bestSqr = d; best = m; }
+        }
+
+        // Enemy entity as a target (off-board but has a transform)
+        var enemy = BattleManager.Instance ? BattleManager.Instance.player?.GetComponentInParent<EnemyEntity>() : null;
+        // Above line won¡¯t find enemy; instead scan scene:
+        if (best == null)
+        {
+            var enemies = FindObjectsOfType<EnemyEntity>();
+            foreach (var e in enemies)
+            {
+                float d = (e.transform.position - from).sqrMagnitude;
+                if (d < bestSqr) { bestSqr = d; best = e; }
+            }
+        }
+        else
+        {
+            var enemies = FindObjectsOfType<EnemyEntity>();
+            foreach (var e in enemies)
+            {
+                float d = (e.transform.position - from).sqrMagnitude;
+                if (d < bestSqr) { bestSqr = d; best = e; }
+            }
+        }
+
+        return best;
     }
 }

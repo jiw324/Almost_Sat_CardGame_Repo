@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 
 public class HandManager : MonoBehaviour
 {
@@ -83,5 +84,16 @@ public class HandManager : MonoBehaviour
         cardsInHand.Clear();
         foreach (Transform child in handArea)
             Destroy(child.gameObject);
+    }
+
+    // Add inside HandManager class
+    public void RemoveByInstance(CardInstance instance)
+    {
+        if (instance == null) return;
+        int idx = cardsInHand.IndexOf(instance);
+        if (idx >= 0)
+        {
+            cardsInHand.RemoveAt(idx);
+        }
     }
 }

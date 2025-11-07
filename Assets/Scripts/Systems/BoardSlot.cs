@@ -64,28 +64,17 @@ public class BoardSlot : MonoBehaviour
 
         if (card.IsMinion)
         {
-            var mb = spawnedObject.GetComponent<MinionBehaviour>();
-            if (!mb) mb = spawnedObject.AddComponent<MinionBehaviour>();
+            var mb = spawnedObject.GetComponent<MinionBehaviour>() ?? spawnedObject.AddComponent<MinionBehaviour>();
             mb.Initialize(this, card);
 
-            var bm = BattleManager.Instance;
-            var caster = bm ? bm.player : null;
-            var target = (bm != null && bm.enemies.Count > 0) ? bm.enemies[0] : null;
-            card.ResolveMinionSummonEffects(caster, target);
+            // NEW: add MinionEntity so ScriptableObject effects can target minions
+            var me = spawnedObject.GetComponent<MinionEntity>() ?? spawnedObject.AddComponent<MinionEntity>();
+            me.Initialize(mb);
 
             Debug.Log($"[BoardSlot] Summoned minion {card.Data.cardName} (ATK {card.Attack}/{card.CurrentHP} HP).");
-            return true; // stays
+            return true;
         }
 
-        // spell/one-shot: resolve then clean up
-        var player = FindFirstObjectByType<PlayerEntity>();
-        var enemy = FindFirstObjectByType<EnemyEntity>();
-        card.ResolveSpellEffects(player, enemy);
-
-        if (spawnedObject != null) Destroy(spawnedObject);
-        spawnedObject = null;
-        currentCard = null;
-        isOccupied = false;
 
 
         Debug.Log($"[BoardSlot] Placed {card.Data.cardName} on {(isRanged ? "ranged" : "melee")} row.");
