@@ -584,6 +584,7 @@ GameObject:
   - component: {fileID: 1096593364}
   - component: {fileID: 1096593367}
   - component: {fileID: 1096593368}
+  - component: {fileID: 1096593369}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -723,6 +724,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetCamera: {fileID: 1096593365}
   sceneSwitch: {fileID: 1353077992}
+--- !u!114 &1096593369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1096593363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0e64d6f9d4bbfe41a85fedd9fdc816a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 5
 --- !u!1 &1353077991
 GameObject:
   m_ObjectHideFlags: 0
