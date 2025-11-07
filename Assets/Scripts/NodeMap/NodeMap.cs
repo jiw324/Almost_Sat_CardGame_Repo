@@ -19,8 +19,8 @@ public class NodeMap : MonoBehaviour
     private int _maxNumPaths = 0;
     private const float _numPathsMult = 3.5f;
 
-    public int mapWidth { get; private set; } = 5;
-    public int mapHeight { get; private set; } = 15;
+    public int mapWidth { get; private set; } = 10;
+    public int mapHeight { get; private set; } = 30;
 
     private bool _isGenerated = false;
 

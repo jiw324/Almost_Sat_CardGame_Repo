@@ -1118,6 +1118,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MoveCamera"",
+                    ""type"": ""Value"",
+                    ""id"": ""c13a6d5d-23fb-447d-99f9-bd574531d59e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -1131,6 +1140,116 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""action"": ""Click"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""ArrowKeys"",
+                    ""id"": ""32102f97-94e2-49e3-8ea9-9ca873a11ee6"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveCamera"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""42df0a46-27e5-491f-bb55-c1dcd3bfad80"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""70d08b92-7d6b-4f04-9903-7175e063dc63"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""2508081c-c4c9-42d1-b5bd-6ab3e897fbf7"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""de227fd1-4425-4e0b-a85f-14d65ef26e7c"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""WASD"",
+                    ""id"": ""45f04528-551a-4d58-98f3-397638ec0804"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveCamera"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""d7e555b0-b435-4ed2-a6e6-50a8ad308f1d"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""925922a3-4512-4125-864a-90317c140ff4"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""09185a88-2941-43fd-b085-5c5a584343b4"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""35be7187-dc19-4267-b6ab-4ba2cf11ad19"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -1226,6 +1345,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         // NodeMap
         m_NodeMap = asset.FindActionMap("NodeMap", throwIfNotFound: true);
         m_NodeMap_Click = m_NodeMap.FindAction("Click", throwIfNotFound: true);
+        m_NodeMap_MoveCamera = m_NodeMap.FindAction("MoveCamera", throwIfNotFound: true);
     }
 
     ~@InputSystem_Actions()
@@ -1710,6 +1830,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_NodeMap;
     private List<INodeMapActions> m_NodeMapActionsCallbackInterfaces = new List<INodeMapActions>();
     private readonly InputAction m_NodeMap_Click;
+    private readonly InputAction m_NodeMap_MoveCamera;
     /// <summary>
     /// Provides access to input actions defined in input action map "NodeMap".
     /// </summary>
@@ -1725,6 +1846,10 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "NodeMap/Click".
         /// </summary>
         public InputAction @Click => m_Wrapper.m_NodeMap_Click;
+        /// <summary>
+        /// Provides access to the underlying input action "NodeMap/MoveCamera".
+        /// </summary>
+        public InputAction @MoveCamera => m_Wrapper.m_NodeMap_MoveCamera;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1754,6 +1879,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Click.started += instance.OnClick;
             @Click.performed += instance.OnClick;
             @Click.canceled += instance.OnClick;
+            @MoveCamera.started += instance.OnMoveCamera;
+            @MoveCamera.performed += instance.OnMoveCamera;
+            @MoveCamera.canceled += instance.OnMoveCamera;
         }
 
         /// <summary>
@@ -1768,6 +1896,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Click.started -= instance.OnClick;
             @Click.performed -= instance.OnClick;
             @Click.canceled -= instance.OnClick;
+            @MoveCamera.started -= instance.OnMoveCamera;
+            @MoveCamera.performed -= instance.OnMoveCamera;
+            @MoveCamera.canceled -= instance.OnMoveCamera;
         }
 
         /// <summary>
@@ -2043,5 +2174,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnClick(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "MoveCamera" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMoveCamera(InputAction.CallbackContext context);
     }
 }

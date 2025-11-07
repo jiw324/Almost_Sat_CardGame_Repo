@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class NodeMapSpawner : MonoBehaviour
 {
-    [SerializeField] private Vector3 mapOffsetFromCamera = new Vector3(0, -2f, 5f);
+    [SerializeField] private Vector3 mapOffsetFromCamera;
     private NodeMap _nodeMap;
 
     private void Start()
@@ -27,7 +27,24 @@ public class NodeMapSpawner : MonoBehaviour
         _nodeMap = mapObject.AddComponent<NodeMap>();
         _nodeMap.Generate();
 
-        float halfMapWidthWorld = (_nodeMap.mapWidth - 1) * 0.5f * _nodeMap.GetGridXSpacing();
+        float gridXSpacing = _nodeMap.GetGridXSpacing();
+        float halfMapWidthWorld = (_nodeMap.mapWidth - 1) * 0.5f * gridXSpacing;
         _nodeMap.transform.position -= mainCamera.transform.right * halfMapWidthWorld;
+
+        MapCameraController camController = mainCamera.GetComponent<MapCameraController>();
+        if (camController != null)
+        {
+            float gridX = _nodeMap.GetGridXSpacing();
+            float gridY = 1.5f;
+
+            camController.SetBounds(
+                _nodeMap.transform.position,
+                _nodeMap.mapWidth,
+                _nodeMap.mapHeight,
+                gridX,
+                gridY
+            );
+        }
+
     }
 }
