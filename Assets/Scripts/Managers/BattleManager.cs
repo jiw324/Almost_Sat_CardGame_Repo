@@ -4,7 +4,6 @@ public class BattleManager : MonoBehaviour
 {
     public static BattleManager Instance;
 
-    public BoardManager boardManager;
     public UIManager uiManager;
     public PlayerEntity playerEntity;
     public EnemyEntity enemyEntity;
@@ -18,7 +17,6 @@ public class BattleManager : MonoBehaviour
 
     void Start()
     {
-        uiManager.boardManager = boardManager;
         GameSession session = SessionGrabber.getGameSession();
         if (session != null)
         {
@@ -34,6 +32,6 @@ public class BattleManager : MonoBehaviour
     void StartBattle()
     {
         uiManager.InitializeUI(playerHealth, playerMana, enemyHealth, enemyMana);
-        boardManager.InitializeBoard();
+        BoardManager.Instance.InitializeBoard();
     }
 }

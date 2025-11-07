@@ -4,7 +4,6 @@ public class UIManager : MonoBehaviour
 {
     public AvatarUI playerUI;
     public AvatarUI enemyUI;
-    public BoardManager boardManager;
 
     public void InitializeUI(int playerHealth, int playerMana, int enemyHealth, int enemyMana)
     {

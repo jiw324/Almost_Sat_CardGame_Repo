@@ -16,12 +16,12 @@ public class BoardSlot : MonoBehaviour
         }
         if (card.Data.type == "spell")
         {
-            Debug.LogError($"[BoardSlot] You can't place spell cards on the board!");
+            Debug.LogWarning($"[BoardSlot] You can't place spell cards on the board!");
             return false;
         }
         if (card.Data.isRanged != isRanged)
         {
-            Debug.LogError($"[BoardSlot] Tried to place a " +
+            Debug.LogWarning($"[BoardSlot] Tried to place a " +
                 $"{(card.Data.isRanged ? "ranged" : "melee")} card in a " +
                 $"{(isRanged ? "ranged" : "melee")} slot!");
             return false;
@@ -63,7 +63,7 @@ public class BoardSlot : MonoBehaviour
         if (controller != null)
             controller.Initialize(card);
         else
-            Debug.LogWarning("[BoardSlot] 3D card prefab missing Card3DController component!");
+            Debug.LogError("[BoardSlot] 3D card prefab missing Card3DController component!");
 
         Debug.Log($"[BoardSlot] Placed {card.Data.cardName} on {(isRanged ? "ranged" : "melee")} row.");
         return true;
