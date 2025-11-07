@@ -8,7 +8,6 @@ public class HandManager : MonoBehaviour
     [SerializeField] private Transform handArea;     // parent for card UI prefabs
     [SerializeField] private GameObject cardUIPrefab;
     [SerializeField] private PlayerEntity owner;     // who this hand belongs to
-    [SerializeField] private DeckDefinition startingDeck;
     [SerializeField] private MulliganOverlay mulliganOverlay;
 
     [Header("Settings")]
@@ -19,6 +18,7 @@ public class HandManager : MonoBehaviour
     private readonly List<CardInstance> cardsInHand = new();
     private readonly Queue<string> drawPile = new();
     private readonly List<string> discardPile = new();
+    private DeckInstance sourceDeck;
 
     private void Start()
     {
@@ -28,8 +28,6 @@ public class HandManager : MonoBehaviour
             Debug.LogError("[HandManager] Missing cardUIPrefab reference!");
         if (owner == null)
             Debug.LogWarning("[HandManager] Owner not set — using PlayerEntity in scene?");
-        if (startingDeck == null)
-            Debug.LogWarning("[HandManager] No starting deck assigned. Drawing will fall back to database random draws.");
         if (mulliganOverlay == null)
             Debug.Log("[HandManager] No mulligan overlay assigned. Opening hand will draw automatically.");
     }
@@ -59,8 +57,14 @@ public class HandManager : MonoBehaviour
         return true;
     }
 
-    public void PrepareForBattle()
+    public void PrepareForBattle(DeckInstance deckInstance)
     {
+        sourceDeck = deckInstance;
+        if (sourceDeck == null || sourceDeck.Cards == null || sourceDeck.Cards.Count == 0)
+        {
+            Debug.LogWarning("[HandManager] No deck instance provided. Drawing will fall back to database random draws.");
+        }
+
         InitializeDeck();
         if (mulliganOverlay != null)
         {
@@ -72,19 +76,21 @@ public class HandManager : MonoBehaviour
             DrawOpeningHand();
     }
 
+    public void PrepareForBattle()
+    {
+        PrepareForBattle(null);
+    }
+
     public void InitializeDeck()
     {
         ClearHand();
         drawPile.Clear();
         discardPile.Clear();
 
-        if (startingDeck == null)
-            return;
-
-        var sourceCards = startingDeck.CardIds;
+        var sourceCards = sourceDeck?.Cards;
         if (sourceCards == null || sourceCards.Count == 0)
         {
-            Debug.LogWarning("[HandManager] Starting deck is empty. No cards enqueued.");
+            Debug.LogWarning("[HandManager] Deck is empty. No cards enqueued.");
             return;
         }
 
@@ -267,7 +273,7 @@ public class HandManager : MonoBehaviour
             if (ReloadDeckFromDiscard())
                 return drawPile.Dequeue();
 
-            if (startingDeck == null)
+            if (sourceDeck == null || sourceDeck.Cards == null || sourceDeck.Cards.Count == 0)
             {
                 CardJSON fallback = CardDatabase.Instance.GetRandomCard();
                 return fallback?.id;

@@ -13,6 +13,7 @@ public class BattleManager : MonoBehaviour
     public int playerMana;
     public int enemyHealth;
     public int enemyMana;
+    private DeckInstance playerDeckInstance;
 
     void Awake() => Instance = this;
 
@@ -25,6 +26,7 @@ public class BattleManager : MonoBehaviour
             playerMana = session.gameSessionData.sessionPlayerData.mana;
             enemyHealth = 10;       // Temporary before enemy loading code is written
             enemyMana = 1;
+            playerDeckInstance = session.gameSessionData.sessionPlayerData.deck;
         }
 
         StartBattle();
@@ -36,7 +38,7 @@ public class BattleManager : MonoBehaviour
         BoardManager.Instance.InitializeBoard();
         if (playerHandManager != null)
         {
-            playerHandManager.PrepareForBattle();
+            playerHandManager.PrepareForBattle(playerDeckInstance);
         }
         else
         {
