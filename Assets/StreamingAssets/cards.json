@@ -10,7 +10,7 @@
             "effects": [
                 {
                     "effectId": "aoe_damage",
-                    "effectValue": "8"
+                    "effectValue": "4"
                 }
             ]
         },
@@ -22,7 +22,7 @@
             "type": "spell",
             "isRanged": true,
             "effectId": "damage_enemy",
-            "effectValue": "4"
+            "effectValue": "6"
         },
         {
             "id": "healinghands",
@@ -64,7 +64,7 @@
             "onSummon": [
                 {
                     "effectId": "damage_enemy",
-                    "effectValue": 5
+                    "effectValue": 3
                 }
             ]
         }
