@@ -38,9 +38,7 @@ public class CardInstance
         IsOnBoard = true;
         HasBeenPlayed = true;
 
-        // Maybe minigame play goes here
-
-        ResolveEffect(targetSlot);
+        // Do NOT resolve effect immediately — resolution happens during EndTurn state
         OnCardPlayed?.Invoke();
     }
 

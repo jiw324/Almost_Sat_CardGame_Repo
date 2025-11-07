@@ -21,6 +21,10 @@ public class TurnManager : MonoBehaviour
     public event Action<TurnStateBase> OnStateChanged;
 
     public InputSystem_Actions InputActions { get; private set; }
+
+    public enum Side { Player, Enemy }
+
+    public Side SideEndingTurn { get; set; } = Side.Player;
     
     private void Awake()
     {
@@ -64,6 +68,24 @@ public class TurnManager : MonoBehaviour
         currentState = newState;
         currentState?.Enter();
         OnStateChanged?.Invoke(currentState);
+    }
+
+    public void EndCurrentTurn()
+    {
+        if (currentState == playerTurnState)
+        {
+            SideEndingTurn = Side.Player;
+        }
+        else if (currentState == enemyTurnState)
+        {
+            SideEndingTurn = Side.Enemy;
+        }
+        else
+        {
+            SideEndingTurn = Side.Player;
+        }
+
+        ChangeState(endTurnState);
     }
 
     // Update is called once per frame

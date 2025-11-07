@@ -31,7 +31,8 @@ public class EndTurnButton : MonoBehaviour
 
     private void OnPressed()
     {
-        turnManager.ChangeState(turnManager.EnemyTurnState);
+
+        turnManager.EndCurrentTurn();
     }
 
     private void HandleStateChange(TurnStateBase newState)

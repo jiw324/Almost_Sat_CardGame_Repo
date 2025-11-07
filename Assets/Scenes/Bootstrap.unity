@@ -166,7 +166,7 @@ MonoBehaviour:
   gameSessionData:
     sessionPlayerData:
       health: 10
-      mana: 1
+      mana: 3
       gold: 5
       cards: []
     sessionNodeMapData:
