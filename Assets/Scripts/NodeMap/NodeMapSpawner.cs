@@ -7,10 +7,10 @@ public class NodeMapSpawner : MonoBehaviour
 
     private void Start()
     {
-        Camera mainCamera = Camera.main;
+        Camera mainCamera = GameObject.FindGameObjectWithTag("MapCamera").GetComponent<Camera>();
         if (mainCamera == null)
         {
-            Debug.LogError("No Main Camera found in the scene.");
+            Debug.LogError("No Map Camera found in the scene.");
             return;
         }
 
