@@ -1,10 +1,13 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class TurnManager : MonoBehaviour
 {
 
     public static TurnManager Instance { get; private set; }
+
+    [SerializeField] public TurnBanner turnBanner;
 
     private TurnStateBase currentState;
     private TurnStateBase playerTurnState;
@@ -14,7 +17,6 @@ public class TurnManager : MonoBehaviour
     public TurnStateBase PlayerTurnState => playerTurnState;
     public TurnStateBase EnemyTurnState => enemyTurnState;
     public TurnStateBase EndTurnState => endTurnState;
-
 
     public event Action<TurnStateBase> OnStateChanged;
 
@@ -47,6 +49,12 @@ public class TurnManager : MonoBehaviour
         enemyTurnState = new EnemyTurnState(this);
         endTurnState = new EndTurnState(this);
 
+        StartCoroutine(BeginBattleRoutine());
+    }
+
+    private IEnumerator BeginBattleRoutine()
+    {
+        yield return turnBanner.ShowIntroBannerEnumerator();
         ChangeState(playerTurnState);
     }
 

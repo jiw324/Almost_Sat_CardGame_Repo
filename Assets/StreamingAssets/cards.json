@@ -1,0 +1,49 @@
+﻿{
+    "cards": [
+        {
+            "id": "fireball",
+            "cardName": "Fireball",
+            "description": "Deal 8 damage to an enemy.",
+            "cost": 3,
+            "type": "spell",
+            "isRanged": true,
+            "effectId": "damage"
+        },
+        {
+            "id": "slash",
+            "cardName": "Slash",
+            "description": "Deal 4 damage to an enemy.",
+            "cost": 1,
+            "type": "spell",
+            "isRanged": true,
+            "effectId": "damage"
+        },
+        {
+            "id": "healinghands",
+            "cardName": "Healing Hands",
+            "description": "Heal 5 health",
+            "cost": 2,
+            "type": "spell",
+            "isRanged": true,
+            "effectId": "heal"
+        },
+        {
+            "id": "warrior",
+            "cardName": "Warrior",
+            "description": "Deals 2 damage each turn",
+            "cost": 1,
+            "type": "minion",
+            "isRanged": false,
+            "effectId": "damage"
+        },
+        {
+            "id": "archer",
+            "cardName": "Archer",
+            "description": "Deals 5 damage each turn",
+            "cost": 2,
+            "type": "minion",
+            "isRanged": true,
+            "effectId": "damage"
+        }
+    ]
+}

@@ -109,8 +109,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -22, y: -23.5}
-  m_SizeDelta: {x: 136, y: 33}
+  m_AnchoredPosition: {x: 0, y: -23.5}
+  m_SizeDelta: {x: 180, y: 33}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2142909842808006053
 CanvasRenderer:
@@ -167,7 +167,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 27.45
+  m_fontSize: 29.5
   m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -345,8 +345,8 @@ MonoBehaviour:
   descText: {fileID: 3790526982692157739}
   selectedBorder: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   normalBorder: {r: 0.39215687, g: 0, b: 0, a: 1}
-  hoverScale: 1.2
-  hoverHeight: 100
+  hoverScale: 1.5
+  hoverHeight: 120
 --- !u!1 &8597891749332769850
 GameObject:
   m_ObjectHideFlags: 0
