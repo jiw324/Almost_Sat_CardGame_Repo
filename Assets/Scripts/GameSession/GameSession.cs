@@ -86,4 +86,19 @@ public class GameSession : MonoBehaviour
             playerData.deck = new DeckInstance(startingPlayerDeck.CardIds);
         }
     }
+
+    public int GetPlayerHealth()
+    {
+        return gameSessionData.sessionPlayerData.health;
+    }
+
+    public int GetPlayerMana()
+    {
+        return gameSessionData.sessionPlayerData.mana;
+    }
+
+    public DeckInstance GetPlayerDeck()
+    {
+        return gameSessionData.sessionPlayerData.deck;
+    }
 }

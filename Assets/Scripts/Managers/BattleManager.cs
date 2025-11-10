@@ -22,11 +22,11 @@ public class BattleManager : MonoBehaviour
         GameSession session = SessionGrabber.getGameSession();
         if (session != null)
         {
-            playerHealth = session.gameSessionData.sessionPlayerData.health;
-            playerMana = session.gameSessionData.sessionPlayerData.mana;
+            playerHealth = session.GetPlayerHealth();
+            playerMana = session.GetPlayerMana();
             enemyHealth = 10;       // Temporary before enemy loading code is written
             enemyMana = 1;
-            playerDeckInstance = session.gameSessionData.sessionPlayerData.deck;
+            playerDeckInstance = session.GetPlayerDeck();
         }
 
         StartBattle();

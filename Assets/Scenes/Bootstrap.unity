@@ -168,10 +168,12 @@ MonoBehaviour:
       health: 10
       mana: 1
       gold: 5
-      cards: []
+      deck:
+        cardIds: []
     sessionNodeMapData:
       currentNodeType: 4
       currentNodeJson: 
+  startingPlayerDeck: {fileID: 0}
 --- !u!1 &488151005
 GameObject:
   m_ObjectHideFlags: 0
