@@ -65,6 +65,11 @@ public class DeckDisplayMenu : MonoBehaviour
             Debug.Log(cardObj.name + " instantiated in DeckDisplayMenu.");
             var controller = cardObj.GetComponent<CardUIController>();
             controller.Initialize(card);
+            var visualRoot = cardObj.transform.Find("VisualRoot");
+            if (visualRoot != null)
+            {
+                visualRoot.localScale = Vector3.one * 0.5f; // Half-size visually
+            }
         }
 
         // Force Unity to refresh layout if using GridLayoutGroup or VerticalLayoutGroup

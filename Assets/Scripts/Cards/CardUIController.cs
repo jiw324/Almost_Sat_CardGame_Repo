@@ -13,6 +13,7 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text costText;
     [SerializeField] private TMP_Text descText;
+    [SerializeField] private RectTransform visualRoot;
 
     [Header("Visuals")]
     [SerializeField] private Color selectedBorder = Color.yellow;
@@ -30,8 +31,8 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
 
     public void Initialize(CardInstance instance)
     {
-        originalScale = transform.localScale;
-        originalPosition = transform.localPosition;
+        originalScale = visualRoot.localScale;
+        originalPosition = visualRoot.localPosition;
         Instance = instance;
         UpdateUI();
     }
@@ -48,14 +49,14 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
     {
         // Smooth scaling when hovered
         Vector3 targetScale = isHovered ? originalScale * hoverScale : originalScale;
-        transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * animationSpeed);
+        visualRoot.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * animationSpeed);
 
-        Vector3 currentPos = transform.localPosition;
+        Vector3 currentPos = visualRoot.localPosition;
         float targetY = isHovered
             ? originalPosition.y + hoverHeight
             : originalPosition.y;
         float newY = Mathf.Lerp(currentPos.y, targetY, Time.deltaTime * animationSpeed);
-        transform.localPosition = new Vector3(currentPos.x, newY, currentPos.z);
+        visualRoot.localPosition = new Vector3(currentPos.x, newY, currentPos.z);
 
     }
 
