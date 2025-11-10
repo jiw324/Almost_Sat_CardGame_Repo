@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 981c72c744d018644b909ec287dc495f, type: 3}
-  m_Name: EventNode
+  m_Script: {fileID: 11500000, guid: d9df961e467e7dd4e8786b2217842e6a, type: 3}
+  m_Name: RestNodeDefinition
   m_EditorClassIdentifier: 
-  nodeType: 2
-  prefab: {fileID: 8655317165456944770, guid: 802e7a26c803afd4199cf1db60b4d8ec, type: 3}
-  nodeSceneName: Event
+  nodeType: 3
+  prefab: {fileID: 288061483857402408, guid: 90833df09628aeb4fa2954c92fc0f3a5, type: 3}
+  nodeSceneName: Rest

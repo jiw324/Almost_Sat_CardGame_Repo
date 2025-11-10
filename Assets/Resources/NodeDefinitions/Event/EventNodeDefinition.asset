@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 981c72c744d018644b909ec287dc495f, type: 3}
-  m_Name: CombatNode
+  m_Script: {fileID: 11500000, guid: 5e4c83b869b1c74439669ac3c2369d63, type: 3}
+  m_Name: EventNodeDefinition
   m_EditorClassIdentifier: 
-  nodeType: 0
-  prefab: {fileID: 6430799345589326161, guid: b26293249188e2243ba5f8f36fe419ac, type: 3}
-  nodeSceneName: Combat
+  nodeType: 2
+  prefab: {fileID: 8655317165456944770, guid: 802e7a26c803afd4199cf1db60b4d8ec, type: 3}
+  nodeSceneName: Event

@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 981c72c744d018644b909ec287dc495f, type: 3}
-  m_Name: RestNode
+  m_Script: {fileID: 11500000, guid: 74f92580e7aa70941862b60ae4d23d30, type: 3}
+  m_Name: ShopNodeDefinition
   m_EditorClassIdentifier: 
-  nodeType: 3
-  prefab: {fileID: 288061483857402408, guid: 90833df09628aeb4fa2954c92fc0f3a5, type: 3}
-  nodeSceneName: Rest
+  nodeType: 1
+  prefab: {fileID: 9068755077185543241, guid: 89f3ac9d6390e8c4198723f3b5040e39, type: 3}
+  nodeSceneName: Shop
