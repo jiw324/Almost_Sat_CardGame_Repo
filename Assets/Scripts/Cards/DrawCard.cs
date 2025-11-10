@@ -7,6 +7,6 @@ public class DrawCard : MonoBehaviour, IPointerClickHandler
     public void OnPointerClick(PointerEventData eventData)
     {
         if (eventData.button != PointerEventData.InputButton.Left) return;
-        handManager.DrawRandomCard();
+        handManager.DrawCardFromDeck();
     }
 }
