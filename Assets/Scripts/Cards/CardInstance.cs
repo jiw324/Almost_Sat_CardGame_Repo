@@ -45,11 +45,12 @@ public class CardInstance
         IsInHand = false;
         IsOnBoard = true;
         HasBeenPlayed = true;
-
+        
         // Maybe minigame play goes here
 
         if (!IsMinion) // SPELLS: execute spell effects only
             ResolveSpellEffects(Owner, targetSlot?.currentCard?.Owner);
+
         OnCardPlayed?.Invoke();
     }
 

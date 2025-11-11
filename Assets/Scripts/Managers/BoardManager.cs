@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -19,13 +20,14 @@ public class BoardManager : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject);
+            Debug.LogWarning($"[BoardManager] Duplicate BoardManager found on {gameObject.name} in scene {gameObject.scene.name}. Destroying.");
+            DestroyImmediate(gameObject);
             return;
         }
         Instance = this;
-
         inputActions = new InputSystem_Actions();
     }
+
 
     private void Start()
     {
@@ -42,6 +44,7 @@ public class BoardManager : MonoBehaviour
 
     private void OnDisable()
     {
+        Debug.Log("[BoardManager] OnDisable called.");
         inputActions.Player.Click.performed -= OnClickPerformed;
         inputActions.Player.Minigame.performed -= OnTestMinigame;
         inputActions.Disable();
@@ -95,7 +98,7 @@ public class BoardManager : MonoBehaviour
                 return;
             }
 
-            // 2b) SPELL CARD: second click chooses the target (entity or empty slot ¡ú nearest)
+            // 2b) SPELL CARD: second click chooses the target (entity or empty slot ï¿½ï¿½ nearest)
             var targetEntity = ResolveClickToEntityOrNearest(hit);
             if (targetEntity != null)
             {
@@ -133,7 +136,7 @@ public class BoardManager : MonoBehaviour
             }
         }
 
-        // Otherwise: click on empty / unrelated ¡ª no action
+        // Otherwise: click on empty / unrelated ï¿½ï¿½ no action
     }
 
     private void OnTestMinigame(InputAction.CallbackContext ctx)
@@ -202,6 +205,31 @@ public class BoardManager : MonoBehaviour
             selectedCard = null;
             return true;
         }
+
+        if (inst == null)
+        {
+            Debug.LogWarning("[BoardManager] Selected card instance is null.");
+            return;
+        }
+
+        if (inst.Owner is PlayerEntity)
+        {
+            if (BattleManager.Instance == null)
+            {
+                Debug.LogWarning("[BoardManager] No BattleManager found to check mana.");
+                return;
+            }
+
+            if (BattleManager.Instance.playerMana < cardInstance.Data.cost)
+            {
+                Debug.Log("[BoardManager] Not enough player mana to play that card.");
+                return;
+            }
+
+            BattleManager.Instance.playerMana -= cardInstance.Data.cost;
+            BattleManager.Instance.uiManager.UpdatePlayerMana(BattleManager.Instance.playerMana);
+        }
+
         return false;
     }
 
@@ -241,7 +269,7 @@ public class BoardManager : MonoBehaviour
 
         // Enemy entity as a target (off-board but has a transform)
         var enemy = BattleManager.Instance ? BattleManager.Instance.player?.GetComponentInParent<EnemyEntity>() : null;
-        // Above line won¡¯t find enemy; instead scan scene:
+        // Above line wonï¿½ï¿½t find enemy; instead scan scene:
         if (best == null)
         {
             var enemies = FindObjectsOfType<EnemyEntity>();
@@ -262,5 +290,68 @@ public class BoardManager : MonoBehaviour
         }
 
         return best;
+    }
+
+    // Resolve spell cards on board (called from EndTurnResolve)
+    public void ResolveAndClearSpellsForSide(bool fromPlayer)
+    {
+        if (BattleManager.Instance == null)
+        {
+            Debug.LogWarning("[BoardManager] No BattleManager instance while resolving spells.");
+            return;
+        }
+
+        var slots = UnityEngine.Object.FindObjectsOfType<BoardSlot>();
+        if (slots == null) return;
+
+        foreach (var s in slots)
+        {
+            if (s == null) continue;
+            if (s.currentCard == null) continue;
+            var card = s.currentCard;
+            if (card.Data == null) continue;
+
+            bool ownedByPlayer = card.Owner is PlayerEntity;
+            if (fromPlayer != ownedByPlayer)
+                continue;
+
+            if (card.Data.type == "spell")
+            {
+                // Ensure owner exists; fallback to battle manager entity if missing
+                EntityBase caster = card.Owner ?? (ownedByPlayer ? (EntityBase)BattleManager.Instance.playerEntity : (EntityBase)BattleManager.Instance.enemyEntity);
+
+                // Determine target: heals target the owner, damage targets the opponent
+                CardEffect effect = card.Data.effect;
+                EntityBase target = null;
+                bool isHeal = effect is HealEffect;
+
+                if (isHeal)
+                {
+                    target = ownedByPlayer ? (EntityBase)BattleManager.Instance.playerEntity : (EntityBase)BattleManager.Instance.enemyEntity;
+                }
+                else
+                {
+                    target = ownedByPlayer ? (EntityBase)BattleManager.Instance.enemyEntity : (EntityBase)BattleManager.Instance.playerEntity;
+                }
+
+                if (effect != null)
+                {
+                    try
+                    {
+                        if (caster != null && target != null)
+                            effect.Execute(caster, target);
+                        else
+                            Debug.LogWarning("[BoardManager] Missing caster or target for spell execution.");
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Debug.LogError($"[BoardManager] Exception while executing spell effect: {ex}");
+                    }
+                }
+
+                // remove spell visual from board
+                s.ClearCurrentCard();
+            }
+        }
     }
 }

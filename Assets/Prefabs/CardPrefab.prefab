@@ -345,7 +345,7 @@ MonoBehaviour:
   descText: {fileID: 3790526982692157739}
   selectedBorder: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   normalBorder: {r: 0.39215687, g: 0, b: 0, a: 1}
-  hoverScale: 1.2
+  hoverScale: 1.5
   hoverHeight: 120
 --- !u!1 &8597891749332769850
 GameObject:

@@ -1,10 +1,13 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class TurnManager : MonoBehaviour
 {
 
     public static TurnManager Instance { get; private set; }
+
+    [SerializeField] public TurnBanner turnBanner;
 
     private TurnStateBase currentState;
     private TurnStateBase playerTurnState;
@@ -15,10 +18,13 @@ public class TurnManager : MonoBehaviour
     public TurnStateBase EnemyTurnState => enemyTurnState;
     public TurnStateBase EndTurnState => endTurnState;
 
-
     public event Action<TurnStateBase> OnStateChanged;
 
     public InputSystem_Actions InputActions { get; private set; }
+
+    public enum Side { Player, Enemy }
+
+    public Side SideEndingTurn { get; set; } = Side.Player;
     
     private void Awake()
     {
@@ -47,6 +53,12 @@ public class TurnManager : MonoBehaviour
         enemyTurnState = new EnemyTurnState(this);
         endTurnState = new EndTurnState(this);
 
+        StartCoroutine(BeginBattleRoutine());
+    }
+
+    private IEnumerator BeginBattleRoutine()
+    {
+        yield return turnBanner.ShowIntroBannerEnumerator();
         ChangeState(playerTurnState);
     }
 
@@ -56,6 +68,24 @@ public class TurnManager : MonoBehaviour
         currentState = newState;
         currentState?.Enter();
         OnStateChanged?.Invoke(currentState);
+    }
+
+    public void EndCurrentTurn()
+    {
+        if (currentState == playerTurnState)
+        {
+            SideEndingTurn = Side.Player;
+        }
+        else if (currentState == enemyTurnState)
+        {
+            SideEndingTurn = Side.Enemy;
+        }
+        else
+        {
+            SideEndingTurn = Side.Player;
+        }
+
+        ChangeState(endTurnState);
     }
 
     // Update is called once per frame

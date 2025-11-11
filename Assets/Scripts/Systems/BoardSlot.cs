@@ -14,14 +14,16 @@ public class BoardSlot : MonoBehaviour
             Debug.LogError("[BoardSlot] Tried to place a null CardInstance!");
             return false;
         }
-        //if (card.Data.type == "spell")
-        //{
-        //    Debug.LogError($"[BoardSlot] You can't place spell cards on the board!");
-        //    return false;
-        //}
+
+        // if (card.Data.type == "spell")
+        // {
+        //     Debug.LogWarning($"[BoardSlot] You can't place spell cards on the board!");
+        //     return false;
+        // }
+
         if (card.Data.isRanged != isRanged)
         {
-            Debug.LogError($"[BoardSlot] Tried to place a " +
+            Debug.LogWarning($"[BoardSlot] Tried to place a " +
                 $"{(card.Data.isRanged ? "ranged" : "melee")} card in a " +
                 $"{(isRanged ? "ranged" : "melee")} slot!");
             return false;
@@ -58,6 +60,7 @@ public class BoardSlot : MonoBehaviour
         spawnedObject.name = card.Data.name;
         Debug.Log($"**** Assigned name: {card.Data.name}");
 
+
         var controller = spawnedObject.GetComponent<Card3DController>();
         if (controller != null) controller.Initialize(card);
         else Debug.LogWarning("[BoardSlot] 3D card prefab missing Card3DController component!");
@@ -75,8 +78,6 @@ public class BoardSlot : MonoBehaviour
             return true;
         }
 
-
-
         Debug.Log($"[BoardSlot] Placed {card.Data.cardName} on {(isRanged ? "ranged" : "melee")} row.");
         return true;
     }
@@ -88,4 +89,5 @@ public class BoardSlot : MonoBehaviour
         currentCard = null;
         isOccupied = false;
     }
+
 }
