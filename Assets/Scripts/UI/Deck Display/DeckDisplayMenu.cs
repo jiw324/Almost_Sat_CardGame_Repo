@@ -18,8 +18,8 @@ public class DeckDisplayMenu : MonoBehaviour
         if (closeButton != null)
             closeButton.onClick.AddListener(Hide);
 
-        //deck = SessionGrabber.getGameSession().GetPlayerDeck();
-        deck = new DeckInstance(deckDefinition.CardIds);
+        deck = SessionGrabber.getGameSession().GetPlayerDeck();
+        //deck = new DeckInstance(deckDefinition.CardIds);
         Debug.Log(deck.Cards.Count + " cards loaded into DeckDisplayMenu.");
         gameObject.SetActive(false);
     }
