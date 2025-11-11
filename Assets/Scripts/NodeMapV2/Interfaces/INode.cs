@@ -10,6 +10,7 @@ public interface INode
     bool IsVisited { get; }
     bool IsCompleted { get; }
     void ConnectTo(INode other);
+    bool HasDefinition();
     void MarkVisited();
     void MarkCompleted();
     bool IsConnectedTo(INode other);

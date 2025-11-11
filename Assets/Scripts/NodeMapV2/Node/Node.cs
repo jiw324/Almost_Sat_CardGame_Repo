@@ -7,7 +7,6 @@ public class Node : INode
     public NodeDefinition Definition { get; private set; }
     public Vector2Int GridPos { get; }
     public List<INode> NextNodes { get; } = new();
-
     public bool IsVisited { get; private set; }
     public bool IsCompleted { get; private set; }
 
@@ -23,7 +22,7 @@ public class Node : INode
         if (other != null && !NextNodes.Contains(other))
             NextNodes.Add(other);
     }
-
+    public bool HasDefinition() => Definition != null;
     public bool IsConnectedTo(INode other) => NextNodes.Contains(other);
     public void MarkVisited() => IsVisited = true;
     public void MarkCompleted() => IsCompleted = true;
