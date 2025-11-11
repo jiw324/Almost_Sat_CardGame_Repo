@@ -92,6 +92,11 @@ public class GameSession : MonoBehaviour
         return gameSessionData.sessionPlayerData.health;
     }
 
+    public int GetPlayerMaxHealth()
+    {
+        return gameSessionData.sessionPlayerData.maxHealth;
+    }
+
     public int GetPlayerMana()
     {
         return gameSessionData.sessionPlayerData.mana;
@@ -100,5 +105,10 @@ public class GameSession : MonoBehaviour
     public DeckInstance GetPlayerDeck()
     {
         return gameSessionData.sessionPlayerData.deck;
+    }
+
+    public void SetPlayerHealth(int health)
+    {
+        gameSessionData.sessionPlayerData.health = health;
     }
 }
