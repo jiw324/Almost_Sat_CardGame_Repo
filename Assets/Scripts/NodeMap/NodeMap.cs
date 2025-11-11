@@ -12,10 +12,17 @@ public class NodeMap : MonoBehaviour
 
     private const float _maxXOffset = 0.3f;
     private const float _maxYOffset = 0.3f;
-    private int _maxNodesPerFloor = 0;
+    private const int _maxNodeGenAttempts = 10;
+
+    private int _maxStartNodes = 0;
+    private const float _startNodesMult = 0.6f;
+    private int _maxNumPaths = 0;
+    private const float _numPathsMult = 3.5f;
 
     public int mapWidth { get; private set; } = 5;
     public int mapHeight { get; private set; } = 15;
+
+    private bool _isGenerated = false;
 
     public void Awake()
     {
@@ -25,14 +32,21 @@ public class NodeMap : MonoBehaviour
         for (int y = 0; y < mapHeight; y++)
             nodes[y] = new INode[mapWidth];
 
-        _nodeFactory       = new NodeFactory();
-        _nodeMapValidator  = new NodeMapValidator(this, _nodeFactory);
-        _maxNodesPerFloor  = Mathf.RoundToInt(mapWidth * 0.75f);
-        _startNodeXVals    = new HashSet<int>();
+        _nodeFactory = new NodeFactory();
+        _nodeMapValidator = new NodeMapValidator(this, _nodeFactory);
+        _maxStartNodes = Mathf.RoundToInt(mapWidth * _startNodesMult);
+        _maxNumPaths = Mathf.RoundToInt(mapWidth * _numPathsMult);
+        _startNodeXVals = new HashSet<int>();
     }
 
-    public void Start()
+    public void Generate()
     {
+        if (_isGenerated)
+        {
+            Debug.LogWarning("NodeMap already generated!");
+            return;
+        }
+
         GenerateNodeData();
 
         var report = _nodeMapValidator.ValidateMap(autoFix: true);
@@ -43,6 +57,8 @@ public class NodeMap : MonoBehaviour
 
         SpawnNodes();
         GeneratePaths();
+
+        _isGenerated = true;
     }
 
     private void GenerateNodeData()
@@ -54,9 +70,10 @@ public class NodeMap : MonoBehaviour
         GameObject nodeAnchorParentObj = new GameObject("NodeAnchors");
         nodeAnchorParentObj.transform.SetParent(transform, false);
 
-        foreach (int gridX in _startNodeXVals)
+        for (int pathIndex = 0; pathIndex < _maxNumPaths; pathIndex++)
         {
-            int x = gridX;
+            int startX = GetRandomStartX();
+            int x = startX;
 
             if (nodes[0][x] == null)
                 nodes[0][x] = _nodeFactory.CreateNode(
@@ -75,7 +92,7 @@ public class NodeMap : MonoBehaviour
                 {
                     randomDeltaX = Random.Range(minDeltaX, maxDeltaX + 1);
                     attemptCount++;
-                    if (attemptCount > 10)
+                    if (attemptCount > _maxNodeGenAttempts)
                     {
                         randomDeltaX = 0;
                         break;
@@ -90,10 +107,17 @@ public class NodeMap : MonoBehaviour
         }
     }
 
+    private int GetRandomStartX()
+    {
+        int[] startXs = new int[_startNodeXVals.Count];
+        _startNodeXVals.CopyTo(startXs);
+        return startXs[Random.Range(0, startXs.Length)];
+    }
+
     private void ChooseStartNodes()
     {
         _startNodeXVals.Clear();
-        while (_startNodeXVals.Count < _maxNodesPerFloor)
+        while (_startNodeXVals.Count < Mathf.Min(_maxStartNodes, mapWidth))
             _startNodeXVals.Add(Random.Range(0, mapWidth));
     }
 
@@ -148,18 +172,20 @@ public class NodeMap : MonoBehaviour
         float yOffset = Random.Range(-_maxYOffset, _maxYOffset);
 
         var (anchorX, anchorY) = _nodeGrid.GetCoords(gridX, gridY);
-        Vector3 pos = new Vector3(anchorX + xOffset, 0.02f, anchorY + yOffset);
+
+        Vector3 localPos = new Vector3(anchorX + xOffset, 0f, anchorY + yOffset);
 
         var prefab = Resources.Load<GameObject>("Prefabs/NodeMap/NodeAnchor");
-        GameObject obj = Instantiate(prefab, pos, Quaternion.identity, parentObj.transform);
+        GameObject obj = Instantiate(prefab, parentObj.transform);
+        obj.transform.localPosition = localPos;
+        obj.transform.localRotation = Quaternion.identity;
+
         obj.name = $"NodeAnchor_{gridX}_{gridY}";
         return obj.AddComponent<NodeAnchor>();
     }
 
     private void SpawnNodes()
     {
-        Debug.Log("Spawning validated nodes");
-
         GameObject nodesParentObj = new GameObject("Nodes");
         nodesParentObj.transform.SetParent(transform, false);
 
@@ -178,15 +204,11 @@ public class NodeMap : MonoBehaviour
 
                 var def = node.nodeDefinition;
                 if (def == null || def.prefab == null)
-                {
-                    Debug.LogWarning($"Node missing prefab on floor {floorIndex + 1}, index {i}");
                     continue;
-                }
 
-                GameObject nodeObj = Instantiate(def.prefab,
-                    node.nodeAnchor.transform.position,
-                    Quaternion.identity,
-                    floorParentObj.transform);
+                GameObject nodeObj = Instantiate(def.prefab, floorParentObj.transform);
+                nodeObj.transform.position = node.nodeAnchor.transform.position;
+                nodeObj.transform.localRotation = Quaternion.identity;
 
                 nodeObj.name = $"Node_{floorIndex + 1}_{i}";
             }
@@ -195,17 +217,12 @@ public class NodeMap : MonoBehaviour
 
     private void GeneratePaths()
     {
-        Debug.Log("Spawning paths between validated nodes");
-
         GameObject pathsParentObj = new GameObject("Paths");
         pathsParentObj.transform.SetParent(transform, false);
 
         GameObject pathPrefab = Resources.Load<GameObject>("Prefabs/NodeMap/NodePath");
         if (pathPrefab == null)
-        {
-            Debug.LogError("Path prefab not found");
             return;
-        }
 
         foreach (var floorPair in nodes)
         {
@@ -226,9 +243,10 @@ public class NodeMap : MonoBehaviour
 
     private GameObject SpawnPath(INode startNode, INode endNode, GameObject pathPrefab, GameObject parentObj)
     {
+        float yLevel = startNode.nodeAnchor.transform.position.y + 0.02f;
         Vector3 midpoint = new Vector3(
             (startNode.nodeAnchor.transform.position.x + endNode.nodeAnchor.transform.position.x) / 2,
-            0.02f,
+            yLevel,
             (startNode.nodeAnchor.transform.position.z + endNode.nodeAnchor.transform.position.z) / 2
         );
 
@@ -250,5 +268,10 @@ public class NodeMap : MonoBehaviour
         pathObj.transform.localScale = newScale;
         pathObj.name = $"Path_{startNode.nodeAnchor.name}_to_{endNode.nodeAnchor.name}";
         return pathObj;
+    }
+
+    public float GetGridXSpacing()
+    {
+        return 1.5f;
     }
 }

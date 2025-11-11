@@ -15,4 +15,14 @@ public class NodeGrid
     {
         return (x * gridXDist, y * gridYDist);
     }
+
+    public float GetGridXSpacing()
+    {
+        return gridXDist;
+    }
+
+    public float GetGridYSpacing()
+    {
+        return gridYDist;
+    }
 }
