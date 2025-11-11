@@ -21,8 +21,6 @@ public class NodeFactory
 
             _definitions[def.nodeType] = def;
         }
-
-        Debug.Log($"Loaded {_definitions.Count} node definitions.");
     }
 
     public Node CreateNode(NodeType type, Vector2Int gridPos)

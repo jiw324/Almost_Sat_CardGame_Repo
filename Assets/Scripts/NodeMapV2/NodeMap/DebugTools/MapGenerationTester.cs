@@ -1,26 +1,35 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEditor;
 
 [ExecuteAlways]
 public class MapGenerationTester : MonoBehaviour
 {
-    [Header("Test Settings")]
+    [Header("General Settings")]
     [SerializeField] private NodeMap nodeMapPrefab;
-    [SerializeField, Min(1)] private int testIterations = 100;
-    [SerializeField] private int randomSeed = 0; // 0 = random
     [SerializeField] private bool autoRunOnPlay = false;
+    [SerializeField, Min(1)] private int testIterations = 50;
 
-    [Header("Visualization Settings")]
-    [SerializeField] private bool drawGizmos = true;
-    [SerializeField] private Color nodeColor = Color.cyan;
-    [SerializeField] private Color lineColor = new Color(0.8f, 0.8f, 1f, 0.6f);
-    [SerializeField] private float nodeRadius = 0.12f;
+    [Header("Phase Toggles")]
+    [SerializeField] private bool runAssigner = true;
+    [SerializeField] private bool runValidator = true;
+    [SerializeField] private bool runSpawner = true;
 
-    private NodeMap currentMap;
-    private List<NodeMap> testMaps = new();
+    private NodeMap _currentMap;
+    private List<NodeMap> _testMaps = new();
+    private List<IMapTestModule> _modules = new();
+
+    private void Awake()
+    {
+        _modules = new List<IMapTestModule>
+        {
+            new StructureValidationModule(),
+            new NodeTypeDistributionModule(),
+            new ValidationModule(),
+            // new RenderingValidationModule()
+        };
+    }
 
     private void Start()
     {
@@ -31,200 +40,172 @@ public class MapGenerationTester : MonoBehaviour
     [ContextMenu("Generate Single Map")]
     public void RunSingleTest()
     {
+        if (_modules == null || _modules.Count == 0)
+            Awake();
+
         ClearMaps();
-        GenerateNewMap();
-        ValidateAndReport(currentMap);
+
+        foreach (var module in _modules)
+            module.Reset();
+
+        _currentMap = GenerateMapInstance();
+        RunAllModules(_currentMap);
+        _testMaps.Add(_currentMap);
+
+        PrintModuleReports();
     }
 
     [ContextMenu("Run Volume Test")]
     public void RunVolumeTest()
     {
+        if (_modules == null || _modules.Count == 0)
+            Awake();
+
         ClearMaps();
-        RunMultipleGenerations(testIterations);
+
+        foreach (var module in _modules)
+            module.Reset();
+
+        Debug.Log($"Running {testIterations} test iterations...");
+
+        for (int i = 0; i < testIterations; i++)
+        {
+            NodeMap map = GenerateMapInstance();
+            RunAllModules(map);
+            _testMaps.Add(map);
+        }
+
+        PrintModuleReports();
     }
+
+    private NodeMap GenerateMapInstance()
+    {
+        GameObject obj = new GameObject("NodeMap_Debug");
+        obj.transform.SetParent(transform);
+
+        NodeMap map = obj.AddComponent<NodeMap>();
+        map.Generate();  // Phase 1 – structure generation
+
+        // -------------- Phase 2 – Node type assignment --------------
+        if (runAssigner)
+        {
+            if (map.Factory == null)
+                Debug.LogError("NodeMap.Factory is null. NodeTypeAssigner cannot run.");
+            else
+            {
+                var assigner = new NodeTypeAssigner(map.Factory);
+                assigner.Assign(map);
+            }
+        }
+
+        if (runValidator)
+        {
+            var validator = new NodeMapValidator();
+            validator.Validate(map);
+        }
+
+        if (runSpawner)
+        {
+            var spawner = new NodeMapSpawner();
+            NodeMapVisualContext context = spawner.Spawn(map, map.transform);
+
+            var camera = FindFirstObjectByType<MapCameraController>();
+            if (camera != null)
+            {
+                camera.SetBounds(context.MapBounds.center, map.MapWidth, map.MapHeight,
+                                 map.Grid.XSpacing, map.Grid.YSpacing);
+            }
+        }
+
+        return map;
+    }
+
+
 
     private void ClearMaps()
     {
-        foreach (var m in testMaps)
-            if (m != null) DestroyImmediate(m.gameObject);
+        foreach (var m in _testMaps)
+            if (m != null)
+                SafeDestroy(m.gameObject);
 
-        testMaps.Clear();
-        currentMap = null;
+        _testMaps.Clear();
+        for (int i = transform.childCount - 1; i >= 0; i--)
+            SafeDestroy(transform.GetChild(i).gameObject);
+
+        _currentMap = null;
     }
 
-    private void GenerateNewMap()
+    private void SafeDestroy(GameObject obj)
     {
-        if (randomSeed != 0)
-            Random.InitState(randomSeed);
+        if (obj == null) return;
+
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+            DestroyImmediate(obj);
         else
-            Random.InitState(System.Environment.TickCount);
-
-        GameObject obj = new GameObject("NodeMap_Debug");
-        obj.transform.SetParent(transform);
-        currentMap = obj.AddComponent<NodeMap>();
-
-        if (nodeMapPrefab != null)
-        {
-            currentMap.GetType().GetFields().ToList().ForEach(field =>
-            {
-                if (field.IsPublic && field.FieldType == typeof(int))
-                    field.SetValue(currentMap, field.GetValue(nodeMapPrefab));
-            });
-        }
-
-        currentMap.Generate();
-        testMaps.Add(currentMap);
+#endif
+            Destroy(obj);
     }
 
-    private void RunMultipleGenerations(int count)
+    private void RunAllModules(NodeMap map)
     {
-        Debug.Log($"Running {count} map generation tests...");
-
-        int validCount = 0;
-        var allNodeCounts = new List<int>();
-        var allConnCounts = new List<int>();
-        var allOutDegrees = new List<float>();
-        var allMergeRatios = new List<float>();
-        var allIsolatedNodes = new List<int>();
-        var allEmptyFloors = new List<int>();
-        var allDurations = new List<float>();
-
-        for (int i = 0; i < count; i++)
-        {
-            var sw = System.Diagnostics.Stopwatch.StartNew();
-
-            Random.InitState(System.DateTime.Now.Millisecond + i * 997);
-            GameObject obj = new GameObject($"NodeMap_Test_{i}");
-            obj.transform.SetParent(transform);
-            NodeMap map = obj.AddComponent<NodeMap>();
-            map.Generate();
-            sw.Stop();
-
-            testMaps.Add(map);
-
-            bool valid = ValidateMapStructure(map, out int nodes, out int connections);
-            if (valid) validCount++;
-
-            allNodeCounts.Add(nodes);
-            allConnCounts.Add(connections);
-            allOutDegrees.Add(nodes > 0 ? (float)connections / nodes : 0);
-            allDurations.Add(sw.ElapsedMilliseconds);
-
-            // Merge ratio: nodes with multiple parents / total nodes
-            int multiParentNodes = map.AllNodes.Count(n =>
-            {
-                int incoming = map.Floors.Values
-                    .SelectMany(f => f)
-                    .Count(p => p.NextNodes.Contains(n));
-                return incoming >= 2;
-            });
-            allMergeRatios.Add(map.AllNodes.Count() > 0
-                ? (float)multiParentNodes / map.AllNodes.Count()
-                : 0);
-
-            // Isolated nodes (should be 0)
-            int isolated = map.AllNodes.Count(n =>
-            {
-                bool incoming = map.Floors.Values.Any(f => f.Any(p => p.NextNodes.Contains(n)));
-                bool outgoing = n.NextNodes.Count > 0;
-                return !incoming && !outgoing;
-            });
-            allIsolatedNodes.Add(isolated);
-
-            // Empty floors (should be 0)
-            int empties = map.Floors.Values.Count(f => f.Count == 0);
-            allEmptyFloors.Add(empties);
-        }
-
-        // Summary stats
-        string report =
-            "========== MAP GENERATION REPORT ==========\n" +
-            $"Total Runs: {count}\n" +
-            $"Valid Maps: {validCount}/{count}  ({(float)validCount / count * 100f:F1}%)\n" +
-            "------------------------------------------\n" +
-            $"Avg Nodes:        {allNodeCounts.Average():F1}\n" +
-            $"Avg Connections:  {allConnCounts.Average():F1}\n" +
-            $"Avg Out-Degree:   {allOutDegrees.Average():F2}\n" +
-            $"Avg Merge Ratio:  {allMergeRatios.Average() * 100f:F1}%\n" +
-            $"Avg Isolated:     {allIsolatedNodes.Average():F2}\n" +
-            $"Avg Empty Floors: {allEmptyFloors.Average():F2}\n" +
-            $"Avg Time:         {allDurations.Average():F1} ms\n" +
-            "------------------------------------------\n" +
-            $"Min Nodes: {allNodeCounts.Min()}   Max Nodes: {allNodeCounts.Max()}\n" +
-            $"Min Conns: {allConnCounts.Min()}   Max Conns: {allConnCounts.Max()}\n" +
-            "==========================================";
-
-        Debug.Log(report);
+        foreach (var module in _modules)
+            module.Run(map);
     }
 
-    private void ValidateAndReport(NodeMap map)
+    private void PrintModuleReports()
     {
-        bool valid = ValidateMapStructure(map, out int nodes, out int connections);
+        string header = "========== MAP TEST SUMMARY ==========";
+        string footer = "======================================";
+        string allReports = "";
 
-        Debug.Log(
-            "Single Map Report:\n" +
-            $"- Nodes: {nodes}\n" +
-            $"- Connections: {connections}\n" +
-            $"- Structure Valid: {valid}"
-        );
+        foreach (var module in _modules)
+            allReports += module.GetReport() + "\n\n";
+
+        string full = $"{header}\n\n{allReports}{footer}";
+
+#if UNITY_EDITOR
+        EditorDeferredLog(full);
+#else
+        Debug.Log(full);
+#endif
     }
 
-    private bool ValidateMapStructure(NodeMap map, out int nodeCount, out int connectionCount)
+#if UNITY_EDITOR
+    private void EditorDeferredLog(string message)
     {
-        nodeCount = map.AllNodes.Count();
-        connectionCount = map.AllNodes.Sum(n => n.NextNodes.Count);
-        bool success = true;
-
-        for (int y = 0; y < map.Floors.Count; y++)
+        UnityEditor.EditorApplication.delayCall += () =>
         {
-            var floor = map.Floors[y];
-            if (floor.Count == 0)
-            {
-                Debug.LogError($"Floor {y} is empty.");
-                success = false;
-            }
+            if (Application.isPlaying)
+                Debug.Log(message);
+            else
+                UnityEngine.Debug.LogFormat(LogType.Log, LogOption.NoStacktrace, null, "{0}", message);
 
-            foreach (var node in floor)
-            {
-                bool hasIncoming = y == 0 || map.Floors[y - 1].Any(p => p.NextNodes.Contains(node));
-                bool hasOutgoing = y == map.MapHeight - 1 || node.NextNodes.Count > 0;
-
-                if (!hasIncoming)
-                {
-                    Debug.LogError($"Invalid: Node {node.GridPos} has no incoming connection.");
-                    success = false;
-                }
-                if (!hasOutgoing)
-                {
-                    Debug.LogError($"Invalid: Node {node.GridPos} has no outgoing connection.");
-                    success = false;
-                }
-            }
-        }
-
-        return success;
+            UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+        };
     }
+#endif
 
     private void OnDrawGizmos()
     {
-        if (!drawGizmos || currentMap == null || currentMap.Grid == null)
+        if (_currentMap == null || _currentMap.Grid == null)
             return;
 
-        Gizmos.color = nodeColor;
+        Gizmos.color = Color.cyan;
 
-        foreach (var node in currentMap.AllNodes)
+        foreach (var node in _currentMap.AllNodes)
         {
-            Vector3 pos = currentMap.Grid.GridToWorld(node.GridPos.x, node.GridPos.y);
-            Gizmos.DrawSphere(pos, nodeRadius);
+            Vector3 pos = _currentMap.Grid.GridToWorld(node.GridPos.x, node.GridPos.y);
+            Gizmos.DrawSphere(pos, 0.12f);
 
-            Gizmos.color = lineColor;
+            Gizmos.color = new Color(0.8f, 0.8f, 1f, 0.6f);
             foreach (var next in node.NextNodes)
             {
-                Vector3 nextPos = currentMap.Grid.GridToWorld(next.GridPos.x, next.GridPos.y);
+                Vector3 nextPos = _currentMap.Grid.GridToWorld(next.GridPos.x, next.GridPos.y);
                 Gizmos.DrawLine(pos, nextPos);
             }
 
-            Gizmos.color = nodeColor;
+            Gizmos.color = Color.cyan;
         }
     }
 }
