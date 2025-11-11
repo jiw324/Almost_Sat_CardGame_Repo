@@ -8,4 +8,5 @@ public class CardJSON
     public string type;
     public bool isRanged;
     public string effectId;
+    public int damage;
 }

@@ -16,8 +16,8 @@ public class HandManager : MonoBehaviour
     [SerializeField] private int mulliganSampleSize = 8;
 
     private readonly List<CardInstance> cardsInHand = new();
-    private readonly Queue<string> drawPile = new();
-    private readonly List<string> discardPile = new();
+    private readonly Queue<CardId> drawPile = new();
+    private readonly List<CardId> discardPile = new();
     private DeckInstance sourceDeck;
 
     private void Start()
@@ -94,14 +94,11 @@ public class HandManager : MonoBehaviour
             return;
         }
 
-        List<string> shuffled = new(sourceCards);
+        List<CardId> shuffled = new(sourceCards);
         Shuffle(shuffled);
 
         foreach (var cardId in shuffled)
         {
-            if (string.IsNullOrWhiteSpace(cardId))
-                continue;
-
             drawPile.Enqueue(cardId);
         }
     }
@@ -182,9 +179,10 @@ public class HandManager : MonoBehaviour
                 break;
         }
 
-        var handRect = handArea as RectTransform;
-        if (handRect != null)
+        if (handArea is RectTransform handRect)
+        {
             LayoutRebuilder.ForceRebuildLayoutImmediate(handRect);
+        }
         }
 
     public void AddCardToHand(CardInstance card)
@@ -194,7 +192,7 @@ public class HandManager : MonoBehaviour
         Debug.Log($"[HandManager] Added {card.Data.name} to hand.\n{card.Data.PrintCard()}");
 
         GameObject go = Instantiate(cardUIPrefab, handArea);
-        go.name = card.Data.id;
+        go.name = card.Data.id.ToString();
         var controller = go.GetComponent<CardUIController>();
         controller.Initialize(card);
 
@@ -230,14 +228,14 @@ public class HandManager : MonoBehaviour
 
     private CardInstance TakeCardFromDeck()
     {
-        string cardId = GetNextCardIdFromDeck();
-        if (string.IsNullOrEmpty(cardId))
+        CardId? cardId = GetNextCardIdFromDeck();
+        if (!cardId.HasValue)
         {
             Debug.LogWarning("[HandManager] Deck is empty. No card drawn.");
             return null;
         }
 
-        CardInstance newCard = CardFactory.CreateCard(cardId, owner);
+        CardInstance newCard = CardFactory.CreateCard(cardId.Value, owner);
         if (newCard == null)
             return null;
 
@@ -249,7 +247,7 @@ public class HandManager : MonoBehaviour
         if (cards == null)
             return;
 
-        List<string> combined = new(drawPile);
+        List<CardId> combined = new(drawPile);
 
         foreach (var card in cards)
         {
@@ -266,18 +264,15 @@ public class HandManager : MonoBehaviour
         }
     }
 
-    private string GetNextCardIdFromDeck()
+    private CardId? GetNextCardIdFromDeck()
     {
         if (drawPile.Count == 0)
         {
             if (ReloadDeckFromDiscard())
                 return drawPile.Dequeue();
 
-            if (sourceDeck == null || sourceDeck.Cards == null || sourceDeck.Cards.Count == 0)
-            {
-                CardJSON fallback = CardDatabase.Instance.GetRandomCard();
-                return fallback?.id;
-            }
+            if (CardDatabase.Instance.TryGetRandomCardId(out var randomId))
+                return randomId;
 
             return null;
         }
@@ -304,7 +299,7 @@ public class HandManager : MonoBehaviour
         if (discardPile.Count == 0)
             return false;
 
-        List<string> shuffled = new(discardPile);
+        List<CardId> shuffled = new(discardPile);
         Shuffle(shuffled);
         Debug.Log($"[HandManager] Shuffling discard pile into draw pile ({discardPile.Count} cards).");
         foreach (var id in shuffled)
@@ -317,16 +312,13 @@ public class HandManager : MonoBehaviour
         return drawPile.Count > 0;
     }
 
-    private void AddToDiscard(string cardId)
+    private void AddToDiscard(CardId cardId)
     {
-        if (string.IsNullOrWhiteSpace(cardId))
-            return;
-
         discardPile.Add(cardId);
         Debug.Log($"[HandManager] Added card '{cardId}' to discard pile (size now {discardPile.Count}).");
     }
 
-    private static void Shuffle(List<string> list)
+    private static void Shuffle(List<CardId> list)
     {
         for (int i = list.Count - 1; i > 0; i--)
         {

@@ -4,31 +4,27 @@ using System.Collections.Generic;
 [Serializable]
 public class DeckInstance
 {
-    public List<string> cardIds = new();
+    public List<CardId> cardIds = new();
 
-    public IReadOnlyList<string> Cards => cardIds;
+    public IReadOnlyList<CardId> Cards => cardIds;
 
     public DeckInstance()
     {
     }
 
-    public DeckInstance(IEnumerable<string> sourceIds)
+    public DeckInstance(IEnumerable<CardId> sourceIds)
     {
         if (sourceIds == null) return;
-        cardIds = new List<string>(sourceIds);
+        cardIds = new List<CardId>(sourceIds);
     }
 
-    public void AddCard(string cardId)
+    public void AddCard(CardId cardId)
     {
-        if (string.IsNullOrWhiteSpace(cardId))
-            return;
         cardIds.Add(cardId);
     }
 
-    public bool RemoveCard(string cardId)
+    public bool RemoveCard(CardId cardId)
     {
-        if (string.IsNullOrWhiteSpace(cardId))
-            return false;
         return cardIds.Remove(cardId);
     }
 
