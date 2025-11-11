@@ -12,9 +12,9 @@ public class NodeMap : MonoBehaviour
 
     [Header("Connectivity Settings")]
     [Tooltip("Probability (0–1) that a node will branch into multiple next-floor nodes.")]
-    [Range(0f, 1f)][SerializeField] private float branchChance = 0.65f;
+    [Range(0f, 1f)][SerializeField] private float branchChance = 0.75f;
     [Tooltip("Probability that a node connects straight up instead of diagonally.")]
-    [Range(0f, 1f)][SerializeField] private float straightBias = 0.2f;
+    [Range(0f, 1f)][SerializeField] private float straightBias = 0.1f;
 
     public int MapWidth => mapWidth;
     public int MapHeight => mapHeight;
@@ -28,7 +28,7 @@ public class NodeMap : MonoBehaviour
     {
         if (_generated)
         {
-            Debug.LogWarning("NodeMap.Generate() called multiple times. Ignoring.");
+            Debug.LogWarning("Failed to generate map. Map already generated");
             return;
         }
 

@@ -14,13 +14,40 @@ public class NodeTypeAssigner
     public void Assign(NodeMap map)
     {
         Debug.Log($"Assigning types to {map.AllNodes.Count()} nodes...");
-        int height = map.MapHeight;
 
+        int height = map.MapHeight;
+        int top = height - 1;
+        int mid = Mathf.RoundToInt((height - 1) / 2f);
+
+        // ----- ANCHOR FLOORS -----
+        // Top floor: Rest
+        if (map.Floors.ContainsKey(top))
+        {
+            foreach (var node in map.Floors[top])
+                node.Reassign(_factory.GetDefinition(NodeType.Rest));
+        }
+
+        // Middle floor: Loot
+        if (map.Floors.ContainsKey(mid))
+        {
+            foreach (var node in map.Floors[mid])
+                node.Reassign(_factory.GetDefinition(NodeType.Loot));
+        }
+
+        // First floor: Combat
+        if (map.Floors.ContainsKey(0))
+        {
+            foreach (var node in map.Floors[0])
+                node.Reassign(_factory.GetDefinition(NodeType.Combat));
+        }
+
+        // ----- ALL OTHER FLOORS -----
         foreach (var floorPair in map.Floors)
         {
             int y = floorPair.Key;
-            List<Node> floorNodes = floorPair.Value;
+            if (y == 0 || y == mid || y == top) continue; // Skip anchors
 
+            List<Node> floorNodes = floorPair.Value;
             foreach (Node node in floorNodes)
             {
                 if (node.HasDefinition()) continue;
@@ -28,27 +55,10 @@ public class NodeTypeAssigner
                 NodeType type = ChooseNodeType(y, height);
                 NodeDefinition def = _factory.GetDefinition(type);
                 node.Reassign(def);
-                // Debug.Log($"Assigned {type} to node {node.GridPos}");
             }
         }
 
-        // Force top floor to be final rest floor
-        foreach (var node in map.Floors[height - 1])
-        {
-            node.Reassign(_factory.GetDefinition(NodeType.Rest));
-        }
-
-        // Force middle floor to be a loot floor
-        foreach (var node in map.Floors[Mathf.RoundToInt(height / 2)])
-        {
-            node.Reassign(_factory.GetDefinition(NodeType.Loot));
-        }
-
-        // Force first floor to be a combat floor
-        foreach (var node in map.Floors[0])
-        {
-            node.Reassign(_factory.GetDefinition(NodeType.Combat));
-        }
+        Debug.Log($"Type assignment complete: first={NodeType.Combat}, mid={NodeType.Loot}, top={NodeType.Rest}");
     }
 
     private NodeType ChooseNodeType(int y, int height)
@@ -72,40 +82,37 @@ public class NodeTypeAssigner
 
     private Dictionary<NodeType, float> GetWeightsForProgress(float progress)
     {
-        // Early floors
         if (progress < 0.33f)
         {
             return new Dictionary<NodeType, float>
             {
                 { NodeType.Combat, 0.5f },
-                { NodeType.Shop, 0.15f },
-                { NodeType.Event, 0.25f },
-                { NodeType.Rest, 0.05f },
-                { NodeType.Loot, 0.05f }
+                { NodeType.Shop,   0.15f },
+                { NodeType.Event,  0.25f },
+                { NodeType.Rest,   0.05f },
+                { NodeType.Loot,   0.05f }
             };
         }
-        // Mid floors
         else if (progress < 0.75f)
         {
             return new Dictionary<NodeType, float>
             {
                 { NodeType.Combat, 0.4f },
-                { NodeType.Shop, 0.2f },
-                { NodeType.Event, 0.25f },
-                { NodeType.Rest, 0.1f },
-                { NodeType.Loot, 0.05f }
+                { NodeType.Shop,   0.2f },
+                { NodeType.Event,  0.25f },
+                { NodeType.Rest,   0.1f },
+                { NodeType.Loot,   0.05f }
             };
         }
-        // Late floors
         else
         {
             return new Dictionary<NodeType, float>
             {
                 { NodeType.Combat, 0.35f },
-                { NodeType.Shop, 0.25f },
-                { NodeType.Event, 0.15f },
-                { NodeType.Rest, 0.15f },
-                { NodeType.Loot, 0.1f }
+                { NodeType.Shop,   0.25f },
+                { NodeType.Event,  0.15f },
+                { NodeType.Rest,   0.15f },
+                { NodeType.Loot,   0.1f }
             };
         }
     }

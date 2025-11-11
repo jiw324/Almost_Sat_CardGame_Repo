@@ -27,7 +27,6 @@ public class MapGenerationTester : MonoBehaviour
             new StructureValidationModule(),
             new NodeTypeDistributionModule(),
             new ValidationModule(),
-            // new RenderingValidationModule()
         };
     }
 
@@ -48,7 +47,7 @@ public class MapGenerationTester : MonoBehaviour
         foreach (var module in _modules)
             module.Reset();
 
-        _currentMap = GenerateMapInstance();
+        _currentMap = GenerateMapInstance(runSpawner);
         RunAllModules(_currentMap);
         _testMaps.Add(_currentMap);
 
@@ -66,11 +65,12 @@ public class MapGenerationTester : MonoBehaviour
         foreach (var module in _modules)
             module.Reset();
 
-        Debug.Log($"Running {testIterations} test iterations...");
+        Debug.Log($"Running {testIterations} test iterations (spawning disabled)...");
 
         for (int i = 0; i < testIterations; i++)
         {
-            NodeMap map = GenerateMapInstance();
+            // Disable prefab spawning during volume testing for performance & visibility
+            NodeMap map = GenerateMapInstance(runSpawner: false);
             RunAllModules(map);
             _testMaps.Add(map);
         }
@@ -78,15 +78,15 @@ public class MapGenerationTester : MonoBehaviour
         PrintModuleReports();
     }
 
-    private NodeMap GenerateMapInstance()
+    private NodeMap GenerateMapInstance(bool runSpawner)
     {
         GameObject obj = new GameObject("NodeMap_Debug");
         obj.transform.SetParent(transform);
 
         NodeMap map = obj.AddComponent<NodeMap>();
-        map.Generate();  // Phase 1 – structure generation
+        map.Generate();  // Phase 1: Node Map Structure Generation
 
-        // -------------- Phase 2 – Node type assignment --------------
+        // Phase 2: Node Type Assignment
         if (runAssigner)
         {
             if (map.Factory == null)
@@ -98,12 +98,14 @@ public class MapGenerationTester : MonoBehaviour
             }
         }
 
+        // Phase 3: Node Type Validation
         if (runValidator)
         {
             var validator = new NodeMapValidator();
             validator.Validate(map);
         }
 
+        // Phase 4: Prefab Spawning (skip if disabled)
         if (runSpawner)
         {
             var spawner = new NodeMapSpawner();
@@ -119,8 +121,6 @@ public class MapGenerationTester : MonoBehaviour
 
         return map;
     }
-
-
 
     private void ClearMaps()
     {
@@ -185,28 +185,5 @@ public class MapGenerationTester : MonoBehaviour
         };
     }
 #endif
-
-    private void OnDrawGizmos()
-    {
-        if (_currentMap == null || _currentMap.Grid == null)
-            return;
-
-        Gizmos.color = Color.cyan;
-
-        foreach (var node in _currentMap.AllNodes)
-        {
-            Vector3 pos = _currentMap.Grid.GridToWorld(node.GridPos.x, node.GridPos.y);
-            Gizmos.DrawSphere(pos, 0.12f);
-
-            Gizmos.color = new Color(0.8f, 0.8f, 1f, 0.6f);
-            foreach (var next in node.NextNodes)
-            {
-                Vector3 nextPos = _currentMap.Grid.GridToWorld(next.GridPos.x, next.GridPos.y);
-                Gizmos.DrawLine(pos, nextPos);
-            }
-
-            Gizmos.color = Color.cyan;
-        }
-    }
 }
 #endif

@@ -4,12 +4,11 @@ using UnityEngine;
 
 public class NodeMapValidator
 {
-    private const int MAX_FLOORS_BETWEEN_RESTS = 5;
-    private const int MAX_FLOORS_BETWEEN_SHOPS = 8;
+    private const int MAX_FLOORS_BETWEEN_RESTS = 3;
+    private const int MAX_FLOORS_BETWEEN_SHOPS = 6;
     private const float MAX_EVENT_PERCENT = 0.4f;
-    private const int MAX_PASSES = 3;
+    private const int MAX_PASSES = 5;
 
-    // Rule hit tracking
     private readonly Dictionary<string, int> _ruleHits = new();
     public IReadOnlyDictionary<string, int> RuleHits => _ruleHits;
     public int PassesUsed { get; private set; } = 1;
@@ -32,17 +31,23 @@ public class NodeMapValidator
     {
         var result = new ValidationResult();
 
+        int top = map.MapHeight - 1;
+        int mid = Mathf.RoundToInt((map.MapHeight - 1) / 2f);
+
         for (int pass = 0; pass < MAX_PASSES; pass++)
         {
             int issuesBefore = result.Issues.Count;
 
-            // Reordered for stability:
-            EnforceTypeBalance(map, result);   // normalize events first
+            EnforceTypeBalance(map, result);
             FixStructural(map, result);
             EnforceTypePlacement(map, result);
-            EnforceRestFrequency(map, result); // rest before flow
-            EnforceFlowRules(map, result);     // resolve chains
-            EnforceShopFrequency(map, result); // shops after flow
+            EnforceRestFrequency(map, result);
+            EnforceFlowRules(map, result, top, mid);
+            EnforceShopFrequency(map, result);
+
+            // Always reassert anchor floors last
+            EnsureAnchorFloorsFinal(map, result);
+
             WarnPatternVariety(map, result);
 
             int issuesAfter = result.Issues.Count;
@@ -54,9 +59,7 @@ public class NodeMapValidator
 
             if (pass == MAX_PASSES - 1 && issuesAfter != issuesBefore)
             {
-                Debug.LogWarning($"[Validator] Map failed to stabilize after {MAX_PASSES} passes. Last rule hits:");
-                foreach (var kvp in _ruleHits.OrderByDescending(k => k.Value))
-                    Debug.Log($" - {kvp.Key}: {kvp.Value}");
+                Debug.LogWarning($"[Validator] Map failed to stabilize after {MAX_PASSES} passes.");
             }
         }
 
@@ -107,35 +110,67 @@ public class NodeMapValidator
         int top = map.MapHeight - 1;
         int mid = Mathf.RoundToInt((map.MapHeight - 1) / 2f);
 
-        // No Shop on first floor
-        foreach (var n in map.Floors[0])
+        // Skip anchors — those are handled separately
+        for (int y = 0; y < map.MapHeight; y++)
         {
-            if (n.Definition.nodeType == NodeType.Shop)
+            if (y == 0 || y == mid || y == top) continue;
+            foreach (var node in map.Floors[y])
             {
-                Count("FirstFloorShopFix");
-                n.Reassign(map.Factory.GetDefinition(NodeType.Combat));
-                r.Issues.Add("Reassigned Shop on first floor to Combat.");
+                if (node.Definition == null)
+                {
+                    node.Reassign(map.Factory.GetDefinition(NodeType.Combat));
+                    r.Issues.Add($"Filled missing definition on floor {y}.");
+                }
             }
         }
+    }
 
-        // Top floor must be Rest
-        foreach (var n in map.Floors[top])
+    // ---------- FLOW RULES ----------
+    private void EnforceFlowRules(NodeMap map, ValidationResult r, int top, int mid)
+    {
+        for (int y = 1; y < map.MapHeight; y++)
         {
-            if (n.Definition.nodeType != NodeType.Rest)
+            var prevTypes = map.Floors[y - 1].Select(n => n.Definition.nodeType).ToList();
+            var curr = map.Floors[y];
+
+            bool isAnchor = (y == 0 || y == mid || y == top);
+            if (isAnchor) continue;
+
+            // Rest -> Rest
+            if (prevTypes.Contains(NodeType.Rest) && y < top)
             {
-                Count("TopFloorRestFix");
-                n.Reassign(map.Factory.GetDefinition(NodeType.Rest));
-                r.Issues.Add($"Top node {n.GridPos} set to Rest.");
+                foreach (var n in curr.Where(n => n.Definition.nodeType == NodeType.Rest))
+                {
+                    Count("NoRestChainFix");
+                    NodeType newType = Random.value < 0.65f ? NodeType.Event : NodeType.Combat;
+                    n.Reassign(map.Factory.GetDefinition(newType));
+                    r.Issues.Add($"Changed Rest at floor {y} to {newType} (avoided Rest chain).");
+                }
             }
-        }
 
-        // Middle floor must contain Loot
-        if (!map.Floors[mid].Any(n => n.Definition.nodeType == NodeType.Loot))
-        {
-            Count("MiddleFloorLootFix");
-            var target = map.Floors[mid][Random.Range(0, map.Floors[mid].Count)];
-            target.Reassign(map.Factory.GetDefinition(NodeType.Loot));
-            r.Issues.Add($"Inserted Loot on middle floor {mid}.");
+            // Shop -> Shop
+            if (prevTypes.Contains(NodeType.Shop) && y < top)
+            {
+                foreach (var n in curr.Where(n => n.Definition.nodeType == NodeType.Shop))
+                {
+                    Count("NoShopChainFix");
+                    NodeType newType = Random.value < 0.65f ? NodeType.Event : NodeType.Combat;
+                    n.Reassign(map.Factory.GetDefinition(newType));
+                    r.Issues.Add($"Changed Shop at floor {y} to {newType} (avoided Shop chain).");
+                }
+            }
+
+            // Loot -> Loot
+            if (prevTypes.Contains(NodeType.Loot) && y < top)
+            {
+                foreach (var n in curr.Where(n => n.Definition.nodeType == NodeType.Loot))
+                {
+                    Count("NoLootChainFix");
+                    NodeType newType = Random.value < 0.65f ? NodeType.Event : NodeType.Combat;
+                    n.Reassign(map.Factory.GetDefinition(newType));
+                    r.Issues.Add($"Changed Loot at floor {y} to {newType} (avoided Loot chain).");
+                }
+            }
         }
     }
 
@@ -143,13 +178,11 @@ public class NodeMapValidator
     private void EnforceRestFrequency(NodeMap map, ValidationResult r)
     {
         int lastRest = -MAX_FLOORS_BETWEEN_RESTS;
-
         for (int y = 0; y < map.MapHeight; y++)
         {
             var types = map.Floors[y].Select(n => n.Definition.nodeType);
             if (types.Contains(NodeType.Rest)) lastRest = y;
 
-            // Skip enforcing Rest on final floor to avoid top-floor conflicts
             if (y < map.MapHeight - 1 && y - lastRest > MAX_FLOORS_BETWEEN_RESTS)
             {
                 Count("RestSpacingFix");
@@ -165,15 +198,12 @@ public class NodeMapValidator
     private void EnforceShopFrequency(NodeMap map, ValidationResult r)
     {
         int lastShop = -MAX_FLOORS_BETWEEN_SHOPS;
-
         for (int y = 0; y < map.MapHeight; y++)
         {
             var types = map.Floors[y].Select(n => n.Definition.nodeType);
             if (types.Contains(NodeType.Shop)) lastShop = y;
 
-            // Skip if previous floor already has a Shop to avoid chain conflict
             bool prevHadShop = y > 0 && map.Floors[y - 1].Any(n => n.Definition.nodeType == NodeType.Shop);
-
             if (!prevHadShop && y - lastShop > MAX_FLOORS_BETWEEN_SHOPS)
             {
                 Count("ShopSpacingFix");
@@ -185,70 +215,70 @@ public class NodeMapValidator
         }
     }
 
-    // ---------- FLOW RULES ----------
-    private void EnforceFlowRules(NodeMap map, ValidationResult r)
-    {
-        for (int y = 1; y < map.MapHeight; y++)
-        {
-            var prevTypes = map.Floors[y - 1].Select(n => n.Definition.nodeType).ToList();
-            var curr = map.Floors[y];
-
-            // No Rest directly after Rest (skip top floor)
-            if (prevTypes.Contains(NodeType.Rest) && y < map.MapHeight - 1)
-            {
-                foreach (var n in curr.Where(n => n.Definition.nodeType == NodeType.Rest))
-                {
-                    Count("NoRestChainFix");
-                    n.Reassign(map.Factory.GetDefinition(NodeType.Event));
-                    r.Issues.Add($"Changed Rest at floor {y} to Event (avoided Rest chain).");
-                }
-            }
-
-            // No Shop directly after Shop
-            if (prevTypes.Contains(NodeType.Shop) && y < map.MapHeight - 1)
-            {
-                foreach (var n in curr.Where(n => n.Definition.nodeType == NodeType.Shop))
-                {
-                    Count("NoShopChainFix");
-                    n.Reassign(map.Factory.GetDefinition(NodeType.Event));
-                    r.Issues.Add($"Changed Shop at floor {y} to Event (avoided Shop chain).");
-                }
-            }
-
-            // No Loot directly after Loot
-            if (prevTypes.Contains(NodeType.Loot) && y < map.MapHeight - 1)
-            {
-                foreach (var n in curr.Where(n => n.Definition.nodeType == NodeType.Loot))
-                {
-                    Count("NoLootChainFix");
-                    n.Reassign(map.Factory.GetDefinition(NodeType.Event));
-                    r.Issues.Add($"Changed Shop at floor {y} to Event (avoided Loot chain).");
-                }
-            }
-        }
-    }
-
     // ---------- TYPE BALANCE ----------
     private void EnforceTypeBalance(NodeMap map, ValidationResult r)
     {
         var all = map.AllNodes.ToList();
         int total = all.Count;
-        int events = all.Count(n => n.Definition.nodeType == NodeType.Event);
+        if (total == 0) return;
 
+        int events = all.Count(n => n.Definition.nodeType == NodeType.Event);
         if ((float)events / total > MAX_EVENT_PERCENT)
         {
             int toConvert = events - Mathf.RoundToInt(total * MAX_EVENT_PERCENT);
-            var eventNodes = all.Where(n => n.Definition.nodeType == NodeType.Event)
-                                .OrderBy(_ => Random.value)
-                                .Take(toConvert);
+            var eventNodes = all.Where(n =>
+                n.Definition.nodeType == NodeType.Event &&
+                n.GridPos.y != 0 &&
+                n.GridPos.y != Mathf.RoundToInt((map.MapHeight - 1) / 2f) &&
+                n.GridPos.y != map.MapHeight - 1)
+                .OrderBy(_ => Random.value)
+                .Take(toConvert);
 
             foreach (var n in eventNodes)
             {
                 Count("EventCapFix");
-                n.Reassign(map.Factory.GetDefinition(NodeType.Combat));
+                NodeType newType = Random.value < 0.7f ? NodeType.Combat : NodeType.Rest;
+                n.Reassign(map.Factory.GetDefinition(newType));
             }
 
             r.Issues.Add($"Reduced Events by {toConvert} to maintain <= {MAX_EVENT_PERCENT * 100f}% total.");
+        }
+    }
+
+    // ---------- FINAL ANCHOR ENFORCEMENT ----------
+    private void EnsureAnchorFloorsFinal(NodeMap map, ValidationResult r)
+    {
+        int top = map.MapHeight - 1;
+        int mid = Mathf.RoundToInt((map.MapHeight - 1) / 2f);
+
+        // First floor: all Combat
+        foreach (var n in map.Floors[0])
+        {
+            if (n.Definition.nodeType != NodeType.Combat)
+            {
+                n.Reassign(map.Factory.GetDefinition(NodeType.Combat));
+                r.Issues.Add("[Final] Reassigned first-floor node to Combat.");
+            }
+        }
+
+        // Middle floor: all Loot
+        foreach (var n in map.Floors[mid])
+        {
+            if (n.Definition.nodeType != NodeType.Loot)
+            {
+                n.Reassign(map.Factory.GetDefinition(NodeType.Loot));
+                r.Issues.Add("[Final] Reassigned middle-floor node to Loot.");
+            }
+        }
+
+        // Top floor: all Rest
+        foreach (var n in map.Floors[top])
+        {
+            if (n.Definition.nodeType != NodeType.Rest)
+            {
+                n.Reassign(map.Factory.GetDefinition(NodeType.Rest));
+                r.Issues.Add("[Final] Reassigned top-floor node to Rest.");
+            }
         }
     }
 
