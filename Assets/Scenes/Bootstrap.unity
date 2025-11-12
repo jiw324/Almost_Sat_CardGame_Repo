@@ -165,6 +165,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameSessionData:
     sessionPlayerData:
+      maxHealth: 30
       health: 10
       mana: 1
       gold: 5
@@ -173,7 +174,7 @@ MonoBehaviour:
     sessionNodeMapData:
       currentNodeType: 4
       currentNodeJson: 
-  startingPlayerDeck: {fileID: 0}
+  startingPlayerDeck: {fileID: 11400000, guid: 5e8d255eb222643af9b19304f1c1dbd7, type: 2}
 --- !u!1 &488151005
 GameObject:
   m_ObjectHideFlags: 0
