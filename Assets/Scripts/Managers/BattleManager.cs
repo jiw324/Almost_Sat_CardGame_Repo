@@ -55,7 +55,7 @@ public class BattleManager : MonoBehaviour
         enemyHealth = 10;       // Temporary before enemy loading code is written
         enemyMana = enemyMaxMana;
 
-        StartBattle();
+        //StartBattle();
     }
 
     private void Start()
