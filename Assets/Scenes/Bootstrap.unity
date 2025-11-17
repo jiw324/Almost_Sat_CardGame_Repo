@@ -636,6 +636,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeMapPrefab: {fileID: 8126679085322039787, guid: 4019462cd89b6d84f93ff42ed3e0d925, type: 3}
+  fogPrefab: {fileID: 9019322638695637648, guid: efc1a35888f08aa4aa744822777f658e, type: 3}
   useRandomSeed: 1
   debugSeed: 12345
 --- !u!1 &1841611669

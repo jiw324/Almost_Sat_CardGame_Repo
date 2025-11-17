@@ -7,6 +7,7 @@ public class MapGenerationManager : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private NodeMap nodeMapPrefab;
+    [SerializeField] private GameObject fogPrefab;
 
     [Header("Seed Settings")]
     [SerializeField] private bool useRandomSeed = true;
@@ -66,7 +67,6 @@ public class MapGenerationManager : MonoBehaviour
         _currentSeed = seed;
         Random.InitState(seed);
 
-        // Clear previous map
         if (_activeMap != null)
             Destroy(_activeMap.gameObject);
 
@@ -78,14 +78,11 @@ public class MapGenerationManager : MonoBehaviour
 
         _activeMap = map;
 
-        // Build the node graph
         map.Generate();
 
-        // Assign node types
         var assigner = new NodeTypeAssigner(map.Factory);
         assigner.Assign(map);
 
-        // Validate structure
         var validator = new NodeMapValidator();
         validator.Validate(map);
 
@@ -94,13 +91,25 @@ public class MapGenerationManager : MonoBehaviour
         var spawner = new NodeMapSpawner();
         _visualContext = spawner.Spawn(map, map.transform);
 
-        // Spawn environment
         var env = new MapEnvironmentSpawner();
         env.SpawnEnvironment(_visualContext, map.transform);
 
+        // IMPORTANT: Recalculate bounds in case environment expanded them
+        Bounds finalBounds = _visualContext.MapBounds;
 
         var cam = FindFirstObjectByType<MapCameraController>();
         if (cam != null)
-            cam.SetBoundsUsingWorldBounds(_visualContext.MapBounds);
+            cam.SetBoundsUsingWorldBounds(finalBounds);
+
+        if (fogPrefab != null)
+        {
+            GameObject fogObj = Instantiate(fogPrefab, _activeMap.transform);
+            fogObj.name = "Fog";
+
+            var fog = fogObj.GetComponent<FogController>();
+            if (fog != null)
+                fog.Initialize(_activeMap, finalBounds);
+        }
     }
 }
+

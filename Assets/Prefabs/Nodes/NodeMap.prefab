@@ -49,7 +49,7 @@ MonoBehaviour:
   gridXSpacing: 1.25
   gridYSpacing: 1.5
   branchChance: 0.8
-  straightBias: 0.6
+  straightBias: 0.5
   maxXOffset: 0.15
   maxYOffset: 0.15
   offsetStdDevFactor: 0.5

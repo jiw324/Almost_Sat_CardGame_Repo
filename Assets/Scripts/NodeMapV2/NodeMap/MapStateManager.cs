@@ -6,6 +6,8 @@ public class MapStateManager : MonoBehaviour
 {
     public static MapStateManager Instance { get; private set; }
 
+    public event System.Action OnNodeChanged;
+
     private NodeMap _map;
     private Dictionary<string, Node> _lookup;
 
@@ -27,6 +29,7 @@ public class MapStateManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
+
     public void Initialize(NodeMap map)
     {
         _map = map;
@@ -86,6 +89,9 @@ public class MapStateManager : MonoBehaviour
     {
         _currentNodeId = node?.Id;
         SessionMap.currentNodeId = _currentNodeId;
+
+        OnNodeChanged?.Invoke();
+
         SaveSession();
     }
 
