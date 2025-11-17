@@ -20,6 +20,9 @@ public class MapGenerationTester : MonoBehaviour
     private List<NodeMap> _testMaps = new();
     private List<IMapTestModule> _modules = new();
 
+    private const int MAX_GENERATION_ATTEMPTS = 10;
+    private int _lastRegenAttempts = 0;
+
     private void Awake()
     {
         _modules = new List<IMapTestModule>
@@ -69,7 +72,6 @@ public class MapGenerationTester : MonoBehaviour
 
         for (int i = 0; i < testIterations; i++)
         {
-            // Disable prefab spawning during volume testing for performance & visibility
             NodeMap map = GenerateMapInstance(runSpawner: false);
             RunAllModules(map);
             _testMaps.Add(map);
@@ -80,46 +82,85 @@ public class MapGenerationTester : MonoBehaviour
 
     private NodeMap GenerateMapInstance(bool runSpawner)
     {
-        GameObject obj = new GameObject("NodeMap_Debug");
-        obj.transform.SetParent(transform);
+        int attempts = 0;
+        _lastRegenAttempts = 0;
 
-        NodeMap map = obj.AddComponent<NodeMap>();
-        map.Generate();  // Phase 1: Node Map Structure Generation
+        while (attempts < MAX_GENERATION_ATTEMPTS)
+        {
+            GameObject obj = new GameObject("NodeMap_Debug");
+            obj.transform.SetParent(transform);
 
-        // Phase 2: Node Type Assignment
+            NodeMap map = obj.AddComponent<NodeMap>();
+            map.Generate();
+
+            if (runAssigner)
+            {
+                if (map.Factory == null)
+                    Debug.LogError("NodeMap.Factory is null. NodeTypeAssigner cannot run.");
+                else
+                {
+                    var assigner = new NodeTypeAssigner(map.Factory);
+                    assigner.Assign(map);
+                }
+            }
+
+            if (runValidator)
+            {
+                var validator = new NodeMapValidator();
+                var res = validator.Validate(map);
+
+                if (!res.ruleViolated)
+                {
+                    _lastRegenAttempts = attempts;
+
+                    if (runSpawner)
+                    {
+                        var spawner = new NodeMapSpawner();
+                        NodeMapVisualContext context = spawner.Spawn(map, map.transform);
+
+                        var camera = FindFirstObjectByType<MapCameraController>();
+                        if (camera != null)
+                        {
+                            camera.SetBounds(context.MapBounds.center, map.MapWidth, map.MapHeight,
+                                             map.Grid.XSpacing, map.Grid.YSpacing);
+                        }
+                    }
+
+                    return map;
+                }
+            }
+
+            SafeDestroy(obj);
+            attempts++;
+        }
+
+        GameObject fallback = new GameObject("NodeMap_Debug_Fallback");
+        fallback.transform.SetParent(transform);
+
+        NodeMap fallbackMap = fallback.AddComponent<NodeMap>();
+        fallbackMap.Generate();
+
         if (runAssigner)
         {
-            if (map.Factory == null)
-                Debug.LogError("NodeMap.Factory is null. NodeTypeAssigner cannot run.");
-            else
-            {
-                var assigner = new NodeTypeAssigner(map.Factory);
-                assigner.Assign(map);
-            }
+            var assigner = new NodeTypeAssigner(fallbackMap.Factory);
+            assigner.Assign(fallbackMap);
         }
 
-        // Phase 3: Node Type Validation
-        if (runValidator)
-        {
-            var validator = new NodeMapValidator();
-            validator.Validate(map);
-        }
-
-        // Phase 4: Prefab Spawning (skip if disabled)
         if (runSpawner)
         {
             var spawner = new NodeMapSpawner();
-            NodeMapVisualContext context = spawner.Spawn(map, map.transform);
+            NodeMapVisualContext context = spawner.Spawn(fallbackMap, fallbackMap.transform);
 
             var camera = FindFirstObjectByType<MapCameraController>();
             if (camera != null)
             {
-                camera.SetBounds(context.MapBounds.center, map.MapWidth, map.MapHeight,
-                                 map.Grid.XSpacing, map.Grid.YSpacing);
+                camera.SetBounds(context.MapBounds.center, fallbackMap.MapWidth, fallbackMap.MapHeight,
+                                 fallbackMap.Grid.XSpacing, fallbackMap.Grid.YSpacing);
             }
         }
 
-        return map;
+        _lastRegenAttempts = MAX_GENERATION_ATTEMPTS;
+        return fallbackMap;
     }
 
     private void ClearMaps()
@@ -150,7 +191,12 @@ public class MapGenerationTester : MonoBehaviour
     private void RunAllModules(NodeMap map)
     {
         foreach (var module in _modules)
+        {
             module.Run(map);
+
+            if (module is ValidationModule vm)
+                vm.RecordRegenerationAttempts(_lastRegenAttempts);
+        }
     }
 
     private void PrintModuleReports()

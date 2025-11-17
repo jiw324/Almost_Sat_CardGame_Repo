@@ -7,75 +7,58 @@ public class ValidationModule : IMapTestModule
     public string ModuleName => "Node Map Validation";
 
     private int _totalRuns;
-    private int _preValid;
     private int _postValid;
-    private int _postValidNoWarn;
-    private int _totalIssues;
-    private int _totalWarnings;
     private int _mapsWithFixes;
 
     private readonly Dictionary<string, int> _ruleHitTotals = new();
-    private readonly Dictionary<int, int> _passHistogram = new(); // pass count distribution
+    private readonly Dictionary<int, int> _passHistogram = new();
+    private readonly Dictionary<int, int> _regenAttemptsHistogram = new();
 
     private readonly List<string> _lastIssues = new();
-    private readonly List<string> _lastWarnings = new();
 
     public void Reset()
     {
         _totalRuns = 0;
-        _preValid = 0;
         _postValid = 0;
-        _postValidNoWarn = 0;
-        _totalIssues = 0;
-        _totalWarnings = 0;
         _mapsWithFixes = 0;
 
         _ruleHitTotals.Clear();
         _passHistogram.Clear();
+        _regenAttemptsHistogram.Clear();
         _lastIssues.Clear();
-        _lastWarnings.Clear();
     }
 
     public void Run(NodeMap map)
     {
         _totalRuns++;
 
-        var preValidator = new NodeMapValidator();
-        var preResult = preValidator.Validate(map);
-        bool preHadIssues = preResult.Issues.Count > 0 || preResult.Warnings.Count > 0;
-        if (!preHadIssues)
-            _preValid++;
-
-        // Main validation
         var validator = new NodeMapValidator();
         var result = validator.Validate(map);
 
-        // Track how many passes were used
         int passes = validator.PassesUsed;
         if (!_passHistogram.ContainsKey(passes))
             _passHistogram[passes] = 0;
         _passHistogram[passes]++;
 
-        bool postHadIssues = result.Issues.Count > 0 || result.Warnings.Count > 0;
-        bool postHadIssuesOnly = result.Issues.Count > 0;
-
-        if (!postHadIssues)
+        if (!result.ruleViolated)
             _postValid++;
-        if (!postHadIssuesOnly)
-            _postValidNoWarn++;
 
-        _totalIssues += result.Issues.Count;
-        _totalWarnings += result.Warnings.Count;
-        if (result.Issues.Count > 0)
+        if (result.ruleViolated)
             _mapsWithFixes++;
 
         foreach (var kvp in validator.RuleHits)
             _ruleHitTotals[kvp.Key] = _ruleHitTotals.TryGetValue(kvp.Key, out int v) ? v + kvp.Value : kvp.Value;
 
         _lastIssues.Clear();
-        _lastWarnings.Clear();
-        _lastIssues.AddRange(result.Issues);
-        _lastWarnings.AddRange(result.Warnings);
+        if (!string.IsNullOrEmpty(result.Message))
+            _lastIssues.Add(result.Message);
+    }
+
+    public void RecordRegenerationAttempts(int attempts)
+    {
+        if (!_regenAttemptsHistogram.ContainsKey(attempts))
+            _regenAttemptsHistogram[attempts] = 0;
+        _regenAttemptsHistogram[attempts]++;
     }
 
     public string GetReport()
@@ -83,23 +66,15 @@ public class ValidationModule : IMapTestModule
         if (_totalRuns == 0)
             return $"[{ModuleName}] No runs performed.";
 
-        float prePercent = (float)_preValid / _totalRuns * 100f;
         float postPercent = (float)_postValid / _totalRuns * 100f;
-        float postNoWarnPercent = (float)_postValidNoWarn / _totalRuns * 100f;
-        float avgPasses = _passHistogram.Sum(p => p.Key * p.Value) / (float)_totalRuns;
 
         string report =
             $"========== {ModuleName.ToUpper()} ==========\n" +
             $"Total Runs: {_totalRuns}\n" +
             $"------------------------------------------\n" +
-            $"Pre-Validation Valid:   {_preValid}/{_totalRuns} ({prePercent:F1}%)\n" +
             $"Post-Validation Valid:  {_postValid}/{_totalRuns} ({postPercent:F1}%)\n" +
-            $"Post-Valid (No Warns):  {_postValidNoWarn}/{_totalRuns} ({postNoWarnPercent:F1}%)\n" +
             $"------------------------------------------\n" +
-            $"Total Issues Fixed: {_totalIssues}\n" +
-            $"Total Warnings:     {_totalWarnings}\n" +
-            $"Maps with Fixes:    {_mapsWithFixes}\n" +
-            $"Average Passes:     {avgPasses:F2}\n";
+            $"Maps with Fixes:    {_mapsWithFixes}\n";
 
         if (_passHistogram.Count > 0)
         {
@@ -108,6 +83,16 @@ public class ValidationModule : IMapTestModule
             {
                 float pct = (float)kvp.Value / _totalRuns * 100f;
                 report += $" • {kvp.Key} pass(es): {kvp.Value} maps ({pct:F1}%)\n";
+            }
+        }
+
+        if (_regenAttemptsHistogram.Count > 0)
+        {
+            report += "\nRegeneration Attempts:\n";
+            foreach (var kvp in _regenAttemptsHistogram.OrderBy(k => k.Key))
+            {
+                float pct = (float)kvp.Value / _totalRuns * 100f;
+                report += $" • {kvp.Key} attempt(s): {kvp.Value} maps ({pct:F1}%)\n";
             }
         }
 
@@ -125,15 +110,6 @@ public class ValidationModule : IMapTestModule
                 report += $" • {i}\n";
             if (_lastIssues.Count > 6)
                 report += $"   (+{_lastIssues.Count - 6} more)\n";
-        }
-
-        if (_lastWarnings.Count > 0)
-        {
-            report += "\nLast Run Warnings:\n";
-            foreach (var w in _lastWarnings.Take(4))
-                report += $" • {w}\n";
-            if (_lastWarnings.Count > 4)
-                report += $"   (+{_lastWarnings.Count - 4} more)\n";
         }
 
         report += "==========================================";

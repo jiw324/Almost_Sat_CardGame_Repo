@@ -86,10 +86,10 @@ public class NodeTypeAssigner
         {
             return new Dictionary<NodeType, float>
             {
-                { NodeType.Combat, 0.5f },
+                { NodeType.Combat, 0.35f },
                 { NodeType.Shop,   0.15f },
-                { NodeType.Event,  0.25f },
-                { NodeType.Rest,   0.05f },
+                { NodeType.Event,  0.2f },
+                { NodeType.Rest,   0.25f },
                 { NodeType.Loot,   0.05f }
             };
         }
@@ -97,10 +97,10 @@ public class NodeTypeAssigner
         {
             return new Dictionary<NodeType, float>
             {
-                { NodeType.Combat, 0.4f },
+                { NodeType.Combat, 0.35f },
                 { NodeType.Shop,   0.2f },
-                { NodeType.Event,  0.25f },
-                { NodeType.Rest,   0.1f },
+                { NodeType.Event,  0.2f },
+                { NodeType.Rest,   0.2f },
                 { NodeType.Loot,   0.05f }
             };
         }

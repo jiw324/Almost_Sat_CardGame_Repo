@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static Unity.VisualScripting.Metadata;
 
 public class Node : INode
 {
     public string Id { get; }
     public NodeDefinition Definition { get; private set; }
     public Vector2Int GridPos { get; }
-    public List<INode> NextNodes { get; } = new();
+    public List<Node> ParentNodes { get; } = new List<Node>();
+    public List<Node> NextNodes { get; } = new List<Node>();
     public bool IsVisited { get; private set; }
     public bool IsCompleted { get; private set; }
 
@@ -16,14 +18,25 @@ public class Node : INode
         GridPos = gridPos;
         Id = $"{gridPos.x}_{gridPos.y}";
     }
-
-    public void ConnectTo(INode other)
+    public void ConnectTo(Node child)
     {
-        if (other != null && !NextNodes.Contains(other))
-            NextNodes.Add(other);
+        if (child == null) return;
+
+        if (!NextNodes.Contains(child))
+            NextNodes.Add(child);
+
+        if (!child.ParentNodes.Contains(this))
+            child.ParentNodes.Add(this);
+    }
+    public void DisconnectFrom(Node child)
+    {
+        if (child == null) return;
+
+        NextNodes.Remove(child);
+        child.ParentNodes.Remove(this);
     }
     public bool HasDefinition() => Definition != null;
-    public bool IsConnectedTo(INode other) => NextNodes.Contains(other);
+    public bool IsConnectedTo(Node other) => NextNodes.Contains(other);
     public void MarkVisited() => IsVisited = true;
     public void MarkCompleted() => IsCompleted = true;
     public void Reassign(NodeDefinition newDef) => Definition = newDef;
