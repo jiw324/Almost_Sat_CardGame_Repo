@@ -7,18 +7,18 @@ public class NodeMap : MonoBehaviour
     [Header("Grid Settings")]
     [SerializeField] private int mapWidth = 5;
     [SerializeField] private int mapHeight = 15;
-    [SerializeField] private float gridXSpacing = 1.5f;
-    [SerializeField] private float gridYSpacing = 1.5f;
+    [SerializeField] private float gridXSpacing = .75f;
+    [SerializeField] private float gridYSpacing = .75f;
 
     [Header("Connectivity Settings")]
     [Tooltip("Probability (0–1) that a node will branch into multiple next-floor nodes.")]
-    [Range(0f, 1f)][SerializeField] private float branchChance = 0.75f;
+    [Range(0f, 1f)][SerializeField] private float branchChance = 0.9f;
     [Tooltip("Probability that a node connects straight up instead of diagonally.")]
-    [Range(0f, 1f)][SerializeField] private float straightBias = 0.1f;
+    [Range(0f, 1f)][SerializeField] private float straightBias = 0.2f;
 
     [Header("Offset Settings")]
-    [SerializeField] private float maxXOffset = 0.3f;
-    [SerializeField] private float maxYOffset = 0.3f;
+    [SerializeField] private float maxXOffset = 0.1f;
+    [SerializeField] private float maxYOffset = 0.2f;
     [Tooltip("Standard deviation as a fraction of max offset (Gaussian scatter).")]
     [Range(0.01f, 1f)][SerializeField] private float offsetStdDevFactor = 0.5f;
 

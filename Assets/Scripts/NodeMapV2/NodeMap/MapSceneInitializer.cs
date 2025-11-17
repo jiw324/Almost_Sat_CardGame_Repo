@@ -6,7 +6,7 @@ public class MapSceneInitializer : MonoBehaviour
     {
         if (MapGenerationManager.Instance.ActiveMap == null)
         {
-            MapGenerationManager.Instance.StartNewRun();
+            MapGenerationManager.Instance.InitializeMapFromSession();
         }
     }
 }

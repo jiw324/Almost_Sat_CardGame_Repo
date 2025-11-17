@@ -18,8 +18,8 @@ public class MapGenerationManager : MonoBehaviour
     private NodeMapVisualContext _visualContext;
     private int _currentSeed;
 
-    private readonly HashSet<string> _visitedNodeIds = new HashSet<string>();
-    private readonly HashSet<string> _completedNodeIds = new HashSet<string>();
+    private readonly HashSet<string> _visited = new();
+    private readonly HashSet<string> _completed = new();
     private string _currentNodeId;
 
     public NodeMap ActiveMap => _activeMap;
@@ -38,187 +38,151 @@ public class MapGenerationManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    private SessionNodeMapData SessionMap =>
+        GameSession.Instance?.gameSessionData?.sessionNodeMapData;
+
+    public void InitializeMapFromSession()
+    {
+        var sm = SessionMap;
+
+        if (sm == null || sm.mapSeed == 0)
+        {
+            StartNewRun();
+            return;
+        }
+
+        GenerateFromSeed(sm.mapSeed);
+        ApplySessionState(sm);
+    }
+
     public void StartNewRun()
     {
         int seed = useRandomSeed ? Random.Range(int.MinValue, int.MaxValue) : debugSeed;
+
         GenerateFromSeed(seed);
+
+        SessionMap.mapSeed = seed;
+        SessionMap.currentNodeId = null;
+        SessionMap.visitedNodeIds.Clear();
+        SessionMap.completedNodeIds.Clear();
+
+        SaveSession();
     }
 
     public void GenerateFromSeed(int seed)
     {
         _currentSeed = seed;
-
         Random.InitState(seed);
 
         ClearActiveMap();
 
-        if (nodeMapPrefab == null)
-        {
-            Debug.LogError("MapGenerationManager: NodeMap prefab not assigned.");
-            return;
-        }
+        NodeMap map = Instantiate(nodeMapPrefab);
 
-        NodeMap mapInstance = Instantiate(nodeMapPrefab);
-
-        // Explicitly move into the MapScene
         Scene mapScene = SceneManager.GetSceneByName("Map");
         if (mapScene.IsValid())
         {
-            SceneManager.MoveGameObjectToScene(mapInstance.gameObject, mapScene);
+            SceneManager.MoveGameObjectToScene(map.gameObject, mapScene);
         }
 
-        _activeMap = mapInstance;
+        _activeMap = map;
+        map.Generate();
 
-
-        mapInstance.Generate();
-
-        if (mapInstance.Factory == null)
-        {
-            Debug.LogError("MapGenerationManager: NodeMap.Factory is null. NodeTypeAssigner cannot run.");
-        }
-        else
-        {
-            var assigner = new NodeTypeAssigner(mapInstance.Factory);
-            assigner.Assign(mapInstance);
-        }
+        var assigner = new NodeTypeAssigner(map.Factory);
+        assigner.Assign(map);
 
         var validator = new NodeMapValidator();
-        var validationResult = validator.Validate(mapInstance);
-        if (validationResult.ruleViolated)
-        {
-            Debug.LogWarning($"MapGenerationManager: Map from seed {seed} had validation fixes:\n{validationResult.Message}");
-        }
+        validator.Validate(map);
 
         var spawner = new NodeMapSpawner();
-        _visualContext = spawner.Spawn(mapInstance, mapInstance.transform);
+        _visualContext = spawner.Spawn(map, map.transform);
 
-        var camera = FindFirstObjectByType<MapCameraController>();
-        if (camera != null)
-        {
-            camera.SetBoundsUsingWorldBounds(_visualContext.MapBounds);
-        }
+        var cam = FindFirstObjectByType<MapCameraController>();
+        if (cam != null)
+            cam.SetBoundsUsingWorldBounds(_visualContext.MapBounds);
 
-        _visitedNodeIds.Clear();
-        _completedNodeIds.Clear();
-
-        // IMPORTANT: do NOT auto-select a start node.
-        // The first click on a floor-0 node will choose the start.
+        _visited.Clear();
+        _completed.Clear();
         _currentNodeId = null;
     }
 
     private void ClearActiveMap()
     {
+        if (_activeMap != null)
+            Destroy(_activeMap.gameObject);
+
+        _activeMap = null;
+        _visualContext = null;
+
+        _visited.Clear();
+        _completed.Clear();
+        _currentNodeId = null;
+    }
+
+    private void ApplySessionState(SessionNodeMapData sm)
+    {
         if (_activeMap == null)
             return;
 
-        Destroy(_activeMap.gameObject);
-        _activeMap = null;
-        _visualContext = null;
-        _currentNodeId = null;
-        _visitedNodeIds.Clear();
-        _completedNodeIds.Clear();
-    }
+        Dictionary<string, Node> lookup = _activeMap.AllNodes.ToDictionary(n => n.Id);
 
-    public Node GetNodeById(string id)
-    {
-        if (_activeMap == null || string.IsNullOrEmpty(id))
-            return null;
+        _visited.Clear();
+        foreach (string id in sm.visitedNodeIds)
+        {
+            if (lookup.TryGetValue(id, out var n))
+            {
+                n.MarkVisited();
+                _visited.Add(id);
+            }
+        }
 
-        return _activeMap.AllNodes.FirstOrDefault(n => n.Id == id);
-    }
+        _completed.Clear();
+        foreach (string id in sm.completedNodeIds)
+        {
+            if (lookup.TryGetValue(id, out var n))
+            {
+                n.MarkCompleted();
+                _completed.Add(id);
+            }
+        }
 
-    public bool IsNodeVisited(INode node)
-    {
-        if (node == null) return false;
-        return _visitedNodeIds.Contains(node.Id);
-    }
-
-    public bool IsNodeCompleted(INode node)
-    {
-        if (node == null) return false;
-        return _completedNodeIds.Contains(node.Id);
+        if (!string.IsNullOrEmpty(sm.currentNodeId) && lookup.TryGetValue(sm.currentNodeId, out var curr))
+        {
+            _currentNodeId = curr.Id;
+        }
     }
 
     public void MarkVisited(Node node)
     {
         if (node == null) return;
+
         node.MarkVisited();
-        _visitedNodeIds.Add(node.Id);
+        if (_visited.Add(node.Id))
+            SessionMap.visitedNodeIds.Add(node.Id);
+
+        SaveSession();
     }
 
     public void MarkCompleted(Node node)
     {
         if (node == null) return;
+
         node.MarkCompleted();
-        _completedNodeIds.Add(node.Id);
+        if (_completed.Add(node.Id))
+            SessionMap.completedNodeIds.Add(node.Id);
+
+        SaveSession();
     }
 
-    // Called by MapPositionManager whenever the current node changes
     public void SetCurrentNode(Node node)
     {
-        _currentNodeId = node != null ? node.Id : null;
+        _currentNodeId = node?.Id;
+        SessionMap.currentNodeId = _currentNodeId;
+
+        SaveSession();
     }
 
-    [System.Serializable]
-    public class MapSaveData
+    private void SaveSession()
     {
-        public int seed;
-        public string currentNodeId;
-        public List<string> visitedNodeIds = new List<string>();
-        public List<string> completedNodeIds = new List<string>();
-    }
-
-    public MapSaveData CreateSaveData()
-    {
-        var data = new MapSaveData
-        {
-            seed = _currentSeed,
-            currentNodeId = _currentNodeId
-        };
-
-        if (_activeMap != null)
-        {
-            foreach (Node node in _activeMap.AllNodes)
-            {
-                if (node.IsVisited)
-                    data.visitedNodeIds.Add(node.Id);
-                if (node.IsCompleted)
-                    data.completedNodeIds.Add(node.Id);
-            }
-        }
-
-        return data;
-    }
-
-    public void LoadFromSaveData(MapSaveData data)
-    {
-        if (data == null)
-        {
-            Debug.LogError("MapGenerationManager: LoadFromSaveData called with null data.");
-            return;
-        }
-
-        GenerateFromSeed(data.seed);
-
-        _currentNodeId = data.currentNodeId;
-        _visitedNodeIds.Clear();
-        _completedNodeIds.Clear();
-
-        if (_activeMap == null)
-            return;
-
-        Dictionary<string, Node> idLookup = _activeMap.AllNodes.ToDictionary(n => n.Id, n => n);
-
-        foreach (string id in data.visitedNodeIds)
-        {
-            if (idLookup.TryGetValue(id, out var node))
-                MarkVisited(node);
-        }
-
-        foreach (string id in data.completedNodeIds)
-        {
-            if (idLookup.TryGetValue(id, out var node))
-                MarkCompleted(node);
-        }
+        SessionSaveManager.SaveGameSession(GameSession.Instance.gameSessionData);
     }
 }

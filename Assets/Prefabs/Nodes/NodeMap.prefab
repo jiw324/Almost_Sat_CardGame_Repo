@@ -46,10 +46,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mapWidth: 5
   mapHeight: 15
-  gridXSpacing: 1.5
-  gridYSpacing: 1.5
-  branchChance: 0.75
-  straightBias: 0.1
-  maxXOffset: 0.3
-  maxYOffset: 0.3
+  gridXSpacing: 1.25
+  gridYSpacing: 1.25
+  branchChance: 0.85
+  straightBias: 0.5
+  maxXOffset: 0.15
+  maxYOffset: 0.15
   offsetStdDevFactor: 0.5

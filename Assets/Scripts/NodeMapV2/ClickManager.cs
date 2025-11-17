@@ -58,30 +58,25 @@ public class ClickManager : MonoBehaviour
         if (!Physics.Raycast(ray, out RaycastHit hit))
             return;
 
-        NodeView nodeView = hit.collider.GetComponent<NodeView>();
-        if (nodeView == null || nodeView.NodeData == null)
+        NodeView view = hit.collider.GetComponent<NodeView>();
+        if (view == null) return;
+
+        if (!mapPositionManager.TrySelectOrMoveToNode(view.NodeData))
             return;
 
-        INode clickedNode = nodeView.NodeData;
+        var def = view.Definition;
+        if (def == null) return;
 
-        bool canInteract = mapPositionManager.TrySelectOrMoveToNode(clickedNode);
-        if (!canInteract)
-            return;
+        // Store node type for gameplay scene
+        var sm = GameSession.Instance.gameSessionData.sessionNodeMapData;
+        sm.currentNodeType = def.nodeType;
+        sm.currentNodeJson = "";
+        sm.currentNodeData = null;
 
-        NodeDefinition def = nodeView.Definition;
-        if (def == null)
-            return;
+        SessionSaveManager.SaveGameSession(GameSession.Instance.gameSessionData);
 
         string sceneName = def.nodeSceneName;
-
-        if (def.nodeType == NodeType.Combat ||
-            def.nodeType == NodeType.Rest ||
-            def.nodeType == NodeType.Shop)
-        {
-            sceneSwitch.SceneChanger(sceneName);
-        }
-
-        Debug.Log($"Navigating to {sceneName} Scene");
+        sceneSwitch.SceneChanger(sceneName);
     }
 
     private void StartHover(GameObject obj)
