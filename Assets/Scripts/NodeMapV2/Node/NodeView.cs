@@ -11,6 +11,8 @@ public class NodeView : MonoBehaviour
     public void Initialize(Node node)
     {
         NodeData = node;
+        gameObject.name = $"NodeView_{node.Id}_{node.Definition.nodeType}";
+
         glow = GetComponentInChildren<NodeGlowView>(true);
 
         UpdateGlow();
@@ -20,20 +22,23 @@ public class NodeView : MonoBehaviour
     {
         if (glow == null) return;
 
-        var mgr = MapGenerationManager.Instance;
+        var state = MapStateManager.Instance;
 
-        if (mgr.IsNodeCompleted(NodeData))
+        // Priority 1 — Completed
+        if (state.IsNodeCompleted(NodeData))
         {
             glow.SetCompleted();
             return;
         }
 
-        if (mgr.IsNodeVisited(NodeData))
+        // Priority 2 — Visited (current node)
+        if (state.IsNodeVisited(NodeData))
         {
             glow.SetVisited();
             return;
         }
 
+        // Default
         glow.ClearGlow();
     }
 
@@ -47,19 +52,19 @@ public class NodeView : MonoBehaviour
     {
         if (glow == null) return;
 
-        var mgr = MapGenerationManager.Instance;
-        var posMgr = FindFirstObjectByType<MapPositionManager>();
+        var state = MapStateManager.Instance;
 
-        bool isAvailable = posMgr.GetAvailableNodes()
-            .Any(n => n.Id == NodeData.Id);
+        // Determine if this node is “available” after hover ends
+        bool isAvailable =
+            state.GetAvailableNodes().Any(n => n.Id == NodeData.Id);
 
         if (isAvailable)
         {
-            glow.SetAvailable(false);
+            glow.SetAvailable(false); // return to dim white available glow
             return;
         }
 
+        // Otherwise revert to state-dependent glow
         UpdateGlow();
     }
-
 }

@@ -12,6 +12,7 @@ public class MapSceneInitializer : MonoBehaviour
 
     private void Start()
     {
-        MapGenerationManager.Instance.UpdateAllNodeGlows();
+        if (MapStateManager.Instance != null)
+            MapStateManager.Instance.RefreshAllNodeGlows();
     }
 }
