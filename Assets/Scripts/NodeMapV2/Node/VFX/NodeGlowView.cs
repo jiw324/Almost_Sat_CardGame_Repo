@@ -4,7 +4,6 @@ public class NodeGlowView : MonoBehaviour
 {
     private MeshRenderer ringRenderer;
 
-    [Header("Materials")]
     public Material defaultMat;
     public Material visitedMat;
     public Material completedMat;
@@ -18,21 +17,26 @@ public class NodeGlowView : MonoBehaviour
 
     public void ClearGlow()
     {
-        ringRenderer.material = defaultMat;
+        ringRenderer.sharedMaterial = defaultMat;
     }
 
     public void SetVisited()
     {
-        ringRenderer.material = visitedMat;
+        ringRenderer.sharedMaterial = visitedMat;
     }
 
     public void SetCompleted()
     {
-        ringRenderer.material = completedMat;
+        ringRenderer.sharedMaterial = completedMat;
     }
 
-    public void SetAvailable(bool hover)
+    public void SetAvailable()
     {
-        ringRenderer.material = hover ? hoverMat : availableMat;
+        ringRenderer.sharedMaterial = availableMat;
+    }
+
+    public void SetHover()
+    {
+        ringRenderer.sharedMaterial = hoverMat;
     }
 }

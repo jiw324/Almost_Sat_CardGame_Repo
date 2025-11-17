@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -42,8 +43,14 @@ public class ClickManager : MonoBehaviour
         NodeView nv = obj.GetComponentInParent<NodeView>();
         if (nv == null) return;
 
-        if (State.IsNodeInteractable(nv.NodeData))
-            nv.ShowAvailable(true);
+        if (State == null) return;
+
+        bool isAvailable = State
+            .GetAvailableNodes()
+            .Any(n => n.Id == nv.NodeData.Id);
+
+        if (isAvailable)
+            nv.ShowHover();
     }
 
     private void EndHover(GameObject obj)
@@ -76,36 +83,16 @@ public class ClickManager : MonoBehaviour
 
         if (State.TrySelectOrMoveToNode(nv.NodeData))
         {
-            // ---- NEW: FIND THE SCENE MANAGER IN THIS SCENE ----
             var sceneManagerObj = GameObject.Find("SceneManager");
-
-            if (sceneManagerObj == null)
-            {
-                Debug.LogError("ClickManager: Could not find a SceneManager object in this scene.");
-                return;
-            }
+            if (sceneManagerObj == null) return;
 
             var sceneSwitch = sceneManagerObj.GetComponent<SceneSwitch>();
+            if (sceneSwitch == null) return;
 
-            if (sceneSwitch == null)
-            {
-                Debug.LogError("ClickManager: SceneManager object does not contain a SceneSwitch component.");
-                return;
-            }
-
-            // ---- DETERMINE WHICH SCENE TO LOAD ----
-            // You can adjust this if NodeDefinitions carry their own scene name
             string route = nv.NodeData.Definition.nodeSceneName;
+            if (string.IsNullOrEmpty(route)) return;
 
-            if (string.IsNullOrEmpty(route))
-            {
-                Debug.LogError($"ClickManager: Node {nv.NodeData.Id} has no assigned sceneName in its NodeDefinition.");
-                return;
-            }
-
-            // ---- CALL THE SCENE CHANGER ----
             sceneSwitch.SceneChanger(route);
         }
     }
-
 }

@@ -27,11 +27,6 @@ public class MapStateManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
-
-    // ============================================================
-    // INITIALIZATION
-    // ============================================================
-
     public void Initialize(NodeMap map)
     {
         _map = map;
@@ -69,10 +64,6 @@ public class MapStateManager : MonoBehaviour
         SessionSaveManager.SaveGameSession(GameSession.Instance.gameSessionData);
     }
 
-    // ============================================================
-    // STATE GETTERS
-    // ============================================================
-
     public Node GetCurrentNode()
     {
         if (string.IsNullOrEmpty(_currentNodeId)) return null;
@@ -90,10 +81,6 @@ public class MapStateManager : MonoBehaviour
         if (node == null) return false;
         return _completed.Contains(node.Id);
     }
-
-    // ============================================================
-    // STATE SETTERS
-    // ============================================================
 
     public void SetCurrentNode(Node node)
     {
@@ -122,10 +109,6 @@ public class MapStateManager : MonoBehaviour
         SaveSession();
     }
 
-    // ============================================================
-    // GAMEPLAY RULES
-    // ============================================================
-
     public bool IsNodeInteractable(INode target)
     {
         if (_map == null || target == null)
@@ -136,7 +119,6 @@ public class MapStateManager : MonoBehaviour
 
         Node current = GetCurrentNode();
 
-        // 0 — No selection yet: floor 0 only
         if (current == null)
             return targetNode.GridPos.y == 0;
 
@@ -145,11 +127,9 @@ public class MapStateManager : MonoBehaviour
 
         bool currentCompleted = IsNodeCompleted(current);
 
-        // 1 — Current not completed ? only current node clickable
         if (!currentCompleted)
             return targetFloor == currentFloor && targetNode.Id == current.Id;
 
-        // 2 — Current completed ? only next-floor children
         if (targetFloor != currentFloor + 1)
             return false;
 
@@ -176,31 +156,23 @@ public class MapStateManager : MonoBehaviour
         Node t = target as Node;
         if (t == null) return false;
 
-        // Must respect interactability
         if (!IsNodeInteractable(t))
             return false;
 
         Node current = GetCurrentNode();
 
-        // Clicking the current node again is allowed but does nothing
         if (current != null && t.Id == current.Id)
             return true;
 
-        // Finish previous node
         if (current != null && !IsNodeCompleted(current))
             MarkCompleted(current);
 
-        // New node becomes visited
         SetCurrentNode(t);
         MarkVisited(t);
 
         SaveSession();
         return true;
     }
-
-    // ============================================================
-    // VISUAL SYNC
-    // ============================================================
 
     public void RefreshAllNodeGlows()
     {
@@ -215,7 +187,7 @@ public class MapStateManager : MonoBehaviour
         foreach (var view in allViews)
         {
             if (availableIds.Contains(view.NodeData.Id))
-                view.ShowAvailable(false);
+                view.ShowAvailable();
         }
     }
 }
