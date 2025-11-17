@@ -8,21 +8,12 @@ public class NodeMapSpawner
 
     public NodeMapSpawner(float pathThickness = 0.05f)
     {
-        // Load the existing path prefab once from Resources
         _pathPrefab = Resources.Load<GameObject>("Prefabs/NodeMap/NodePath");
-
-        if (_pathPrefab == null)
-            Debug.LogError("NodeMapSpawner: Could not find NodePath prefab in Resources/Prefabs/NodeMap/.");
-
         _pathThickness = pathThickness;
     }
 
     public NodeMapVisualContext Spawn(NodeMap map, Transform parent)
     {
-        if (map == null || map.Grid == null)
-            throw new System.Exception("NodeMapSpawner: map or grid not initialized.");
-
-        // Create containers
         var nodeParent = new GameObject("Nodes").transform;
         var pathParent = new GameObject("Paths").transform;
         nodeParent.SetParent(parent);
@@ -39,16 +30,14 @@ public class NodeMapSpawner
             Vector3 worldPos = map.Grid.GridToWorld(node.GridPos.x, node.GridPos.y);
             UpdateBounds(worldPos, ref min, ref max);
 
-            if (node.Definition?.prefab == null)
-                continue;
+            if (node.Definition?.prefab != null)
+            {
+                GameObject nodeObj = Object.Instantiate(node.Definition.prefab, worldPos, Quaternion.identity, nodeParent);
+                NodeView view = nodeObj.GetComponent<NodeView>() ?? nodeObj.AddComponent<NodeView>();
+                view.Initialize(node);
+                spawnedNodes.Add(view);
+            }
 
-            // Instantiate node prefab
-            GameObject nodeObj = Object.Instantiate(node.Definition.prefab, worldPos, Quaternion.identity, nodeParent);
-            NodeView view = nodeObj.GetComponent<NodeView>() ?? nodeObj.AddComponent<NodeView>();
-            view.Initialize(node);
-            spawnedNodes.Add(view);
-
-            // Create paths for all outgoing connections
             foreach (Node next in node.NextNodes)
             {
                 Vector3 nextPos = map.Grid.GridToWorld(next.GridPos.x, next.GridPos.y);
@@ -58,6 +47,22 @@ public class NodeMapSpawner
                 if (path != null)
                     spawnedPaths.Add(path);
             }
+        }
+
+        if (map.BossNode != null)
+        {
+            Vector3 bossPos = map.Grid.GridToWorld(map.BossNode.GridPos.x, map.BossNode.GridPos.y);
+            UpdateBounds(bossPos, ref min, ref max);
+
+            var combatDef = map.Factory.GetDefinition(NodeType.Combat);
+            GameObject prefab = combatDef.prefab;
+
+            GameObject bossObj = Object.Instantiate(prefab, bossPos, Quaternion.identity, nodeParent);
+            bossObj.transform.localScale *= 2.5f;
+
+            NodeView bossView = bossObj.GetComponent<NodeView>() ?? bossObj.AddComponent<NodeView>();
+            bossView.Initialize(map.BossNode);
+            spawnedNodes.Add(bossView);
         }
 
         Bounds bounds = new Bounds();
@@ -75,27 +80,18 @@ public class NodeMapSpawner
     private GameObject CreatePath(Vector3 start, Vector3 end, Transform parent)
     {
         if (_pathPrefab == null)
-        {
-            Debug.LogWarning("NodeMapSpawner: No path prefab assigned or found in Resources.");
             return null;
-        }
 
         Vector3 direction = end - start;
         float distance = direction.magnitude;
 
         GameObject pathObj = Object.Instantiate(_pathPrefab, parent);
-        pathObj.name = $"Path_{start}_{end}";
-
-        // Position at midpoint
         pathObj.transform.position = start + direction * 0.5f;
-
-        // Rotate to face target
         pathObj.transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
 
-        // Stretch to match distance between nodes
-        Vector3 localScale = pathObj.transform.localScale;
-        localScale.z = distance;
-        pathObj.transform.localScale = localScale;
+        Vector3 scale = pathObj.transform.localScale;
+        scale.z = distance;
+        pathObj.transform.localScale = scale;
 
         return pathObj;
     }

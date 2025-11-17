@@ -13,39 +13,32 @@ public class NodeTypeAssigner
 
     public void Assign(NodeMap map)
     {
-        Debug.Log($"Assigning types to {map.AllNodes.Count()} nodes...");
-
         int height = map.MapHeight;
         int top = height - 1;
         int mid = Mathf.RoundToInt((height - 1) / 2f);
 
-        // ----- ANCHOR FLOORS -----
-        // Top floor: Rest
         if (map.Floors.ContainsKey(top))
         {
             foreach (var node in map.Floors[top])
                 node.Reassign(_factory.GetDefinition(NodeType.Rest));
         }
 
-        // Middle floor: Loot
         if (map.Floors.ContainsKey(mid))
         {
             foreach (var node in map.Floors[mid])
                 node.Reassign(_factory.GetDefinition(NodeType.Loot));
         }
 
-        // First floor: Combat
         if (map.Floors.ContainsKey(0))
         {
             foreach (var node in map.Floors[0])
                 node.Reassign(_factory.GetDefinition(NodeType.Combat));
         }
 
-        // ----- ALL OTHER FLOORS -----
         foreach (var floorPair in map.Floors)
         {
             int y = floorPair.Key;
-            if (y == 0 || y == mid || y == top) continue; // Skip anchors
+            if (y == 0 || y == mid || y == top) continue;
 
             List<Node> floorNodes = floorPair.Value;
             foreach (Node node in floorNodes)
@@ -58,7 +51,9 @@ public class NodeTypeAssigner
             }
         }
 
-        Debug.Log($"Type assignment complete: first={NodeType.Combat}, mid={NodeType.Loot}, top={NodeType.Rest}");
+        // boss node always combat
+        if (map.BossNode != null)
+            map.BossNode.Reassign(_factory.GetDefinition(NodeType.Combat));
     }
 
     private NodeType ChooseNodeType(int y, int height)

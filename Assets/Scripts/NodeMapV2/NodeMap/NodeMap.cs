@@ -11,19 +11,19 @@ public class NodeMap : MonoBehaviour
     [SerializeField] private float gridYSpacing = .75f;
 
     [Header("Connectivity Settings")]
-    [Tooltip("Probability (0–1) that a node will branch into multiple next-floor nodes.")]
     [Range(0f, 1f)][SerializeField] private float branchChance = 0.9f;
-    [Tooltip("Probability that a node connects straight up instead of diagonally.")]
     [Range(0f, 1f)][SerializeField] private float straightBias = 0.2f;
 
     [Header("Offset Settings")]
     [SerializeField] private float maxXOffset = 0.1f;
     [SerializeField] private float maxYOffset = 0.2f;
-    [Tooltip("Standard deviation as a fraction of max offset (Gaussian scatter).")]
     [Range(0.01f, 1f)][SerializeField] private float offsetStdDevFactor = 0.5f;
 
     public int MapWidth => mapWidth;
     public int MapHeight => mapHeight;
+
+    public Node BossNode { get; private set; }
+
     public NodeGrid Grid { get; private set; }
     public NodeFactory Factory { get; private set; }
     public Dictionary<int, List<Node>> Floors { get; private set; } = new Dictionary<int, List<Node>>();
@@ -40,10 +40,11 @@ public class NodeMap : MonoBehaviour
 
         InitializeGrid();
         GenerateStructure();
-        ApplyGaussianOffsets(); // visual-only offsets, after structure
+        CreateBossNode();
+        ApplyGaussianOffsets();
 
         _generated = true;
-        Debug.Log($"Generated NodeMap structure: {mapWidth}x{mapHeight} with {AllNodes.Count()} nodes.");
+        Debug.Log($"Generated NodeMap structure: {mapWidth}x{mapHeight} with {AllNodes.Count()} nodes (+ BossNode).");
     }
 
     private void InitializeGrid()
@@ -58,22 +59,31 @@ public class NodeMap : MonoBehaviour
 
     private void GenerateStructure()
     {
-        // 1: Create starting floor
         int numStartNodes = Mathf.Max(2, Mathf.RoundToInt(mapWidth * 0.6f));
         var startCols = GetRandomUniqueColumns(numStartNodes);
         foreach (int x in startCols)
             Floors[0].Add(CreateNode(x, 0));
 
-        // 2: Expand map upwards, one floor at a time
         for (int y = 0; y < mapHeight - 1; y++)
             ConnectFloors(y, y + 1);
 
-        // 3: Ensure at least one node on final floor
         if (Floors[mapHeight - 1].Count == 0)
         {
             int x = mapWidth / 2;
             Floors[mapHeight - 1].Add(CreateNode(x, mapHeight - 1));
         }
+    }
+
+    private void CreateBossNode()
+    {
+        int restFloor = mapHeight - 1;
+        int bossY = mapHeight; // virtual floor
+
+        int bossX = mapWidth / 2;
+        BossNode = new Node(null, new Vector2Int(bossX, bossY));
+
+        foreach (Node n in Floors[restFloor])
+            n.ConnectTo(BossNode);
     }
 
     private void ConnectFloors(int fromY, int toY)
@@ -86,11 +96,9 @@ public class NodeMap : MonoBehaviour
         {
             List<int> candidateXs = new List<int>();
 
-            // 1: Add straight connections based on straightBias
             if (Random.value < straightBias)
                 candidateXs.Add(parent.GridPos.x);
 
-            // 2: Add diagonal paths based on branchChance
             if (Random.value < branchChance)
             {
                 foreach (int dx in new int[] { -1, 1 })
@@ -101,13 +109,11 @@ public class NodeMap : MonoBehaviour
                 }
             }
 
-            // 3: Always have at least one candidate to fallback on if all checks fail
             if (candidateXs.Count == 0)
                 candidateXs.Add(parent.GridPos.x);
 
             bool connected = false;
 
-            // 4: Try connecting to each candidate, reject cross paths
             foreach (int nx in candidateXs.Distinct())
             {
                 if (!Grid.IsValidCoord(nx, toY))
@@ -126,7 +132,6 @@ public class NodeMap : MonoBehaviour
                 connected = true;
             }
 
-            // 5: If every candidate was rejected due to crossing, default to safe straight path
             if (!connected)
             {
                 int nx = parent.GridPos.x;
@@ -142,7 +147,6 @@ public class NodeMap : MonoBehaviour
             }
         }
 
-        // 6: Guarantee no empty floors
         if (nextFloor.Count == 0)
         {
             Node parent = currentFloor[Random.Range(0, currentFloor.Count)];
@@ -153,7 +157,6 @@ public class NodeMap : MonoBehaviour
             nextFloor.Add(forced);
         }
 
-        // 7: Ensure every next floor node has at least one incoming path from previous floor
         foreach (Node child in nextFloor)
         {
             bool hasIncoming = currentFloor.Any(p => p.NextNodes.Contains(child));
@@ -172,9 +175,6 @@ public class NodeMap : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Prevents two edges (a -> b) and (c -> d) on the same level from crossing visually.
-    /// </summary>
     private bool WouldCross(int startX, int endX, int y, HashSet<(int, int)> existing)
     {
         if (startX == endX)
@@ -203,8 +203,7 @@ public class NodeMap : MonoBehaviour
 
     private Node CreateNode(int x, int y)
     {
-        Node node = new Node(null, new Vector2Int(x, y));
-        return node;
+        return new Node(null, new Vector2Int(x, y));
     }
 
     private List<int> GetRandomUniqueColumns(int count)
@@ -238,6 +237,9 @@ public class NodeMap : MonoBehaviour
 
             Grid.SetOffset(node.GridPos.x, node.GridPos.y, offset);
         }
+
+        // boss node also gets a clean offset
+        Grid.SetOffset(BossNode.GridPos.x, BossNode.GridPos.y, Vector2.zero);
     }
 
     private float SampleClampedGaussian(float mean, float stdDev, float min, float max)
@@ -245,7 +247,6 @@ public class NodeMap : MonoBehaviour
         if (stdDev <= 0f)
             return Mathf.Clamp(mean, min, max);
 
-        // Try a few times to get a value within the desired range
         for (int i = 0; i < 6; i++)
         {
             float u1 = 1f - Random.value;
@@ -257,7 +258,6 @@ public class NodeMap : MonoBehaviour
                 return val;
         }
 
-        // Fallback to clamped mean if we somehow keep rolling out-of-range
         return Mathf.Clamp(mean, min, max);
     }
 }

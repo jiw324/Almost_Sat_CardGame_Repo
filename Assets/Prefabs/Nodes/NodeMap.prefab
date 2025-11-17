@@ -47,7 +47,7 @@ MonoBehaviour:
   mapWidth: 7
   mapHeight: 15
   gridXSpacing: 1.25
-  gridYSpacing: 1.25
+  gridYSpacing: 1.5
   branchChance: 0.8
   straightBias: 0.6
   maxXOffset: 0.15
