@@ -16,11 +16,17 @@ public class NodeMap : MonoBehaviour
     [Tooltip("Probability that a node connects straight up instead of diagonally.")]
     [Range(0f, 1f)][SerializeField] private float straightBias = 0.1f;
 
+    [Header("Offset Settings")]
+    [SerializeField] private float maxXOffset = 0.3f;
+    [SerializeField] private float maxYOffset = 0.3f;
+    [Tooltip("Standard deviation as a fraction of max offset (Gaussian scatter).")]
+    [Range(0.01f, 1f)][SerializeField] private float offsetStdDevFactor = 0.5f;
+
     public int MapWidth => mapWidth;
     public int MapHeight => mapHeight;
     public NodeGrid Grid { get; private set; }
     public NodeFactory Factory { get; private set; }
-    public Dictionary<int, List<Node>> Floors { get; private set; } = new();
+    public Dictionary<int, List<Node>> Floors { get; private set; } = new Dictionary<int, List<Node>>();
     public IEnumerable<Node> AllNodes => Floors.Values.SelectMany(list => list);
     private bool _generated = false;
 
@@ -34,6 +40,7 @@ public class NodeMap : MonoBehaviour
 
         InitializeGrid();
         GenerateStructure();
+        ApplyGaussianOffsets(); // visual-only offsets, after structure
 
         _generated = true;
         Debug.Log($"Generated NodeMap structure: {mapWidth}x{mapHeight} with {AllNodes.Count()} nodes.");
@@ -73,11 +80,11 @@ public class NodeMap : MonoBehaviour
     {
         var currentFloor = Floors[fromY];
         var nextFloor = Floors[toY];
-        HashSet<(int, int)> usedConnections = new();
+        HashSet<(int, int)> usedConnections = new HashSet<(int, int)>();
 
         foreach (Node parent in currentFloor)
         {
-            List<int> candidateXs = new();
+            List<int> candidateXs = new List<int>();
 
             // 1: Add straight connections based on straightBias
             if (Random.value < straightBias)
@@ -173,8 +180,11 @@ public class NodeMap : MonoBehaviour
         if (startX == endX)
             return false;
 
-        foreach (var (a, b) in existing)
+        foreach (var pair in existing)
         {
+            int a = pair.Item1;
+            int b = pair.Item2;
+
             if ((a < startX && b > endX) || (a > startX && b < endX))
                 return true;
         }
@@ -200,7 +210,7 @@ public class NodeMap : MonoBehaviour
     private List<int> GetRandomUniqueColumns(int count)
     {
         List<int> allCols = Enumerable.Range(0, mapWidth).ToList();
-        List<int> chosen = new();
+        List<int> chosen = new List<int>();
 
         while (chosen.Count < count && allCols.Count > 0)
         {
@@ -209,5 +219,45 @@ public class NodeMap : MonoBehaviour
             allCols.RemoveAt(index);
         }
         return chosen;
+    }
+
+    private void ApplyGaussianOffsets()
+    {
+        if (Grid == null)
+            return;
+
+        float sigmaX = maxXOffset * offsetStdDevFactor;
+        float sigmaY = maxYOffset * offsetStdDevFactor;
+
+        foreach (Node node in AllNodes)
+        {
+            Vector2 offset = new Vector2(
+                SampleClampedGaussian(0f, sigmaX, -maxXOffset, maxXOffset),
+                SampleClampedGaussian(0f, sigmaY, -maxYOffset, maxYOffset)
+            );
+
+            Grid.SetOffset(node.GridPos.x, node.GridPos.y, offset);
+        }
+    }
+
+    private float SampleClampedGaussian(float mean, float stdDev, float min, float max)
+    {
+        if (stdDev <= 0f)
+            return Mathf.Clamp(mean, min, max);
+
+        // Try a few times to get a value within the desired range
+        for (int i = 0; i < 6; i++)
+        {
+            float u1 = 1f - Random.value;
+            float u2 = 1f - Random.value;
+            float randStdNormal = Mathf.Sqrt(-2f * Mathf.Log(u1)) * Mathf.Sin(2f * Mathf.PI * u2);
+            float val = mean + stdDev * randStdNormal;
+
+            if (val >= min && val <= max)
+                return val;
+        }
+
+        // Fallback to clamped mean if we somehow keep rolling out-of-range
+        return Mathf.Clamp(mean, min, max);
     }
 }

@@ -141,8 +141,7 @@ public class MapGenerationTester : MonoBehaviour
                         var camera = FindFirstObjectByType<MapCameraController>();
                         if (camera != null)
                         {
-                            camera.SetBounds(context.MapBounds.center, map.MapWidth, map.MapHeight,
-                                             map.Grid.XSpacing, map.Grid.YSpacing);
+                            camera.SetBoundsUsingWorldBounds(context.MapBounds);
                         }
                     }
 
@@ -174,8 +173,7 @@ public class MapGenerationTester : MonoBehaviour
             var camera = FindFirstObjectByType<MapCameraController>();
             if (camera != null)
             {
-                camera.SetBounds(context.MapBounds.center, fallbackMap.MapWidth, fallbackMap.MapHeight,
-                                 fallbackMap.Grid.XSpacing, fallbackMap.Grid.YSpacing);
+                camera.SetBoundsUsingWorldBounds(context.MapBounds);
             }
         }
 

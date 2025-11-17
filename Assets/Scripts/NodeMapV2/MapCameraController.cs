@@ -1,131 +1,74 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(Camera))]
 public class MapCameraController : MonoBehaviour
 {
-    [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 10f;
-    [SerializeField] private float smoothTime = 0.1f;
 
-    private InputSystem_Actions _input;
-    private Vector2 _moveInput;
-    private Vector3 _velocity;
+    private InputSystem_Actions inputActions;
+    private Vector2 moveInput;
 
-    private bool _boundsSet = false;
-    private Vector3 _mapCenter;
-    private Vector2 _xzMin;
-    private Vector2 _xzMax;
+    // World-space bounding box for the map
+    private float minX, maxX, minZ, maxZ;
+    private bool boundsSet = false;
 
-    private Camera _cam;
+    // Extra padding around map bounds
+    [SerializeField] private float horizontalPadding = 1f;
+    [SerializeField] private float verticalPadding = 1f;
 
     private void Awake()
     {
-        _cam = GetComponent<Camera>();
-
-        _input = new InputSystem_Actions();
-        _input.NodeMap.MoveCamera.performed += ctx => _moveInput = ctx.ReadValue<Vector2>();
-        _input.NodeMap.MoveCamera.canceled += ctx => _moveInput = Vector2.zero;
+        inputActions = new InputSystem_Actions();
+        inputActions.NodeMap.MoveCamera.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
+        inputActions.NodeMap.MoveCamera.canceled += ctx => moveInput = Vector2.zero;
     }
 
-    private void OnEnable()
-    {
-        _input.Enable();
-    }
-
-    private void OnDisable()
-    {
-        _input.Disable();
-    }
-
-    private void Start()
-    {
-        // Optionally recenter at startup
-        if (_boundsSet)
-            CenterCamera();
-    }
+    private void OnEnable() => inputActions.Enable();
+    private void OnDisable() => inputActions.Disable();
 
     private void Update()
     {
-        HandleMovement();
-        ApplyBounds();
-    }
+        // Movement
+        Vector3 moveDir = new Vector3(moveInput.x, 0f, moveInput.y).normalized;
+        if (moveDir.sqrMagnitude > 0.01f)
+            transform.position += moveDir * moveSpeed * Time.deltaTime;
 
-    private void HandleMovement()
-    {
-        if (_moveInput.sqrMagnitude < 0.01f)
+        if (!boundsSet)
             return;
 
-        // Convert input to world-space movement
-        Vector3 moveDir = new Vector3(_moveInput.x, 0f, _moveInput.y).normalized;
-        Vector3 target = transform.position + moveDir * moveSpeed * Time.deltaTime;
-
-        // Smooth damp movement
-        transform.position = Vector3.SmoothDamp(transform.position, target, ref _velocity, smoothTime);
-    }
-
-    private void ApplyBounds()
-    {
-        if (!_boundsSet)
-            return;
-
+        // Bounds clamping
         Vector3 pos = transform.position;
-        pos.x = Mathf.Clamp(pos.x, _xzMin.x, _xzMax.x);
-        pos.z = Mathf.Clamp(pos.z, _xzMin.y, _xzMax.y);
+        pos.x = Mathf.Clamp(pos.x, minX, maxX);
+        pos.z = Mathf.Clamp(pos.z, minZ, maxZ);
         transform.position = pos;
     }
-
-    /// <summary>
-    /// Called by the MapGenerationTester or MapGenerationManager after NodeMapSpawner completes.
-    /// </summary>
-    public void SetBounds(Vector3 mapCenter, int mapWidth, int mapHeight, float gridXSpacing, float gridYSpacing)
+    public void SetBoundsUsingWorldBounds(Bounds bounds)
     {
-        _mapCenter = mapCenter;
+        // Expand map bounds slightly for movement comfort
+        minX = bounds.min.x - horizontalPadding;
+        maxX = bounds.max.x + horizontalPadding;
 
-        float mapWidthWorld = mapWidth * gridXSpacing;
-        float mapHeightWorld = mapHeight * gridYSpacing;
+        // Clamp Z bounds safely so the map is never scrolled out of view
+        float startFloorZ = bounds.min.z - verticalPadding;
+        float topFloorZ = bounds.max.z;
 
-        // Margins define how far you can scroll beyond map edges
-        float marginX = gridXSpacing * 1.5f;
-        float marginZ = gridYSpacing * 1.5f;
+        // Prevent scrolling ABOVE the top floor by more than half a unit
+        maxZ = topFloorZ - 0.5f;
 
-        // Define world-space clamp bounds
-        _xzMin = new Vector2(
-            mapCenter.x - (mapWidthWorld / 2f) - marginX,
-            mapCenter.z - marginZ
+        // Prevent scrolling BELOW the bottom floor by more than half a unit
+        minZ = startFloorZ - 0.5f;
+
+        boundsSet = true;
+
+        // Initial camera start:
+        // - X centered
+        // - Slightly below the bottom floor
+        Vector3 startPos = new Vector3(
+            (bounds.min.x + bounds.max.x) * 0.5f,
+            transform.position.y,
+            startFloorZ - 0.5f
         );
-        _xzMax = new Vector2(
-            mapCenter.x + (mapWidthWorld / 2f) + marginX,
-            mapCenter.z + mapHeightWorld + marginZ
-        );
 
-        _boundsSet = true;
-        CenterCamera();
-    }
-
-    /// <summary>
-    /// Repositions camera horizontally at map center (used after map spawn).
-    /// </summary>
-    public void CenterCamera()
-    {
-        if (!_boundsSet)
-            return;
-
-        Vector3 pos = transform.position;
-        pos.x = _mapCenter.x;
-        pos.z = _xzMin.y + (_xzMax.y - _xzMin.y) * 0.25f; // Slightly toward bottom of map
-        transform.position = pos;
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        if (!_boundsSet)
-            return;
-
-        Gizmos.color = Color.yellow;
-        Vector3 min = new Vector3(_xzMin.x, transform.position.y, _xzMin.y);
-        Vector3 max = new Vector3(_xzMax.x, transform.position.y, _xzMax.y);
-        Vector3 size = max - min;
-        Gizmos.DrawWireCube(_mapCenter + new Vector3(0, 0, size.z / 2f), new Vector3(size.x, 0, size.z));
+        transform.position = startPos;
     }
 }

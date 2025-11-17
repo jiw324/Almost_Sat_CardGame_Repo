@@ -11,6 +11,9 @@ public class NodeGrid
 
     public Vector3 Origin { get; } // world-space anchor point for (0,0)
 
+    // Per-cell visual offsets (x,z plane)
+    private readonly Dictionary<Vector2Int, Vector2> _offsets = new Dictionary<Vector2Int, Vector2>();
+
     public NodeGrid(int width, int height, float xSpacing = 1.5f, float ySpacing = 1.5f, Vector3? origin = null)
     {
         Width = width;
@@ -21,17 +24,42 @@ public class NodeGrid
     }
 
     /// <summary>
-    /// Converts grid coordinates (x, y) into a world-space position.
+    /// Assigns a visual offset for a specific grid coordinate (x,z in world).
+    /// </summary>
+    public void SetOffset(int x, int y, Vector2 offset)
+    {
+        var key = new Vector2Int(x, y);
+        _offsets[key] = offset;
+    }
+
+    /// <summary>
+    /// Gets the visual offset for a specific grid coordinate (x,z in world).
+    /// Returns Vector2.zero if not set.
+    /// </summary>
+    public Vector2 GetOffset(int x, int y)
+    {
+        var key = new Vector2Int(x, y);
+        if (_offsets.TryGetValue(key, out var offset))
+            return offset;
+
+        return Vector2.zero;
+    }
+
+    /// <summary>
+    /// Converts grid coordinates (x, y) into a world-space position, including visual offset.
     /// </summary>
     public Vector3 GridToWorld(int x, int y)
     {
-        float worldX = Origin.x + (x * XSpacing);
-        float worldZ = Origin.z + (y * YSpacing);
+        Vector2 offset = GetOffset(x, y);
+
+        float worldX = Origin.x + (x * XSpacing) + offset.x;
+        float worldZ = Origin.z + (y * YSpacing) + offset.y;
         return new Vector3(worldX, Origin.y, worldZ);
     }
 
     /// <summary>
     /// Converts a world-space position back to nearest grid coordinates.
+    /// Note: ignores offsets and assumes ideal grid spacing.
     /// </summary>
     public Vector2Int WorldToGrid(Vector3 worldPos)
     {
@@ -73,7 +101,7 @@ public class NodeGrid
     /// </summary>
     public List<Vector2Int> GetForwardNeighbors(Vector2Int gridPos)
     {
-        List<Vector2Int> result = new();
+        List<Vector2Int> result = new List<Vector2Int>();
         foreach (var offset in ForwardNeighborOffsets)
         {
             Vector2Int neighbor = gridPos + offset;
@@ -88,7 +116,7 @@ public class NodeGrid
     /// </summary>
     public List<Vector2Int> GetBackwardNeighbors(Vector2Int gridPos)
     {
-        List<Vector2Int> result = new();
+        List<Vector2Int> result = new List<Vector2Int>();
         foreach (var offset in BackwardNeighborOffsets)
         {
             Vector2Int neighbor = gridPos + offset;
