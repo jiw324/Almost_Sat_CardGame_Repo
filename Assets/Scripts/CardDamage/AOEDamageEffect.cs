@@ -16,12 +16,24 @@ public class AOEDamageEffect : CardEffect
             return;
         }
 
+        // 1) Enemy hero/entities
         foreach (var enemy in bm.enemies)
         {
-            if (enemy == null) continue;
-            enemy.TakeDamage(dmg);
+            if (enemy != null) enemy.TakeDamage(dmg);
         }
 
-        Debug.Log($"AOE dealt {dmg} damage to all enemies.");
+        // 2) Enemy minions only (don¡¯t hurt player minions)
+        var allMinions = Object.FindObjectsOfType<MinionEntity>();
+        foreach (var me in allMinions)
+        {
+            var mb = me.GetComponent<MinionBehaviour>();
+            if (mb == null || mb.instance == null) continue;
+
+            // treat anything not owned by bm.player as "enemy minion"
+            if (mb.instance.Owner != bm.player)
+                me.TakeDamage(dmg);
+        }
+
+        Debug.Log($"AOE dealt {dmg} damage to enemy side (hero + minions).");
     }
 }
