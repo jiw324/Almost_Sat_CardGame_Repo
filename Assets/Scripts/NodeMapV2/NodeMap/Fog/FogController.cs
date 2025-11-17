@@ -36,18 +36,15 @@ public class FogController : MonoBehaviour
         Node current = _state.GetCurrentNode();
         int currentFloor = current != null ? current.GridPos.y : 0;
 
-        // Fog begins ONE FLOOR EARLIER now
         int fogStartFloor = currentFloor + revealRadius;
         fogStartFloor = Mathf.Clamp(fogStartFloor, 0, _map.MapHeight - 1);
 
         Vector3 fogStartWorld = _map.Grid.GridToWorld(0, fogStartFloor);
-        float fogStartZ = fogStartWorld.z;
+        float fogStartZ = fogStartWorld.z + 0.5f;
 
         float topZ = _bounds.max.z;
 
         float fogLength = Mathf.Max(1f, (topZ - fogStartZ) + verticalPadding * 2f);
-
-        // NEW – extend horizontally into the forest ring
         float fogWidth = (_bounds.max.x - _bounds.min.x) + forestPadding * 2f;
 
         float centerX = (_bounds.min.x + _bounds.max.x) * 0.5f;
