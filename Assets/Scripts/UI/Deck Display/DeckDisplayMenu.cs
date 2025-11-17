@@ -46,22 +46,19 @@ public class DeckDisplayMenu : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    private void PopulateCards(IReadOnlyList<string> cardIds)
+    private void PopulateCards(IReadOnlyList<CardId> cardIds)
     {
         ClearCards();
 
-        foreach (string id in cardIds)
+        foreach (CardId id in cardIds)
         {
-            if (string.IsNullOrEmpty(id))
-                continue;
-
             // create a CardInstance like HandManager does
             CardInstance card = CardFactory.CreateCard(id, owner);
             if (card == null)
                 continue;
 
             GameObject cardObj = Instantiate(cardUIPrefab, contentArea);
-            cardObj.name = card.Data.id;
+            cardObj.name = card.Data.id.ToString();
             Debug.Log(cardObj.name + " instantiated in DeckDisplayMenu.");
             var controller = cardObj.GetComponent<CardUIController>();
             controller.Initialize(card);
