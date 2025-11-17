@@ -172,6 +172,17 @@ public class MapGenerationManager : MonoBehaviour
 
         SaveSession();
     }
+    public bool IsNodeVisited(INode node)
+    {
+        if (node == null) return false;
+        return _visited.Contains(node.Id);
+    }
+
+    public bool IsNodeCompleted(INode node)
+    {
+        if (node == null) return false;
+        return _completed.Contains(node.Id);
+    }
 
     public void SetCurrentNode(Node node)
     {
@@ -185,4 +196,27 @@ public class MapGenerationManager : MonoBehaviour
     {
         SessionSaveManager.SaveGameSession(GameSession.Instance.gameSessionData);
     }
+
+    public void UpdateAllNodeGlows()
+    {
+        if (_visualContext == null || _visualContext.SpawnedNodes == null)
+            return;
+
+        foreach (var view in _visualContext.SpawnedNodes)
+            view.UpdateGlow();
+
+        var posMgr = FindFirstObjectByType<MapPositionManager>();
+        if (posMgr == null) return;
+
+        var available = posMgr.GetAvailableNodes()
+                              .Select(n => n.Id)
+                              .ToHashSet();
+
+        foreach (var view in _visualContext.SpawnedNodes)
+        {
+            if (available.Contains(view.NodeData.Id))
+                view.ShowAvailable(false);
+        }
+    }
+
 }

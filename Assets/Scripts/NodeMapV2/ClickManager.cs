@@ -45,7 +45,7 @@ public class ClickManager : MonoBehaviour
                 StartHover(lastHovered);
             }
         }
-        else if (lastHovered != null)
+        else
         {
             EndHover(lastHovered);
             lastHovered = null;
@@ -78,21 +78,27 @@ public class ClickManager : MonoBehaviour
         string sceneName = def.nodeSceneName;
         sceneSwitch.SceneChanger(sceneName);
     }
-
     private void StartHover(GameObject obj)
     {
         if (obj == null) return;
 
-        NodeView nodeView = obj.GetComponentInParent<NodeView>();
-        if (nodeView == null) return;
+        NodeView nv = obj.GetComponentInParent<NodeView>();
+        if (nv == null) return;
 
-        bool interactable = mapPositionManager.IsNodeInteractable(nodeView.NodeData);
-        // TODO: add hover visuals based on interactable
+        bool interactable = mapPositionManager.IsNodeInteractable(nv.NodeData);
+
+        if (interactable)
+            nv.ShowAvailable(true);
     }
 
     private void EndHover(GameObject obj)
     {
         if (obj == null) return;
-        // TODO: clear hover visuals
+
+        NodeView nv = obj.GetComponentInParent<NodeView>();
+        if (nv == null) return;
+
+        nv.ClearHoverGlow();
     }
+
 }

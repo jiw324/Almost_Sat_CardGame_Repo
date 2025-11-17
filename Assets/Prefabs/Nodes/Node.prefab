@@ -346,6 +346,7 @@ GameObject:
   - component: {fileID: 7221357766327886506}
   - component: {fileID: 5121126377645233115}
   - component: {fileID: 7120275383092288638}
+  - component: {fileID: 4475441756983825725}
   m_Layer: 0
   m_Name: NodeBase_Inner
   m_TagString: Untagged
@@ -444,3 +445,20 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!114 &4475441756983825725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8482871579377544681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b6fc7be6d682624f9ede3dc01be8d7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultMat: {fileID: 2100000, guid: bdafacadfaf4f6d4daf110e2d34e183c, type: 2}
+  visitedMat: {fileID: 2100000, guid: 3a199219aec9c7e4eb1a3d2f68c42556, type: 2}
+  completedMat: {fileID: 2100000, guid: 35f902c94f99e6b4c9041c140bf2abfc, type: 2}
+  availableMat: {fileID: 2100000, guid: b6b3ae4bfd7d2ac4d97a17df818d8d18, type: 2}
+  hoverMat: {fileID: 2100000, guid: 837942597a2a91f41baf6127ed20459f, type: 2}

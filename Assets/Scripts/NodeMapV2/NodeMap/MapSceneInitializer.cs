@@ -9,4 +9,9 @@ public class MapSceneInitializer : MonoBehaviour
             MapGenerationManager.Instance.InitializeMapFromSession();
         }
     }
+
+    private void Start()
+    {
+        MapGenerationManager.Instance.UpdateAllNodeGlows();
+    }
 }
