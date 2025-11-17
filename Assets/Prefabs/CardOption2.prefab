@@ -433,6 +433,7 @@ MonoBehaviour:
   nameText: {fileID: 918828096731144944}
   costText: {fileID: 6795793974000127702}
   descriptionText: {fileID: 232055014409889061}
+  visualRoot: {fileID: 2780468888242532613}
   selectToggle: {fileID: 3759984551120512666}
 --- !u!1 &9118992281427790032
 GameObject:
@@ -643,6 +644,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &2780468888242532613 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1111607720804802971, guid: b39f880c06d5dde4cbd4e5c1265341d2, type: 3}
+  m_PrefabInstance: {fileID: 3025025790122021022}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6795793974000127702 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8625675801558965832, guid: b39f880c06d5dde4cbd4e5c1265341d2, type: 3}

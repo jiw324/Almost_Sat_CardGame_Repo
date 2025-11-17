@@ -41,8 +41,20 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
     {
         if (Instance == null || Instance.Data == null) return;
         nameText.text = Instance.Data.cardName;
-        //costText.text = Instance.Data.cost.ToString();
+        costText.text = Instance.Data.cost.ToString();
         descText.text = Instance.Data.description;
+        if (Instance.Data.type == "spell")
+        {
+            visualRoot.Find("Type").Find("Spell").gameObject.SetActive(true);
+        }
+        else if (Instance.Data.isRanged)
+        {
+            visualRoot.Find("Type").Find("Ranged").gameObject.SetActive(true);
+        }
+        else
+        {
+            visualRoot.Find("Type").Find("Melee").gameObject.SetActive(true);
+        }
     }
 
     private void Update()
