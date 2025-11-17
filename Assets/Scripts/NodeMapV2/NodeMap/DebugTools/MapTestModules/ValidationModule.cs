@@ -31,27 +31,31 @@ public class ValidationModule : IMapTestModule
     public void Run(NodeMap map)
     {
         _totalRuns++;
+    }
 
-        var validator = new NodeMapValidator();
-        var result = validator.Validate(map);
+    public void RecordValidationStats(
+        bool isValid,
+        bool hadFixes,
+        int passes,
+        Dictionary<string, int> ruleHits,
+        string message)
+    {
+        if (isValid)
+            _postValid++;
 
-        int passes = validator.PassesUsed;
+        if (hadFixes)
+            _mapsWithFixes++;
+
         if (!_passHistogram.ContainsKey(passes))
             _passHistogram[passes] = 0;
         _passHistogram[passes]++;
 
-        if (!result.ruleViolated)
-            _postValid++;
-
-        if (result.ruleViolated)
-            _mapsWithFixes++;
-
-        foreach (var kvp in validator.RuleHits)
+        foreach (var kvp in ruleHits)
             _ruleHitTotals[kvp.Key] = _ruleHitTotals.TryGetValue(kvp.Key, out int v) ? v + kvp.Value : kvp.Value;
 
         _lastIssues.Clear();
-        if (!string.IsNullOrEmpty(result.Message))
-            _lastIssues.Add(result.Message);
+        if (!string.IsNullOrEmpty(message))
+            _lastIssues.Add(message);
     }
 
     public void RecordRegenerationAttempts(int attempts)

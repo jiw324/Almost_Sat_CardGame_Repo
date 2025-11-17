@@ -23,6 +23,12 @@ public class MapGenerationTester : MonoBehaviour
     private const int MAX_GENERATION_ATTEMPTS = 10;
     private int _lastRegenAttempts = 0;
 
+    private bool _lastMapValid;
+    private bool _lastMapHadFixes;
+    private int _lastPassesUsed;
+    private Dictionary<string, int> _lastRuleHits = new();
+    private string _lastValidationMessage = "";
+
     private void Awake()
     {
         _modules = new List<IMapTestModule>
@@ -84,6 +90,11 @@ public class MapGenerationTester : MonoBehaviour
     {
         int attempts = 0;
         _lastRegenAttempts = 0;
+        _lastMapValid = false;
+        _lastMapHadFixes = false;
+        _lastPassesUsed = 0;
+        _lastRuleHits.Clear();
+        _lastValidationMessage = "";
 
         while (attempts < MAX_GENERATION_ATTEMPTS)
         {
@@ -109,7 +120,16 @@ public class MapGenerationTester : MonoBehaviour
                 var validator = new NodeMapValidator();
                 var res = validator.Validate(map);
 
-                if (!res.ruleViolated)
+                _lastPassesUsed = validator.PassesUsed;
+                _lastValidationMessage = res.Message ?? "";
+                _lastRuleHits = new Dictionary<string, int>(validator.RuleHits);
+                int totalHits = 0;
+                foreach (var kvp in validator.RuleHits)
+                    totalHits += kvp.Value;
+                _lastMapHadFixes = totalHits > 0;
+                _lastMapValid = !res.ruleViolated;
+
+                if (_lastMapValid)
                 {
                     _lastRegenAttempts = attempts;
 
@@ -160,6 +180,12 @@ public class MapGenerationTester : MonoBehaviour
         }
 
         _lastRegenAttempts = MAX_GENERATION_ATTEMPTS;
+        _lastMapValid = false;
+        _lastMapHadFixes = false;
+        _lastPassesUsed = 0;
+        _lastRuleHits.Clear();
+        _lastValidationMessage = "";
+
         return fallbackMap;
     }
 
@@ -194,8 +220,17 @@ public class MapGenerationTester : MonoBehaviour
         {
             module.Run(map);
 
-            if (module is ValidationModule vm)
+            if (module is ValidationModule vm && runValidator)
+            {
+                vm.RecordValidationStats(
+                    _lastMapValid,
+                    _lastMapHadFixes,
+                    _lastPassesUsed,
+                    _lastRuleHits,
+                    _lastValidationMessage);
+
                 vm.RecordRegenerationAttempts(_lastRegenAttempts);
+            }
         }
     }
 
