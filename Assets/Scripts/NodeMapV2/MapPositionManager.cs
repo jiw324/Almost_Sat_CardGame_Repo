@@ -5,14 +5,11 @@ using UnityEngine;
 public class MapPositionManager : MonoBehaviour
 {
     private NodeMap _map;
-    private string _currentNodeId;
-
-    // Cache lookup for performance
     private Dictionary<string, Node> _nodeLookup;
+    private string _currentNodeId;
 
     private void Awake()
     {
-        // Get active map from generation manager
         _map = MapGenerationManager.Instance.ActiveMap;
 
         if (_map == null)
@@ -23,23 +20,15 @@ public class MapPositionManager : MonoBehaviour
 
         _nodeLookup = _map.AllNodes.ToDictionary(n => n.Id, n => n);
 
-        // Restore state if loading a save
+        // May be null on a brand new run — that's what we want
         _currentNodeId = MapGenerationManager.Instance.CurrentNodeId;
-
-        if (string.IsNullOrEmpty(_currentNodeId))
-            _currentNodeId = AutoFindStartNode();
-    }
-
-    private string AutoFindStartNode()
-    {
-        if (!_map.Floors.ContainsKey(0) || _map.Floors[0].Count == 0)
-            return null;
-
-        return _map.Floors[0][0].Id;
     }
 
     public Node GetCurrentNode()
     {
+        if (string.IsNullOrEmpty(_currentNodeId))
+            return null;
+
         if (_nodeLookup.TryGetValue(_currentNodeId, out var node))
             return node;
 
@@ -48,19 +37,29 @@ public class MapPositionManager : MonoBehaviour
 
     public bool IsNodeInteractable(INode target)
     {
-        if (target == null)
+        if (_map == null || target == null)
+            return false;
+
+        Node targetNode = target as Node;
+        if (targetNode == null)
             return false;
 
         Node current = GetCurrentNode();
-        if (current == null)
-            return false;
 
-        // Same node (always interactable)
-        if (target.Id == current.Id)
+        // No current node yet: first visit to map.
+        // Only allow clicking nodes on the first floor (y == 0).
+        if (current == null)
+        {
+            return targetNode.GridPos.y == 0;
+        }
+
+        // After a start node is chosen:
+        // - The current node is always interactable
+        if (targetNode.Id == current.Id)
             return true;
 
-        // Can only move to nodes that are "next nodes" from current
-        return current.NextNodes.Contains(target as Node);
+        // - Any direct child (NextNode) is interactable
+        return current.NextNodes.Contains(targetNode);
     }
 
     /// <summary>
@@ -68,41 +67,44 @@ public class MapPositionManager : MonoBehaviour
     /// </summary>
     public bool TrySelectOrMoveToNode(INode target)
     {
-        if (target == null)
+        if (_map == null || target == null)
+            return false;
+
+        Node targetNode = target as Node;
+        if (targetNode == null)
             return false;
 
         Node current = GetCurrentNode();
-        Node targetNode = target as Node;
+        var manager = MapGenerationManager.Instance;
 
-        // Clicking same node — allowed, but no movement
+        // CASE 1: First ever selection (no current node yet)
+        if (current == null)
+        {
+            // Must pick a node on the first floor
+            if (targetNode.GridPos.y != 0)
+                return false;
+
+            _currentNodeId = targetNode.Id;
+            manager.SetCurrentNode(targetNode);
+            manager.MarkVisited(targetNode);
+
+            Debug.Log($"[MapPositionManager] Start node chosen: {targetNode.Id}");
+            return true;
+        }
+
+        // CASE 2: Re-clicking the current node (allowed, but no movement)
         if (targetNode.Id == current.Id)
             return true;
 
-        // Must be directly reachable (current ? target)
+        // CASE 3: Moving to a child node
         if (!current.NextNodes.Contains(targetNode))
             return false;
 
-        // Movement is allowed!
-        MoveToNode(targetNode);
+        _currentNodeId = targetNode.Id;
+        manager.SetCurrentNode(targetNode);
+        manager.MarkVisited(targetNode);
+
+        Debug.Log($"[MapPositionManager] Moved from {current.Id} to {targetNode.Id}");
         return true;
-    }
-
-    private void MoveToNode(Node node)
-    {
-        _currentNodeId = node.Id;
-
-        // Update visited status in both the node and the manager system
-        MapGenerationManager.Instance.MarkVisited(node);
-
-        // Eventual spot for animating a "map token" moving between nodes
-        Debug.Log($"Player moved to node {node.Id} ({node.Definition.nodeType})");
-    }
-
-    /// <summary>
-    /// Helper: check if target is the next immediate floor
-    /// </summary>
-    private bool IsNextFloor(Node current, Node target)
-    {
-        return target.GridPos.y == current.GridPos.y + 1;
     }
 }

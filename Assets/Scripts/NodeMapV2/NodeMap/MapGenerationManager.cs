@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MapGenerationManager : MonoBehaviour
 {
@@ -40,8 +41,6 @@ public class MapGenerationManager : MonoBehaviour
     public void StartNewRun()
     {
         int seed = useRandomSeed ? Random.Range(int.MinValue, int.MaxValue) : debugSeed;
-        Debug.Log("STARTNEWRUN CALLED — Seed = " + seed);
-
         GenerateFromSeed(seed);
     }
 
@@ -49,7 +48,6 @@ public class MapGenerationManager : MonoBehaviour
     {
         _currentSeed = seed;
 
-        // Seed Unity's RNG so generation + offsets + assignment are deterministic
         Random.InitState(seed);
 
         ClearActiveMap();
@@ -61,7 +59,16 @@ public class MapGenerationManager : MonoBehaviour
         }
 
         NodeMap mapInstance = Instantiate(nodeMapPrefab);
+
+        // Explicitly move into the MapScene
+        Scene mapScene = SceneManager.GetSceneByName("Map");
+        if (mapScene.IsValid())
+        {
+            SceneManager.MoveGameObjectToScene(mapInstance.gameObject, mapScene);
+        }
+
         _activeMap = mapInstance;
+
 
         mapInstance.Generate();
 
@@ -94,7 +101,9 @@ public class MapGenerationManager : MonoBehaviour
         _visitedNodeIds.Clear();
         _completedNodeIds.Clear();
 
-        _currentNodeId = ChooseDefaultStartNode();
+        // IMPORTANT: do NOT auto-select a start node.
+        // The first click on a floor-0 node will choose the start.
+        _currentNodeId = null;
     }
 
     private void ClearActiveMap()
@@ -108,22 +117,6 @@ public class MapGenerationManager : MonoBehaviour
         _currentNodeId = null;
         _visitedNodeIds.Clear();
         _completedNodeIds.Clear();
-    }
-
-    private string ChooseDefaultStartNode()
-    {
-        if (_activeMap == null || !_activeMap.Floors.ContainsKey(0))
-            return null;
-
-        var floor0 = _activeMap.Floors[0];
-        if (floor0.Count == 0)
-            return null;
-
-        int idx = Mathf.Clamp(floor0.Count / 2, 0, floor0.Count - 1);
-        Node startNode = floor0[idx];
-
-        MarkVisited(startNode);
-        return startNode.Id;
     }
 
     public Node GetNodeById(string id)
@@ -158,6 +151,12 @@ public class MapGenerationManager : MonoBehaviour
         if (node == null) return;
         node.MarkCompleted();
         _completedNodeIds.Add(node.Id);
+    }
+
+    // Called by MapPositionManager whenever the current node changes
+    public void SetCurrentNode(Node node)
+    {
+        _currentNodeId = node != null ? node.Id : null;
     }
 
     [System.Serializable]
