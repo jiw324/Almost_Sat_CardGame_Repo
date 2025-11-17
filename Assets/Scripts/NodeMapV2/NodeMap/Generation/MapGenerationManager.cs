@@ -34,10 +34,6 @@ public class MapGenerationManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    // ============================================================
-    // SESSION LOADING / RUN START
-    // ============================================================
-
     public void InitializeMapFromSession()
     {
         var sm = SessionMap;
@@ -65,10 +61,6 @@ public class MapGenerationManager : MonoBehaviour
         SessionSaveManager.SaveGameSession(GameSession.Instance.gameSessionData);
     }
 
-    // ============================================================
-    // GENERATION
-    // ============================================================
-
     public void GenerateFromSeed(int seed)
     {
         _currentSeed = seed;
@@ -78,7 +70,6 @@ public class MapGenerationManager : MonoBehaviour
         if (_activeMap != null)
             Destroy(_activeMap.gameObject);
 
-        // Instantiate map into the proper scene
         NodeMap map = Instantiate(nodeMapPrefab);
 
         Scene mapScene = SceneManager.GetSceneByName("Map");
@@ -98,15 +89,16 @@ public class MapGenerationManager : MonoBehaviour
         var validator = new NodeMapValidator();
         validator.Validate(map);
 
-        // IMPORTANT:
-        // Initialize Map State BEFORE spawning NodeViews
         MapStateManager.Instance.Initialize(map);
 
-        // Spawn NodeViews AFTER state exists
         var spawner = new NodeMapSpawner();
         _visualContext = spawner.Spawn(map, map.transform);
 
-        // Configure camera
+        // Spawn environment
+        var env = new MapEnvironmentSpawner();
+        env.SpawnEnvironment(_visualContext, map.transform);
+
+
         var cam = FindFirstObjectByType<MapCameraController>();
         if (cam != null)
             cam.SetBoundsUsingWorldBounds(_visualContext.MapBounds);

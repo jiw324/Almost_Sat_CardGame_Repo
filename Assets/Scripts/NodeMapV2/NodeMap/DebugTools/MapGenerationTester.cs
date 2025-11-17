@@ -14,18 +14,16 @@ public class MapGenerationTester : MonoBehaviour
     [Header("Phase Toggles")]
     [SerializeField] private bool runAssigner = true;
     [SerializeField] private bool runValidator = true;
-    [SerializeField] private bool runSpawner = true;
 
-    private NodeMap _currentMap;
     private List<NodeMap> _testMaps = new();
     private List<IMapTestModule> _modules = new();
 
     private const int MAX_GENERATION_ATTEMPTS = 10;
-    private int _lastRegenAttempts = 0;
 
     private bool _lastMapValid;
     private bool _lastMapHadFixes;
     private int _lastPassesUsed;
+    private int _lastRegenAttempts;
     private Dictionary<string, int> _lastRuleHits = new();
     private string _lastValidationMessage = "";
 
@@ -48,17 +46,12 @@ public class MapGenerationTester : MonoBehaviour
     [ContextMenu("Generate Single Map")]
     public void RunSingleTest()
     {
-        if (_modules == null || _modules.Count == 0)
-            Awake();
-
+        InitializeModules();
         ClearMaps();
 
-        foreach (var module in _modules)
-            module.Reset();
-
-        _currentMap = GenerateMapInstance(runSpawner);
-        RunAllModules(_currentMap);
-        _testMaps.Add(_currentMap);
+        NodeMap map = GenerateMapInstance();
+        RunAllModules(map);
+        _testMaps.Add(map);
 
         PrintModuleReports();
     }
@@ -66,19 +59,14 @@ public class MapGenerationTester : MonoBehaviour
     [ContextMenu("Run Volume Test")]
     public void RunVolumeTest()
     {
-        if (_modules == null || _modules.Count == 0)
-            Awake();
-
+        InitializeModules();
         ClearMaps();
 
-        foreach (var module in _modules)
-            module.Reset();
-
-        Debug.Log($"Running {testIterations} test iterations (spawning disabled)...");
+        Debug.Log($"Running {testIterations} test iterations...");
 
         for (int i = 0; i < testIterations; i++)
         {
-            NodeMap map = GenerateMapInstance(runSpawner: false);
+            NodeMap map = GenerateMapInstance();
             RunAllModules(map);
             _testMaps.Add(map);
         }
@@ -86,73 +74,57 @@ public class MapGenerationTester : MonoBehaviour
         PrintModuleReports();
     }
 
-    private NodeMap GenerateMapInstance(bool runSpawner)
+    private NodeMap GenerateMapInstance()
     {
         int attempts = 0;
-        _lastRegenAttempts = 0;
-        _lastMapValid = false;
-        _lastMapHadFixes = false;
-        _lastPassesUsed = 0;
-        _lastRuleHits.Clear();
-        _lastValidationMessage = "";
+        ResetLastRunStats();
 
         while (attempts < MAX_GENERATION_ATTEMPTS)
         {
+            // Create an empty object containing NodeMap
             GameObject obj = new GameObject("NodeMap_Debug");
             obj.transform.SetParent(transform);
 
             NodeMap map = obj.AddComponent<NodeMap>();
             map.Generate();
 
+            // Assign node types
             if (runAssigner)
             {
-                if (map.Factory == null)
-                    Debug.LogError("NodeMap.Factory is null. NodeTypeAssigner cannot run.");
-                else
-                {
-                    var assigner = new NodeTypeAssigner(map.Factory);
-                    assigner.Assign(map);
-                }
+                var assigner = new NodeTypeAssigner(map.Factory);
+                assigner.Assign(map);
             }
 
+            // Validate
             if (runValidator)
             {
                 var validator = new NodeMapValidator();
                 var res = validator.Validate(map);
 
                 _lastPassesUsed = validator.PassesUsed;
-                _lastValidationMessage = res.Message ?? "";
+                _lastValidationMessage = res.Message;
                 _lastRuleHits = new Dictionary<string, int>(validator.RuleHits);
-                int totalHits = 0;
+
+                int totalFixHits = 0;
                 foreach (var kvp in validator.RuleHits)
-                    totalHits += kvp.Value;
-                _lastMapHadFixes = totalHits > 0;
+                    totalFixHits += kvp.Value;
+
+                _lastMapHadFixes = totalFixHits > 0;
                 _lastMapValid = !res.ruleViolated;
 
                 if (_lastMapValid)
                 {
                     _lastRegenAttempts = attempts;
-
-                    if (runSpawner)
-                    {
-                        var spawner = new NodeMapSpawner();
-                        NodeMapVisualContext context = spawner.Spawn(map, map.transform);
-
-                        var camera = FindFirstObjectByType<MapCameraController>();
-                        if (camera != null)
-                        {
-                            camera.SetBoundsUsingWorldBounds(context.MapBounds);
-                        }
-                    }
-
                     return map;
                 }
             }
 
+            // invalid map -> destroy and retry
             SafeDestroy(obj);
             attempts++;
         }
 
+        // fallback
         GameObject fallback = new GameObject("NodeMap_Debug_Fallback");
         fallback.transform.SetParent(transform);
 
@@ -165,51 +137,24 @@ public class MapGenerationTester : MonoBehaviour
             assigner.Assign(fallbackMap);
         }
 
-        if (runSpawner)
-        {
-            var spawner = new NodeMapSpawner();
-            NodeMapVisualContext context = spawner.Spawn(fallbackMap, fallbackMap.transform);
-
-            var camera = FindFirstObjectByType<MapCameraController>();
-            if (camera != null)
-            {
-                camera.SetBoundsUsingWorldBounds(context.MapBounds);
-            }
-        }
-
         _lastRegenAttempts = MAX_GENERATION_ATTEMPTS;
-        _lastMapValid = false;
-        _lastMapHadFixes = false;
-        _lastPassesUsed = 0;
-        _lastRuleHits.Clear();
-        _lastValidationMessage = "";
-
         return fallbackMap;
     }
 
-    private void ClearMaps()
+    private void ResetLastRunStats()
     {
-        foreach (var m in _testMaps)
-            if (m != null)
-                SafeDestroy(m.gameObject);
-
-        _testMaps.Clear();
-        for (int i = transform.childCount - 1; i >= 0; i--)
-            SafeDestroy(transform.GetChild(i).gameObject);
-
-        _currentMap = null;
+        _lastMapValid = false;
+        _lastMapHadFixes = false;
+        _lastPassesUsed = 0;
+        _lastRegenAttempts = 0;
+        _lastRuleHits.Clear();
+        _lastValidationMessage = "";
     }
 
-    private void SafeDestroy(GameObject obj)
+    private void InitializeModules()
     {
-        if (obj == null) return;
-
-#if UNITY_EDITOR
-        if (!Application.isPlaying)
-            DestroyImmediate(obj);
-        else
-#endif
-            Destroy(obj);
+        foreach (var module in _modules)
+            module.Reset();
     }
 
     private void RunAllModules(NodeMap map)
@@ -230,6 +175,30 @@ public class MapGenerationTester : MonoBehaviour
                 vm.RecordRegenerationAttempts(_lastRegenAttempts);
             }
         }
+    }
+
+    private void ClearMaps()
+    {
+        foreach (var m in _testMaps)
+            if (m != null)
+                SafeDestroy(m.gameObject);
+
+        _testMaps.Clear();
+
+        for (int i = transform.childCount - 1; i >= 0; i--)
+            SafeDestroy(transform.GetChild(i).gameObject);
+    }
+
+    private void SafeDestroy(GameObject obj)
+    {
+        if (obj == null) return;
+
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+            DestroyImmediate(obj);
+        else
+#endif
+            Destroy(obj);
     }
 
     private void PrintModuleReports()
@@ -253,12 +222,12 @@ public class MapGenerationTester : MonoBehaviour
 #if UNITY_EDITOR
     private void EditorDeferredLog(string message)
     {
-        UnityEditor.EditorApplication.delayCall += () =>
+        EditorApplication.delayCall += () =>
         {
             if (Application.isPlaying)
                 Debug.Log(message);
             else
-                UnityEngine.Debug.LogFormat(LogType.Log, LogOption.NoStacktrace, null, "{0}", message);
+                Debug.LogFormat(LogType.Log, LogOption.NoStacktrace, null, "{0}", message);
 
             UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
         };
