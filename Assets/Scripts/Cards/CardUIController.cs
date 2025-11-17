@@ -10,8 +10,10 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
     [Header("References")]
     [SerializeField] private Image background;
     [SerializeField] private Image border;
+    [SerializeField] private Image artworkImage;
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text costText;
+    [SerializeField] private TMP_Text damageText;
     [SerializeField] private TMP_Text descText;
     [SerializeField] private RectTransform visualRoot;
 
@@ -40,9 +42,28 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
     private void UpdateUI()
     {
         if (Instance == null || Instance.Data == null) return;
-        nameText.text = Instance.Data.cardName;
-        //costText.text = Instance.Data.cost.ToString();
-        descText.text = Instance.Data.description;
+        
+        if (nameText != null)
+            nameText.text = Instance.Data.cardName;
+        
+        if (costText != null)
+            costText.text = Instance.Data.cost.ToString();
+        
+        if (damageText != null)
+        {
+            damageText.text = Instance.Data.damage > 0 ? Instance.Data.damage.ToString() : "";
+            damageText.gameObject.SetActive(Instance.Data.damage > 0);
+        }
+        
+        if (descText != null)
+            descText.text = Instance.Data.description;
+        
+        // Set artwork image
+        if (artworkImage != null)
+        {
+            artworkImage.sprite = Instance.Data.artwork;
+            artworkImage.enabled = Instance.Data.artwork != null;
+        }
     }
 
     private void Update()

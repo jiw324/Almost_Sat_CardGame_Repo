@@ -189,6 +189,10 @@ public class NodeMap : MonoBehaviour
         GameObject nodesParentObj = new GameObject("Nodes");
         nodesParentObj.transform.SetParent(transform, false);
 
+        // Load all available enemies once
+        EnemyDefinition[] allEnemies = Resources.LoadAll<EnemyDefinition>("Enemies");
+        bool hasEnemies = allEnemies != null && allEnemies.Length > 0;
+
         foreach (var floorPair in nodes)
         {
             int floorIndex = floorPair.Key;
@@ -211,6 +215,21 @@ public class NodeMap : MonoBehaviour
                 nodeObj.transform.localRotation = Quaternion.identity;
 
                 nodeObj.name = $"Node_{floorIndex + 1}_{i}";
+
+                // Assign random enemy to combat nodes at runtime
+                if (node.Type == NodeType.Combat && hasEnemies)
+                {
+                    NodeBehaviour nodeBehaviour = nodeObj.GetComponent<NodeBehaviour>();
+                    if (nodeBehaviour != null)
+                    {
+                        string randomEnemyName = allEnemies[Random.Range(0, allEnemies.Length)].name;
+                        nodeBehaviour.SetEnemy(randomEnemyName);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[NodeMap] Combat node {nodeObj.name} has no NodeBehaviour component.");
+                    }
+                }
             }
         }
     }

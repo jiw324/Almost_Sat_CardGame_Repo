@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e425dc03d75c641f68ab56c5ac666241, type: 3}
+  m_Name: Wendy Wraith
+  m_EditorClassIdentifier: 
+  enemyName: Enemy
+  maxHealth: 15
+  startingMana: 5
+  deckDefinition: {fileID: 11400000, guid: 5e8d255eb222643af9b19304f1c1dbd7, type: 2}

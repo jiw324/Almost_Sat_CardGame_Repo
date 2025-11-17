@@ -67,6 +67,22 @@ public class ClickManager : MonoBehaviour
 
             if (nodeType == NodeType.Combat || nodeType == NodeType.Rest || nodeType == NodeType.Shop)
             {
+                // Initialize combat data if this is a combat node
+                if (nodeType == NodeType.Combat)
+                {
+                    string enemyName = nodeBehaviour.GetEnemyDefinitionName();
+                    if (!string.IsNullOrWhiteSpace(enemyName))
+                    {
+                        CombatNodeDataInitializer.InitializeCombatNode(enemyName);
+                        Debug.Log($"[ClickManager] Initialized combat with enemy: {enemyName}");
+                    }
+                    else
+                    {
+                        Debug.LogWarning("[ClickManager] Combat node has no enemy assigned. Using default.");
+                        // Optionally initialize with a default enemy or let BattleManager handle it
+                    }
+                }
+                
                 sceneSwitch.SceneChanger(sceneName);
             }
 

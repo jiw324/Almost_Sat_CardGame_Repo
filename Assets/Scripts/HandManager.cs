@@ -7,7 +7,7 @@ public class HandManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private Transform handArea;     // parent for card UI prefabs
     [SerializeField] private GameObject cardUIPrefab;
-    [SerializeField] private PlayerEntity owner;     // who this hand belongs to
+    [SerializeField] private EntityBase owner;       // who this hand belongs to (player or enemy)
     [SerializeField] private MulliganOverlay mulliganOverlay;
 
     [Header("Settings")]
@@ -27,7 +27,7 @@ public class HandManager : MonoBehaviour
         if (cardUIPrefab == null)
             Debug.LogError("[HandManager] Missing cardUIPrefab reference!");
         if (owner == null)
-            Debug.LogWarning("[HandManager] Owner not set — using PlayerEntity in scene?");
+            Debug.LogWarning("[HandManager] Owner not set — hand manager needs an entity owner.");
         if (mulliganOverlay == null)
             Debug.Log("[HandManager] No mulligan overlay assigned. Opening hand will draw automatically.");
     }
@@ -66,14 +66,19 @@ public class HandManager : MonoBehaviour
         }
 
         InitializeDeck();
-        if (mulliganOverlay != null)
+        
+        // Only show mulligan for player (enemies don't get mulligan)
+        bool isPlayer = owner is PlayerEntity;
+        if (isPlayer && mulliganOverlay != null)
         {
             if (!mulliganOverlay.gameObject.activeSelf)
                 mulliganOverlay.gameObject.SetActive(true);
             BeginMulligan();
         }
         else
+        {
             DrawOpeningHand();
+        }
     }
 
     public void PrepareForBattle()
