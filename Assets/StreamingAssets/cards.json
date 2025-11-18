@@ -63,8 +63,8 @@
             "type": "minion",
             "isRanged": true,
             "isMinion": true,
-            "minionAttack": 2,
-            "minionHealth": 6,
+            "minionAttack": 4,
+            "minionHealth": 2,
             "onSummon": [
                 {
                     "effectId": "damage_enemy",

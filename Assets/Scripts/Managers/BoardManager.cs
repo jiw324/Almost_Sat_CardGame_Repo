@@ -145,31 +145,6 @@ public class BoardManager : MonoBehaviour
                 var bm = BattleManager.Instance;
                 var caster = bm ? bm.player : null;
 
-                if (inst.Data != null)
-                {
-                    var id = inst.Data.id ?? string.Empty;
-                    var name = inst.Data.cardName ?? string.Empty;
-                    bool isFireballOrSlash = string.Equals(id, "fireball", StringComparison.OrdinalIgnoreCase)
-                                           || string.Equals(id, "slash", StringComparison.OrdinalIgnoreCase)
-                                           || name.IndexOf("fireball", StringComparison.OrdinalIgnoreCase) >= 0
-                                           || name.IndexOf("slash", StringComparison.OrdinalIgnoreCase) >= 0;
-                    if (isFireballOrSlash)
-                    {
-                        var minionTarget = targetEntity as MinionEntity;
-                        if (minionTarget == null)
-                        {
-                            Debug.Log("[BoardManager] This spell must target an enemy minion on the board.");
-                            return;
-                        }
-                        var mbComp = minionTarget.GetComponent<MinionBehaviour>();
-                        if (mbComp == null || mbComp.instance == null || !(mbComp.instance.Owner is EnemyEntity))
-                        {
-                            Debug.Log("[BoardManager] This spell must target an enemy minion.");
-                            return;
-                        }
-                    }
-                }
-
                 if (inst.Owner is PlayerEntity)
                 {
                     if (bm == null)
