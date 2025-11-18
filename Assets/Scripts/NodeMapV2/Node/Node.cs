@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static Unity.VisualScripting.Metadata;
 
 public class Node : INode
 {
