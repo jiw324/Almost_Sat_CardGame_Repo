@@ -102,6 +102,11 @@ public class GameSession : MonoBehaviour
         return gameSessionData.sessionPlayerData.mana;
     }
 
+    public int GetPlayerGold()
+    {
+        return gameSessionData.sessionPlayerData.gold;
+    }
+
     public DeckInstance GetPlayerDeck()
     {
         return gameSessionData.sessionPlayerData.deck;
@@ -110,5 +115,10 @@ public class GameSession : MonoBehaviour
     public void SetPlayerHealth(int health)
     {
         gameSessionData.sessionPlayerData.health = health;
+    }
+
+    public void SetPlayerGold(int gold)
+    {
+        gameSessionData.sessionPlayerData.gold = gold;
     }
 }

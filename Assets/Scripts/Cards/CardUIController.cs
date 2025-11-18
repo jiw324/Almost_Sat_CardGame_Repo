@@ -64,6 +64,18 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
             artworkImage.sprite = Instance.Data.artwork;
             artworkImage.enabled = Instance.Data.artwork != null;
         }
+        if (Instance.Data.type == "spell")
+        {
+            visualRoot.Find("Type").Find("Spell").gameObject.SetActive(true);
+        }
+        else if (Instance.Data.isRanged)
+        {
+            visualRoot.Find("Type").Find("Ranged").gameObject.SetActive(true);
+        }
+        else
+        {
+            visualRoot.Find("Type").Find("Melee").gameObject.SetActive(true);
+        }
     }
 
     private void Update()

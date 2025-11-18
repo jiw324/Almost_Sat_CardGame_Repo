@@ -4,7 +4,7 @@ public class SessionPlayerData
     public int maxHealth = 30;
     public int health = 10;
     public int mana = 1;
-    public int gold = 5;
+    public int gold = 10;
     public DeckInstance deck = new DeckInstance();
 
     public void ResetSessionData(DeckDefinition defaultDeck = null)
@@ -12,7 +12,7 @@ public class SessionPlayerData
         maxHealth = 30;
         health = 10;
         mana = 1;
-        gold = 5;
+        gold = 10;
         if (deck == null)
             deck = new DeckInstance();
         else
