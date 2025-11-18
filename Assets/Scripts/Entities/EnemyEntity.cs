@@ -2,11 +2,9 @@ using UnityEngine;
 
 public class EnemyEntity : EntityBase
 {
-    private void Start()
+    private void Awake()
     {
-        entityName = "Test Enemy";
-        maxHealth = 20;
-        currentHealth = maxHealth;
+        entityName = "Enemy";
     }
 
     public override void Die()

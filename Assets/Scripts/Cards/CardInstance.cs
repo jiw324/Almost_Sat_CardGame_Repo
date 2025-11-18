@@ -6,8 +6,6 @@ using UnityEngine;
 public class CardInstance
 {
     public CardData Data { get; private set; }
-
-    // Runtime-specific values
     public bool IsInHand { get; private set; }
     public bool IsOnBoard { get; private set; }
     public EntityBase Owner { get; private set; }
@@ -34,7 +32,7 @@ public class CardInstance
             CurrentHP = Data.minionHealth;
     }
 
-    public void PlayCard(BoardSlot targetSlot)
+    public void PlayCard(BoardSlot targetSlot, EntityBase spellTarget = null)
     {
         if (HasBeenPlayed)
         {
@@ -46,10 +44,11 @@ public class CardInstance
         IsOnBoard = true;
         HasBeenPlayed = true;
         
-        // Maybe minigame play goes here
-
-        if (!IsMinion) // SPELLS: execute spell effects only
-            ResolveSpellEffects(Owner, targetSlot?.currentCard?.Owner);
+        if (!IsMinion)
+        {
+            EntityBase target = spellTarget ?? targetSlot?.currentCard?.Owner;
+            ResolveSpellEffects(Owner, target);
+        }
 
         OnCardPlayed?.Invoke();
     }
@@ -57,7 +56,21 @@ public class CardInstance
 
     // SPELLS ONLY
     public void ResolveSpellEffects(EntityBase caster, EntityBase target)
-        => Execute(Data?.effects, caster, target);
+    {
+        Execute(Data?.effects, caster, target);
+
+        var minions = UnityEngine.Object.FindObjectsOfType<MinionEntity>();
+        foreach (var m in minions)
+        {
+            if (m == null) continue;
+            var mb = m.GetComponent<MinionBehaviour>();
+            if (mb == null || mb.instance == null) continue;
+            if (mb.instance.IsDead())
+            {
+                mb.Die();
+            }
+        }
+    }
 
     // MINIONS ONLY
     public void ResolveMinionSummonEffects(EntityBase caster, EntityBase target)
@@ -69,34 +82,16 @@ public class CardInstance
     private void Execute(List<CardData.EffectBinding> list, EntityBase caster, EntityBase target)
     {
         if (list == null || list.Count == 0) return;
-        foreach (var b in list) if (b?.effect != null) b.effect.Execute(caster, target, b.value);
+        foreach (var b in list)
+        {
+            if (b?.effect == null) continue;
+            var effectType = b.effect.GetType().Name;
+            string casterName = caster != null ? caster.entityName ?? caster.name : "(none)";
+            string targetName = target != null ? target.entityName ?? target.name : "(none)";
+            Debug.Log($"[CardInstance] Executing effect {effectType} from card {Data?.cardName} by {casterName} targeting {targetName} value={b.value}");
+            b.effect.Execute(caster, target, b.value);
+        }
     }
-    //public void ResolveEffect(EntityBase caster, EntityBase target)
-    //{
-    //    if (Data == null || Data.effects == null || Data.effects.Count == 0)
-    //    {
-    //        Debug.LogWarning($"[CardInstance] {Data?.cardName} has no effects assigned.");
-    //        return;
-    //    }
-
-    //    foreach (var binding in Data.effects)
-    //    {
-    //        if (binding?.effect == null) continue;
-    //        binding.effect.Execute(caster, target, binding.value);
-    //    }
-    //}
-    //public void ResolveEffect(BoardSlot targetSlot)
-    //{
-    //    if (Data.effect != null)
-    //    {
-    //        EntityBase target = targetSlot?.currentCard?.Owner; // example target logic
-    //        ResolveEffect(Owner, target);
-    //    }
-    //    else
-    //    {
-    //        Debug.LogWarning($"[CardInstance] {Data.cardName} has no effect assigned.");
-    //    }
-    //}
 
     public void TakeDamage(int amount)
     {

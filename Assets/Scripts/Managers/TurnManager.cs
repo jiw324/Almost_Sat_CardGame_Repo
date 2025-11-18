@@ -68,6 +68,27 @@ public class TurnManager : MonoBehaviour
         currentState = newState;
         currentState?.Enter();
         OnStateChanged?.Invoke(currentState);
+
+        var bm = BattleManager.Instance;
+        if (bm != null)
+        {
+            if (newState == enemyTurnState)
+            {
+                bm.enemyMana = bm.enemyMaxMana;
+                if (bm.uiManager != null) bm.uiManager.UpdateEnemyMana(bm.enemyMana);
+
+                bm.playerMana = 0;
+                if (bm.uiManager != null) bm.uiManager.UpdatePlayerMana(bm.playerMana);
+            }
+            else if (newState == playerTurnState)
+            {
+                bm.playerMana = bm.playerMaxMana;
+                if (bm.uiManager != null) bm.uiManager.UpdatePlayerMana(bm.playerMana);
+
+                bm.enemyMana = 0;
+                if (bm.uiManager != null) bm.uiManager.UpdateEnemyMana(bm.enemyMana);
+            }
+        }
     }
 
     public void EndCurrentTurn()
@@ -75,20 +96,21 @@ public class TurnManager : MonoBehaviour
         if (currentState == playerTurnState)
         {
             SideEndingTurn = Side.Player;
-        }
-        else if (currentState == enemyTurnState)
-        {
-            SideEndingTurn = Side.Enemy;
-        }
-        else
-        {
-            SideEndingTurn = Side.Player;
+            ChangeState(enemyTurnState);
+            return;
         }
 
+        if (currentState == enemyTurnState)
+        {
+            SideEndingTurn = Side.Enemy;
+            ChangeState(endTurnState);
+            return;
+        }
+
+        SideEndingTurn = Side.Player;
         ChangeState(endTurnState);
     }
 
-    // Update is called once per frame
     private void Update()
     {
         currentState?.Update();

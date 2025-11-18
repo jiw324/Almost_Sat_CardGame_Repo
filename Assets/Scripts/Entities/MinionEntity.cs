@@ -3,6 +3,7 @@ using UnityEngine;
 public class MinionEntity : EntityBase
 {
     [SerializeField] private MinionBehaviour minion;
+    public int maxHealth;
 
     public void Initialize(MinionBehaviour mb)
     {

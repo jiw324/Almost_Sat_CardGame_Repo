@@ -144,7 +144,58 @@ public class BoardManager : MonoBehaviour
             {
                 var bm = BattleManager.Instance;
                 var caster = bm ? bm.player : null;
-                inst.ResolveSpellEffects(caster, targetEntity);
+
+                if (inst.Data != null)
+                {
+                    var id = inst.Data.id ?? string.Empty;
+                    var name = inst.Data.cardName ?? string.Empty;
+                    bool isFireballOrSlash = string.Equals(id, "fireball", StringComparison.OrdinalIgnoreCase)
+                                           || string.Equals(id, "slash", StringComparison.OrdinalIgnoreCase)
+                                           || name.IndexOf("fireball", StringComparison.OrdinalIgnoreCase) >= 0
+                                           || name.IndexOf("slash", StringComparison.OrdinalIgnoreCase) >= 0;
+                    if (isFireballOrSlash)
+                    {
+                        var minionTarget = targetEntity as MinionEntity;
+                        if (minionTarget == null)
+                        {
+                            Debug.Log("[BoardManager] This spell must target an enemy minion on the board.");
+                            return;
+                        }
+                        var mbComp = minionTarget.GetComponent<MinionBehaviour>();
+                        if (mbComp == null || mbComp.instance == null || !(mbComp.instance.Owner is EnemyEntity))
+                        {
+                            Debug.Log("[BoardManager] This spell must target an enemy minion.");
+                            return;
+                        }
+                    }
+                }
+
+                if (inst.Owner is PlayerEntity)
+                {
+                    if (bm == null)
+                    {
+                        Debug.LogWarning("[BoardManager] No BattleManager found to check mana.");
+                        return;
+                    }
+
+                    if (bm.playerMana < inst.Data.cost)
+                    {
+                        Debug.Log("[BoardManager] Not enough player mana to cast that spell.");
+                        return;
+                    }
+
+                    bm.playerMana -= inst.Data.cost;
+                    if (bm.uiManager != null) bm.uiManager.UpdatePlayerMana(bm.playerMana);
+                }
+
+                Debug.Log($"[BoardManager] Casting spell {inst.Data.cardName} by Player targeting {GetTargetDescription(targetEntity)}");
+                inst.PlayCard(null, targetEntity);
+
+                if (bm != null && bm.uiManager != null)
+                {
+                    bm.uiManager.UpdatePlayerHealth(bm.playerHealth);
+                    bm.uiManager.UpdateEnemyHealth(bm.enemyHealth);
+                }
 
                 var hm = FindFirstObjectByType<HandManager>();
                 if (hm != null) hm.RemoveByInstance(inst);
@@ -224,52 +275,63 @@ public class BoardManager : MonoBehaviour
 
     private bool TryPlaceSelectedCard(BoardSlot slot)
     {
-        if (selectedCard == null) 
+        if (selectedCard == null)
         {
-            Debug.Log("[BoardManager] No card selected."); 
+            Debug.Log("[BoardManager] No card selected.");
             return false;
         }
-        if (slot.isOccupied) 
-        { 
-            Debug.Log("[BoardManager] Slot already occupied."); 
-            return false; 
+        if (slot.isOccupied)
+        {
+            Debug.Log("[BoardManager] Slot already occupied.");
+            return false;
         }
 
         var inst = selectedCard.Instance;
-        if (slot.PlaceCard(inst))
-        {
-            var hm = FindFirstObjectByType<HandManager>();
-            if (hm != null) hm.RemoveByInstance(selectedCard.Instance);
-            Destroy(selectedCard.gameObject); // remove from hand UI
-            selectedCard = null;
-            return true;
-        }
-
         if (inst == null)
         {
             Debug.LogWarning("[BoardManager] Selected card instance is null.");
             return false;
         }
 
+        var bm = BattleManager.Instance;
+
         if (inst.Owner is PlayerEntity)
         {
-            if (BattleManager.Instance == null)
+            if (bm == null)
             {
                 Debug.LogWarning("[BoardManager] No BattleManager found to check mana.");
                 return false;
             }
 
-            if (BattleManager.Instance.playerMana < inst.Data.cost)
+            if (bm.playerMana < inst.Data.cost)
             {
                 Debug.Log("[BoardManager] Not enough player mana to play that card.");
                 return false;
             }
 
-            BattleManager.Instance.playerMana -= inst.Data.cost;
-            BattleManager.Instance.uiManager.UpdatePlayerMana(BattleManager.Instance.playerMana);
+            bm.playerMana -= inst.Data.cost;
+            if (bm.uiManager != null) bm.uiManager.UpdatePlayerMana(bm.playerMana);
         }
 
-        return false;
+        inst.PlayCard(slot);
+        if (slot.PlaceCard(inst))
+        {
+            var hm = FindFirstObjectByType<HandManager>();
+            if (hm != null) hm.RemoveByInstance(inst);
+            Destroy(selectedCard.gameObject);
+            selectedCard = null;
+            return true;
+        }
+        else
+        {
+            if (inst.Owner is PlayerEntity && bm != null)
+            {
+                bm.playerMana += inst.Data.cost;
+                if (bm.uiManager != null) bm.uiManager.UpdatePlayerMana(bm.playerMana);
+            }
+            Debug.LogWarning("[BoardManager] Failed to place selected card on slot.");
+            return false;
+        }
     }
 
     // Strict resolver: only returns a target if you click directly on it
@@ -327,11 +389,21 @@ public class BoardManager : MonoBehaviour
         {
             var enemies = FindObjectsOfType<EnemyEntity>();
             if (enemies != null && enemies.Length > 0)
-                return enemies[0];   // or choose by index if you ever have >1
+                return enemies[0];
             return null;
         }
 
         // Anything else: no target
         return null;
+    }
+
+    private string GetTargetDescription(EntityBase target)
+    {
+        if (target == null) return "(none)";
+        if (target is PlayerEntity) return "Player";
+        if (target is EnemyEntity) return "Enemy Hero";
+        var m = target as MinionEntity;
+        if (m != null) return $"Minion:{m.entityName}";
+        return target.entityName ?? target.name ?? target.GetType().Name;
     }
 }
