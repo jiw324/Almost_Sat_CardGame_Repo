@@ -168,7 +168,7 @@ MonoBehaviour:
       maxHealth: 30
       health: 10
       mana: 1
-      gold: 5
+      gold: 12
       deck:
         cardIds: 
     sessionNodeMapData:
