@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class FogController : MonoBehaviour
 {
-    [SerializeField] private float horizontalPadding = 2f;
     [SerializeField] private float verticalPadding = 2f;
     [SerializeField] private float forestPadding = 6f;
     [SerializeField] private float fogHeight = 0.6f;
