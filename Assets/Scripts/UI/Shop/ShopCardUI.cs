@@ -6,12 +6,18 @@ public class ShopCardUI : MonoBehaviour
 {
     [Header("References")]
     public TMP_Text priceText;
-    public Toggle toggle;
+    public Button clickArea;
     public CardUIController visual;
+
+    [Header("Visual States")]
+    public Color normalColor = Color.white;
+    public Color selectedColor = Color.green;
 
     private TransactionManager transactionManager;
     private CardId cardId;
     private int cost;
+    private bool isSelected = false;
+    private Image borderImage;
 
     public void Initialize(CardId id, int price, TransactionManager mgr)
     {
@@ -25,11 +31,36 @@ public class ShopCardUI : MonoBehaviour
         CardInstance tempCard = CardFactory.CreateCard(id, null);
         visual.Initialize(tempCard);
 
-        toggle.onValueChanged.AddListener(OnToggle);
+        // Get the border image from the button's target graphic
+        borderImage = clickArea.targetGraphic as Image;
+
+        clickArea.onClick.AddListener(OnClick);
+
+        UpdateVisualState();
     }
 
-    private void OnToggle(bool isOn)
+    private void OnClick()
     {
-        transactionManager.TogglePurchase(cardId, cost);
+        Debug.Log($"Card clicked: {cardId}, Current state: {isSelected}");
+        bool success = transactionManager.TogglePurchase(cardId, cost);
+
+        if (success)
+        {
+            isSelected = !isSelected;
+            Debug.Log($"Toggle successful. New state: {isSelected}");
+            UpdateVisualState();
+        }
+        else
+        {
+            Debug.Log($"Cannot toggle card {cardId} - insufficient gold");
+        }
+    }
+
+    private void UpdateVisualState()
+    {
+        if (borderImage != null)
+        {
+            borderImage.color = isSelected ? selectedColor : normalColor;
+        }
     }
 }

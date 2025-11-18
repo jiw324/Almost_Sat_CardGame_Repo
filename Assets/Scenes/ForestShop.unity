@@ -3253,7 +3253,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &939984522
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3696,31 +3696,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 591196071}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: RestPlayerButton, Assembly-CSharp
-        m_MethodName: OnRestButtonClicked
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SceneSwitch, Assembly-CSharp
-        m_MethodName: SceneChanger
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Map
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1001 &1037190755
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4871,7 +4847,7 @@ RectTransform:
   m_Father: {fileID: 1404393005}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -4962,6 +4938,7 @@ MonoBehaviour:
   shopCardPrefab: {fileID: 3550189849506567307, guid: f520fd999fa39494fa692f1f2f274e0d, type: 3}
   continueButton: {fileID: 1033220028}
   goldDisplay: {fileID: 284100641}
+  sceneManager: {fileID: 834377125}
   cardsForSale: 000000000100000003000000
   cardPrices: 050000000500000005000000
 --- !u!1 &1283593518
@@ -5400,6 +5377,18 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: MainMenu
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 374459641}
+        m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
+        m_MethodName: ResumeGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1362031850 stripped
@@ -6438,12 +6427,12 @@ RectTransform:
   - {fileID: 597051354}
   - {fileID: 1286693242}
   - {fileID: 1856850085}
-  - {fileID: 1605884651}
-  - {fileID: 939984522}
-  - {fileID: 374459640}
   - {fileID: 284100637}
   - {fileID: 1968669273}
   - {fileID: 1033220027}
+  - {fileID: 939984522}
+  - {fileID: 1605884651}
+  - {fileID: 374459640}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -6619,7 +6608,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -165, y: 10}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1805772983
 MonoBehaviour:
@@ -7270,9 +7259,9 @@ RectTransform:
   m_Father: {fileID: 20627683}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -7, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2017979890
 MonoBehaviour:

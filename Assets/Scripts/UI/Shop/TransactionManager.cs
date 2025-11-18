@@ -12,7 +12,7 @@ public class TransactionManager : MonoBehaviour
 
     private List<PurchaseEntry> pendingPurchases = new();
 
-    public event Action<int> OnGoldChanged;   // For UI updates
+    public event Action<int> OnGoldChanged;
 
     public void Initialize(DeckInstance deck, int gold)
     {
@@ -23,25 +23,40 @@ public class TransactionManager : MonoBehaviour
         TempGold = gold;
     }
 
-    public void TogglePurchase(CardId cardId, int cost)
+    public bool TogglePurchase(CardId cardId, int cost)
     {
-        // Find existing toggle
         var entry = pendingPurchases.Find(x => x.cardId == cardId);
 
         if (entry == null)
         {
+            // Check if player can afford it
+            if (TempGold < cost)
+            {
+                Debug.Log($"Cannot purchase {cardId}: insufficient gold ({TempGold}/{cost})");
+                return false;
+            }
+
             // Add as purchased
             pendingPurchases.Add(new PurchaseEntry(cardId, cost));
             TempGold -= cost;
+            Debug.Log($"Purchased {cardId} for {cost}. Gold: {originalGold} -> {TempGold}");
         }
         else
         {
             // Remove purchase → refund gold
             pendingPurchases.Remove(entry);
             TempGold += cost;
+            Debug.Log($"Refunded {cardId} for {cost}. Gold: {TempGold}");
         }
 
+        Debug.Log($"Invoking OnGoldChanged with {TempGold}. Subscribers: {OnGoldChanged?.GetInvocationList().Length}");
         OnGoldChanged?.Invoke(TempGold);
+        return true;
+    }
+
+    public bool IsPurchased(CardId cardId)
+    {
+        return pendingPurchases.Exists(x => x.cardId == cardId);
     }
 
     public bool TryCommitChanges()

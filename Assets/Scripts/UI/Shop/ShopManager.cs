@@ -10,6 +10,7 @@ public class ShopManager : MonoBehaviour
     public GameObject shopCardPrefab;
     public Button continueButton;
     public GoldDisplay goldDisplay;
+    public SceneSwitch sceneManager;
 
     [Header("Shop Data")]
     public List<CardId> cardsForSale;
@@ -25,13 +26,28 @@ public class ShopManager : MonoBehaviour
         playerGold = session.GetPlayerGold();
 
         transactionManager.Initialize(playerDeck, playerGold);
-        transactionManager.OnGoldChanged += goldDisplay.UpdateGold;
+        transactionManager.OnGoldChanged += OnGoldChanged;
 
         goldDisplay.UpdateGold(playerGold);
 
         BuildShop();
 
         continueButton.onClick.AddListener(TryFinishNode);
+    }
+
+    private void OnDestroy()
+    {
+        // Clean up event subscription
+        if (transactionManager != null)
+        {
+            transactionManager.OnGoldChanged -= OnGoldChanged;
+        }
+    }
+
+    private void OnGoldChanged(int newGold)
+    {
+        Debug.Log($"OnGoldChanged called with {newGold}");
+        goldDisplay.UpdateGold(newGold);
     }
 
     private void BuildShop()
@@ -42,6 +58,7 @@ public class ShopManager : MonoBehaviour
             int cost = cardPrices[i];
 
             GameObject cardObj = Instantiate(shopCardPrefab, shopContentArea);
+            cardObj.transform.localScale = Vector3.one * 1.5f;
             ShopCardUI ui = cardObj.GetComponent<ShopCardUI>();
             ui.Initialize(id, cost, transactionManager);
         }
@@ -52,6 +69,7 @@ public class ShopManager : MonoBehaviour
         if (!transactionManager.TryCommitChanges())
         {
             Debug.Log("Cannot continue: insufficient gold!");
+            // Optional: Show error popup to player
             return;
         }
 
@@ -59,10 +77,8 @@ public class ShopManager : MonoBehaviour
         ExitNode();
     }
 
-
     private void ExitNode()
     {
-        // Load next scene or return to map
-        // SceneManager.LoadScene(...);
+        sceneManager.SceneChanger("Map");
     }
 }
