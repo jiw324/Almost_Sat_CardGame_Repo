@@ -64,46 +64,53 @@ public class MapGenerationManager : MonoBehaviour
 
     public void GenerateFromSeed(int seed)
     {
+        // Grab seed and initialize Random class with seed
         _currentSeed = seed;
         Random.InitState(seed);
 
         if (_activeMap != null)
             Destroy(_activeMap.gameObject);
 
+        // Instantiate map object and move to map scene
         NodeMap map = Instantiate(nodeMapPrefab);
-
         Scene mapScene = SceneManager.GetSceneByName("Map");
         if (mapScene.IsValid())
             SceneManager.MoveGameObjectToScene(map.gameObject, mapScene);
 
         _activeMap = map;
 
+        // Generate structure of map
         map.Generate();
 
+        // Assign node types on map
         var assigner = new NodeTypeAssigner(map.Factory);
         assigner.Assign(map);
 
         // Assign random enemies to combat nodes
         AssignEnemiesToCombatNodes(map);
 
+        // Validate node map against rules
         var validator = new NodeMapValidator();
         validator.Validate(map);
 
         MapStateManager.Instance.Initialize(map);
 
+        // Spawn prefabs for node map
         var spawner = new NodeMapSpawner();
         _visualContext = spawner.Spawn(map, map.transform);
 
+        // Spawn environment around node map
         var env = new MapEnvironmentSpawner();
         env.SpawnEnvironment(_visualContext, map.transform);
 
-        // IMPORTANT: Recalculate bounds in case environment expanded them
         Bounds finalBounds = _visualContext.MapBounds;
 
+        // Position map camera and set movement bounds
         var cam = FindFirstObjectByType<MapCameraController>();
         if (cam != null)
             cam.SetBoundsUsingWorldBounds(finalBounds);
 
+        // Spawn fog over map
         if (fogPrefab != null)
         {
             GameObject fogObj = Instantiate(fogPrefab, _activeMap.transform);

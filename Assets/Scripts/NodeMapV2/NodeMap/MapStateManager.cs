@@ -30,6 +30,39 @@ public class MapStateManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    private void Update()
+    {
+        var kb = UnityEngine.InputSystem.Keyboard.current;
+        if (kb != null && kb.cKey.wasPressedThisFrame)
+        {
+            Node current = GetCurrentNode();
+            if (current != null)
+            {
+                MarkCompleted(current);
+                ReturnToMapScene();
+            }
+        }
+    }
+
+    private void ReturnToMapScene()
+    {
+        var sceneManagerObj = GameObject.Find("SceneManager");
+        if (sceneManagerObj == null)
+        {
+            Debug.LogError("MapStateManager: Could not find SceneManager object.");
+            return;
+        }
+
+        var sceneSwitch = sceneManagerObj.GetComponent<SceneSwitch>();
+        if (sceneSwitch == null)
+        {
+            Debug.LogError("MapStateManager: SceneManager missing SceneSwitch component.");
+            return;
+        }
+
+        sceneSwitch.SceneChanger("Map");
+    }
+
     public void Initialize(NodeMap map)
     {
         _map = map;

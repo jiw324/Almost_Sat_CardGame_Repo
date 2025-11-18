@@ -170,7 +170,7 @@ MonoBehaviour:
       mana: 1
       gold: 5
       deck:
-        cardIds: []
+        cardIds: 
     sessionNodeMapData:
       mapSeed: 0
       currentNodeId: 
