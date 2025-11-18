@@ -6,9 +6,12 @@ using UnityEngine.UI;
 public class MulliganCardOption : MonoBehaviour
 {
     [Header("UI References")]
+    [SerializeField] private Image artworkImage;
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text costText;
+    [SerializeField] private TMP_Text damageText;
     [SerializeField] private TMP_Text descriptionText;
+    [SerializeField] private RectTransform visualRoot;
     [SerializeField] private Toggle selectToggle;
 
     public CardInstance Card { get; private set; }
@@ -32,8 +35,33 @@ public class MulliganCardOption : MonoBehaviour
         if (costText != null)
             costText.text = Card.Data.cost.ToString();
 
+        if (damageText != null)
+        {
+            damageText.text = Card.Data.damage > 0 ? Card.Data.damage.ToString() : "";
+            damageText.gameObject.SetActive(Card.Data.damage > 0);
+        }
+
         if (descriptionText != null)
             descriptionText.text = Card.Data.description;
+
+        // Set artwork image
+        if (artworkImage != null)
+        {
+            artworkImage.sprite = Card.Data.artwork;
+            artworkImage.enabled = Card.Data.artwork != null;
+        }
+        if (Card.Data.type == "spell")
+        {
+            visualRoot.Find("Type").Find("Spell").gameObject.SetActive(true);
+        }
+        else if (Card.Data.isRanged)
+        {
+            visualRoot.Find("Type").Find("Ranged").gameObject.SetActive(true);
+        }
+        else
+        {
+            visualRoot.Find("Type").Find("Melee").gameObject.SetActive(true);
+        }
 
         if (selectToggle != null)
         {

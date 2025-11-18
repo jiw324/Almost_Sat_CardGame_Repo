@@ -11,6 +11,9 @@ public class Node : INode
     public List<Node> NextNodes { get; } = new List<Node>();
     public bool IsVisited { get; private set; }
     public bool IsCompleted { get; private set; }
+    
+    // Per-node enemy assignment (for combat nodes)
+    public string AssignedEnemyName { get; set; }
 
     public Node(NodeDefinition def, Vector2Int gridPos)
     {
