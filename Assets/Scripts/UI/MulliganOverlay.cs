@@ -10,6 +10,7 @@ public class MulliganOverlay : MonoBehaviour
     [SerializeField] private Transform cardContainer;
     [SerializeField] private MulliganCardOption cardOptionPrefab;
     [SerializeField] private Button confirmButton;
+    [SerializeField] private TurnManager turnManager;
 
     private readonly List<MulliganCardOption> activeOptions = new();
     private Action<List<CardInstance>, List<CardInstance>> onComplete;
@@ -83,6 +84,7 @@ public class MulliganOverlay : MonoBehaviour
 
         SetRootActive(false);
         ClearOptions();
+        turnManager.OnMulliganFinished();
     }
 
     public void HideImmediate()

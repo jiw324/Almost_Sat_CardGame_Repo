@@ -80,6 +80,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4107252543769997497, guid: 973b3df2dc20d6f47abf1d25b287b3af, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4107252543769997497, guid: 973b3df2dc20d6f47abf1d25b287b3af, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 0d800b02045940e4d9a46fbbf21c583e, type: 2}
     - target: {fileID: 4108068500310524476, guid: 973b3df2dc20d6f47abf1d25b287b3af, type: 3}
       propertyPath: m_Size.x
       value: 10.24
@@ -93,9 +101,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: c1a9956fe1a64614cbec6495dc26a658, type: 3}
     - target: {fileID: 4108068500310524476, guid: 973b3df2dc20d6f47abf1d25b287b3af, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4108068500310524476, guid: 973b3df2dc20d6f47abf1d25b287b3af, type: 3}
       propertyPath: m_WasSpriteAssigned
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4108068500310524476, guid: 973b3df2dc20d6f47abf1d25b287b3af, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
     - target: {fileID: 4530968154965542551, guid: 973b3df2dc20d6f47abf1d25b287b3af, type: 3}
       propertyPath: m_Name
       value: Node_Combat

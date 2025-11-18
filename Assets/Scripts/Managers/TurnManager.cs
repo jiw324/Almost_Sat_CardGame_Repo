@@ -48,14 +48,17 @@ public class TurnManager : MonoBehaviour
         playerTurnState = new PlayerTurnState(this);
         enemyTurnState = new EnemyTurnState(this);
         endTurnState = new EndTurnState(this);
-
-        StartCoroutine(BeginBattleRoutine());
     }
 
     private IEnumerator BeginBattleRoutine()
     {
         yield return turnBanner.ShowIntroBannerEnumerator();
         ChangeState(playerTurnState);
+    }
+
+    public void OnMulliganFinished()
+    {
+        StartCoroutine(BeginBattleRoutine());
     }
 
     public void ChangeState(TurnStateBase newState)

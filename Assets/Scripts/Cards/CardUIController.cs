@@ -10,9 +10,12 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
     [Header("References")]
     [SerializeField] private Image background;
     [SerializeField] private Image border;
+    [SerializeField] private Image artworkImage;
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text costText;
+    [SerializeField] private TMP_Text damageText;
     [SerializeField] private TMP_Text descText;
+    [SerializeField] private RectTransform visualRoot;
 
     [Header("Visuals")]
     [SerializeField] private Color selectedBorder = Color.yellow;
@@ -30,8 +33,8 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
 
     public void Initialize(CardInstance instance)
     {
-        originalScale = transform.localScale;
-        originalPosition = transform.localPosition;
+        originalScale = visualRoot.localScale;
+        originalPosition = visualRoot.localPosition;
         Instance = instance;
         UpdateUI();
     }
@@ -39,23 +42,54 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
     private void UpdateUI()
     {
         if (Instance == null || Instance.Data == null) return;
-        nameText.text = Instance.Data.cardName;
-        //costText.text = Instance.Data.cost.ToString();
-        descText.text = Instance.Data.description;
+        
+        if (nameText != null)
+            nameText.text = Instance.Data.cardName;
+        
+        if (costText != null)
+            costText.text = Instance.Data.cost.ToString();
+        
+        if (damageText != null)
+        {
+            damageText.text = Instance.Data.damage > 0 ? Instance.Data.damage.ToString() : "";
+            damageText.gameObject.SetActive(Instance.Data.damage > 0);
+        }
+        
+        if (descText != null)
+            descText.text = Instance.Data.description;
+        
+        // Set artwork image
+        if (artworkImage != null)
+        {
+            artworkImage.sprite = Instance.Data.artwork;
+            artworkImage.enabled = Instance.Data.artwork != null;
+        }
+        if (Instance.Data.type == "spell")
+        {
+            visualRoot.Find("Type").Find("Spell").gameObject.SetActive(true);
+        }
+        else if (Instance.Data.isRanged)
+        {
+            visualRoot.Find("Type").Find("Ranged").gameObject.SetActive(true);
+        }
+        else
+        {
+            visualRoot.Find("Type").Find("Melee").gameObject.SetActive(true);
+        }
     }
 
     private void Update()
     {
         // Smooth scaling when hovered
         Vector3 targetScale = isHovered ? originalScale * hoverScale : originalScale;
-        transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * animationSpeed);
+        visualRoot.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * animationSpeed);
 
-        Vector3 currentPos = transform.localPosition;
+        Vector3 currentPos = visualRoot.localPosition;
         float targetY = isHovered
             ? originalPosition.y + hoverHeight
             : originalPosition.y;
         float newY = Mathf.Lerp(currentPos.y, targetY, Time.deltaTime * animationSpeed);
-        transform.localPosition = new Vector3(currentPos.x, newY, currentPos.z);
+        visualRoot.localPosition = new Vector3(currentPos.x, newY, currentPos.z);
 
     }
 
