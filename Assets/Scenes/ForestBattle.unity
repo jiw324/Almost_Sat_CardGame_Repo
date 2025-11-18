@@ -637,6 +637,7 @@ MonoBehaviour:
   playerEntity: {fileID: 229261168}
   enemyEntity: {fileID: 1239390924}
   playerHandManager: {fileID: 1060245581}
+  enemyHandManager: {fileID: 0}
   playerHealth: 1
   playerMana: 1
   enemyHealth: 1
@@ -744,16 +745,24 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7807290915893413821, guid: d2156b40f6ec18f4ab7144686d88bb14, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 812038384}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d2156b40f6ec18f4ab7144686d88bb14, type: 3}
 --- !u!224 &129009313 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4869795013754454611, guid: d2156b40f6ec18f4ab7144686d88bb14, type: 3}
   m_PrefabInstance: {fileID: 129009312}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &129009314 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 266341286250077857, guid: d2156b40f6ec18f4ab7144686d88bb14, type: 3}
+  m_PrefabInstance: {fileID: 129009312}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1d58e4aeb1b7704f8576f8350b5b34a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &131602407
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2460,25 +2469,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   handManager: {fileID: 1060245581}
---- !u!1 &812038383 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7807290915893413821, guid: d2156b40f6ec18f4ab7144686d88bb14, type: 3}
-  m_PrefabInstance: {fileID: 129009312}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &812038384
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 812038383}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1d58e4aeb1b7704f8576f8350b5b34a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  healthText: {fileID: 1054914731}
-  manaText: {fileID: 1435077662}
 --- !u!1 &816775706
 GameObject:
   m_ObjectHideFlags: 0
@@ -3156,7 +3146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerUI: {fileID: 1396077449}
-  enemyUI: {fileID: 812038384}
+  enemyUI: {fileID: 129009314}
 --- !u!1 &937715131
 GameObject:
   m_ObjectHideFlags: 0
@@ -3863,17 +3853,6 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
---- !u!114 &1054914731 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4428214653059624489, guid: d2156b40f6ec18f4ab7144686d88bb14, type: 3}
-  m_PrefabInstance: {fileID: 129009312}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1060245580
 GameObject:
   m_ObjectHideFlags: 0
@@ -4323,6 +4302,8 @@ MonoBehaviour:
   entityName: 
   maxHealth: 0
   currentHealth: 0
+  mana: 1
+  maxMana: 1
 --- !u!1 &1242896914
 GameObject:
   m_ObjectHideFlags: 0
@@ -4756,6 +4737,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healthText: {fileID: 1142551925}
   manaText: {fileID: 845049363}
+  portraitImage: {fileID: 0}
 --- !u!1 &1405136340
 GameObject:
   m_ObjectHideFlags: 0
@@ -4831,17 +4813,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1405136340}
   m_CullTransparentMesh: 1
---- !u!114 &1435077662 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8534194892529790133, guid: d2156b40f6ec18f4ab7144686d88bb14, type: 3}
-  m_PrefabInstance: {fileID: 129009312}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1439479035
 GameObject:
   m_ObjectHideFlags: 0

@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e425dc03d75c641f68ab56c5ac666241, type: 3}
-  m_Name: Wendy Wraith
+  m_Name: Daniel Demon
   m_EditorClassIdentifier: 
   enemyName: Enemy
-  maxHealth: 15
-  startingMana: 5
-  portrait: {fileID: 21300000, guid: 4e43b0758faf2c548819f4c93474a7e5, type: 3}
-  deckDefinition: {fileID: 11400000, guid: 5e8d255eb222643af9b19304f1c1dbd7, type: 2}
+  maxHealth: 20
+  startingMana: 1
+  portrait: {fileID: 0}
+  deckDefinition: {fileID: 0}

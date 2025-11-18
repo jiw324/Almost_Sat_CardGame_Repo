@@ -83,6 +83,9 @@ public class MapGenerationManager : MonoBehaviour
         var assigner = new NodeTypeAssigner(map.Factory);
         assigner.Assign(map);
 
+        // Assign random enemies to combat nodes
+        AssignEnemiesToCombatNodes(map);
+
         var validator = new NodeMapValidator();
         validator.Validate(map);
 
@@ -110,6 +113,56 @@ public class MapGenerationManager : MonoBehaviour
             if (fog != null)
                 fog.Initialize(_activeMap, finalBounds);
         }
+    }
+
+    /// <summary>
+    /// Assigns random enemies to all combat nodes in the map.
+    /// </summary>
+    private void AssignEnemiesToCombatNodes(NodeMap map)
+    {
+        // Dynamically load all enemies from Resources/Enemies/
+        EnemyDefinition[] enemyDefinitions = Resources.LoadAll<EnemyDefinition>("Enemies");
+        
+        if (enemyDefinitions == null || enemyDefinitions.Length == 0)
+        {
+            Debug.LogWarning("[MapGenerationManager] No enemies found in Resources/Enemies/. Using fallback.");
+            return;
+        }
+
+        // Extract enemy names from the loaded definitions
+        string[] availableEnemies = new string[enemyDefinitions.Length];
+        for (int i = 0; i < enemyDefinitions.Length; i++)
+        {
+            availableEnemies[i] = enemyDefinitions[i].name; // Use the asset name (without .asset extension)
+        }
+
+        Debug.Log($"[MapGenerationManager] Loaded {availableEnemies.Length} enemies: {string.Join(", ", availableEnemies)}");
+
+        int assignedCount = 0;
+        foreach (var floorPair in map.Floors)
+        {
+            foreach (var node in floorPair.Value)
+            {
+                if (node.Definition != null && node.Definition.nodeType == NodeType.Combat)
+                {
+                    // Randomly assign an enemy to this combat node
+                    string randomEnemy = availableEnemies[Random.Range(0, availableEnemies.Length)];
+                    CombatNodeEnemyAssigner.AssignEnemyToNode(node, randomEnemy);
+                    assignedCount++;
+                }
+            }
+        }
+
+        // Also check boss node
+        if (map.BossNode != null && map.BossNode.Definition != null && map.BossNode.Definition.nodeType == NodeType.Combat)
+        {
+            // Boss could use a different enemy or same pool - using same pool for now
+            string randomEnemy = availableEnemies[Random.Range(0, availableEnemies.Length)];
+            CombatNodeEnemyAssigner.AssignEnemyToNode(map.BossNode, randomEnemy);
+            assignedCount++;
+        }
+
+        Debug.Log($"[MapGenerationManager] Assigned enemies to {assignedCount} combat nodes.");
     }
 }
 

@@ -80,6 +80,12 @@ public class BattleManager : MonoBehaviour
                 {
                     enemyDeckInstance = combatData.enemyDeck;
                 }
+
+                // Set enemy portrait if available
+                if (enemyDef != null && enemyDef.Portrait != null && uiManager != null && uiManager.enemyUI != null)
+                {
+                    uiManager.enemyUI.SetPortrait(enemyDef.Portrait);
+                }
             }
         }
         else
@@ -93,7 +99,15 @@ public class BattleManager : MonoBehaviour
 
     void StartBattle()
     {
-        uiManager.InitializeUI(playerHealth, playerMana, enemyHealth, enemyMana);
+        if (uiManager != null)
+        {
+            uiManager.InitializeUI(playerHealth, playerMana, enemyHealth, enemyMana);
+        }
+        else
+        {
+            Debug.LogWarning("[BattleManager] UIManager is not assigned.");
+        }
+
         BoardManager.Instance.InitializeBoard();
         
         if (playerHandManager != null)

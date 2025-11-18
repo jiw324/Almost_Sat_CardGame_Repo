@@ -1,47 +1,47 @@
 using UnityEngine;
 
 /// <summary>
-/// Utility class for assigning enemies to combat nodes.
-/// Can be used to set up enemies when nodes are generated or manually assign them.
+/// Utility class for assigning enemies to combat nodes
+/// Used to set up enemies when nodes are generated
 /// </summary>
 public static class CombatNodeEnemyAssigner
 {
     /// <summary>
-    /// Assigns an enemy to a combat node by finding the NodeBehaviour component.
+    /// Assigns an enemy to a combat node by storing it in the node's per-node assignment.
     /// </summary>
-    /// <param name="nodeGameObject">The GameObject with NodeBehaviour component</param>
+    /// <param name="node">The Node instance (data model)</param>
     /// <param name="enemyDefinitionName">Name of EnemyDefinition in Resources/Enemies/</param>
-    public static void AssignEnemyToNode(GameObject nodeGameObject, string enemyDefinitionName)
+    public static void AssignEnemyToNode(Node node, string enemyDefinitionName)
     {
-        if (nodeGameObject == null)
+        if (node == null)
         {
-            Debug.LogError("[CombatNodeEnemyAssigner] Node GameObject is null.");
+            Debug.LogError("[CombatNodeEnemyAssigner] Node is null.");
             return;
         }
 
-        NodeBehaviour nodeBehaviour = nodeGameObject.GetComponent<NodeBehaviour>();
-        if (nodeBehaviour == null)
+        if (node.Definition == null || node.Definition.nodeType != NodeType.Combat)
         {
-            Debug.LogError($"[CombatNodeEnemyAssigner] No NodeBehaviour found on {nodeGameObject.name}.");
+            Debug.LogWarning($"[CombatNodeEnemyAssigner] Node {node.Id} is not a combat node.");
             return;
         }
 
-        if (nodeBehaviour.definition.nodeType != NodeType.Combat)
+        CombatNodeDefinition combatDef = node.Definition as CombatNodeDefinition;
+        if (combatDef == null)
         {
-            Debug.LogWarning($"[CombatNodeEnemyAssigner] Node {nodeGameObject.name} is not a combat node.");
+            Debug.LogError($"[CombatNodeEnemyAssigner] Node {node.Id} definition is not a CombatNodeDefinition.");
             return;
         }
 
-        nodeBehaviour.SetEnemy(enemyDefinitionName);
-        Debug.Log($"[CombatNodeEnemyAssigner] Assigned enemy '{enemyDefinitionName}' to node {nodeGameObject.name}.");
+        node.AssignedEnemyName = enemyDefinitionName;
+        Debug.Log($"[CombatNodeEnemyAssigner] Assigned enemy '{enemyDefinitionName}' to node {node.Id}.");
     }
 
     /// <summary>
     /// Assigns a random enemy from a pool to a combat node.
     /// </summary>
-    /// <param name="nodeGameObject">The GameObject with NodeBehaviour component</param>
+    /// <param name="node">The Node instance (data model)</param>
     /// <param name="enemyPool">Array of enemy definition names to choose from</param>
-    public static void AssignRandomEnemyToNode(GameObject nodeGameObject, string[] enemyPool)
+    public static void AssignRandomEnemyToNode(Node node, string[] enemyPool)
     {
         if (enemyPool == null || enemyPool.Length == 0)
         {
@@ -50,31 +50,69 @@ public static class CombatNodeEnemyAssigner
         }
 
         string randomEnemy = enemyPool[Random.Range(0, enemyPool.Length)];
-        AssignEnemyToNode(nodeGameObject, randomEnemy);
+        AssignEnemyToNode(node, randomEnemy);
     }
 
     /// <summary>
     /// Sets up a node to randomly select from a pool when entered.
     /// </summary>
-    /// <param name="nodeGameObject">The GameObject with NodeBehaviour component</param>
+    /// <param name="node">The Node instance (data model)</param>
     /// <param name="enemyPool">Array of enemy definition names for the pool</param>
-    public static void SetRandomEnemyPool(GameObject nodeGameObject, string[] enemyPool)
+    public static void SetRandomEnemyPool(Node node, string[] enemyPool)
     {
-        if (nodeGameObject == null)
+        if (node == null)
         {
-            Debug.LogError("[CombatNodeEnemyAssigner] Node GameObject is null.");
+            Debug.LogError("[CombatNodeEnemyAssigner] Node is null.");
             return;
         }
 
-        NodeBehaviour nodeBehaviour = nodeGameObject.GetComponent<NodeBehaviour>();
-        if (nodeBehaviour == null)
+        if (node.Definition == null || node.Definition.nodeType != NodeType.Combat)
         {
-            Debug.LogError($"[CombatNodeEnemyAssigner] No NodeBehaviour found on {nodeGameObject.name}.");
+            Debug.LogWarning($"[CombatNodeEnemyAssigner] Node {node.Id} is not a combat node.");
             return;
         }
 
-        nodeBehaviour.SetRandomEnemyPool(enemyPool);
-        Debug.Log($"[CombatNodeEnemyAssigner] Set random enemy pool on {nodeGameObject.name} with {enemyPool.Length} enemies.");
+        CombatNodeDefinition combatDef = node.Definition as CombatNodeDefinition;
+        if (combatDef == null)
+        {
+            Debug.LogError($"[CombatNodeEnemyAssigner] Node {node.Id} definition is not a CombatNodeDefinition.");
+            return;
+        }
+
+        combatDef.enemyPool = enemyPool;
+        combatDef.useRandomPool = true;
+        Debug.Log($"[CombatNodeEnemyAssigner] Set random enemy pool on node {node.Id} with {enemyPool.Length} enemies.");
+    }
+
+    /// <summary>
+    /// Gets the enemy definition name for a combat node, handling random pools if configured.
+    /// Priority: 1) Per-node assignment, 2) Random pool, 3) Definition's enemyDefinitionName
+    /// </summary>
+    /// <param name="node">The Node instance</param>
+    /// <returns>Enemy definition name, or null if not configured</returns>
+    public static string GetEnemyDefinitionName(Node node)
+    {
+        if (node == null || node.Definition == null || node.Definition.nodeType != NodeType.Combat)
+            return null;
+
+        // Check per-node assignment first (highest priority)
+        if (!string.IsNullOrWhiteSpace(node.AssignedEnemyName))
+        {
+            return node.AssignedEnemyName;
+        }
+
+        CombatNodeDefinition combatDef = node.Definition as CombatNodeDefinition;
+        if (combatDef == null)
+            return null;
+
+        // Check random pool
+        if (combatDef.useRandomPool && combatDef.enemyPool != null && combatDef.enemyPool.Length > 0)
+        {
+            return combatDef.enemyPool[Random.Range(0, combatDef.enemyPool.Length)];
+        }
+
+        // Fall back to definition's enemyDefinitionName
+        return combatDef.enemyDefinitionName;
     }
 }
 

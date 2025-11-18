@@ -21,23 +21,23 @@ public class MapPositionManager : MonoBehaviour
 
     private void LogStarterNodes()
     {
-        if (!_nodeMap.nodes.ContainsKey(0))
+        if (!_nodeMap.Floors.ContainsKey(0))
         {
             Debug.LogError("NodeMap does not contain a first row (floor 0).");
             return;
         }
 
         Debug.Log("Starter nodes (first row):");
-        for (int x = 0; x < _nodeMap.nodes[0].Length; x++)
+        foreach (var node in _nodeMap.Floors[0])
         {
-            if (_nodeMap.nodes[0][x] != null)
-                Debug.Log($" - Node at (x={x}, y=0)");
+            if (node != null)
+                Debug.Log($" - Node at (x={node.GridPos.x}, y=0)");
         }
     }
 
     public void SelectStarterNode(INode starterNode)
     {
-        if (!_nodeMap.nodes[0].Contains(starterNode))
+        if (!_nodeMap.Floors.ContainsKey(0) || !_nodeMap.Floors[0].Any(n => n == starterNode))
         {
             Debug.LogWarning("Attempted to select a starter node not in first row.");
             return;
@@ -57,7 +57,7 @@ public class MapPositionManager : MonoBehaviour
         if (_currentNode == null)
             return;
 
-        foreach (var next in _currentNode.nextNodes)
+        foreach (var next in _currentNode.NextNodes)
         {
             if (next != null)
                 _reachableNodes.Add(next);
@@ -99,17 +99,10 @@ public class MapPositionManager : MonoBehaviour
 
     private (int x, int y) GetNodeCoords(INode target)
     {
-        foreach (var kvp in _nodeMap.nodes)
-        {
-            int y = kvp.Key;
-            INode[] row = kvp.Value;
+        if (target == null)
+            return (-1, -1);
 
-            for (int x = 0; x < row.Length; x++)
-            {
-                if (row[x] == target)
-                    return (x, y);
-            }
-        }
-        return (-1, -1); // Not found (shouldn't happen)
+        // Use GridPos directly from the Node
+        return (target.GridPos.x, target.GridPos.y);
     }
 }

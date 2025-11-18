@@ -8,12 +8,16 @@ public class EnemyDefinition : ScriptableObject
     [SerializeField] private int maxHealth = 20;
     [SerializeField] private int startingMana = 1;
 
+    [Header("Visual")]
+    [SerializeField] private Sprite portrait;
+
     [Header("Deck")]
     [SerializeField] private DeckDefinition deckDefinition;
 
     public string EnemyName => enemyName;
     public int MaxHealth => maxHealth;
     public int StartingMana => startingMana;
+    public Sprite Portrait => portrait;
     public DeckDefinition DeckDefinition => deckDefinition;
 
     public DeckInstance CreateDeckInstance()
