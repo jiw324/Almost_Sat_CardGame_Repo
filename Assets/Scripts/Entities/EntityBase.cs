@@ -3,6 +3,7 @@ using UnityEngine;
 public abstract class EntityBase : MonoBehaviour
 {
     public string entityName;
+    public int maxHealth;
     public int currentHealth;
 
     public virtual void TakeDamage(int amount)
