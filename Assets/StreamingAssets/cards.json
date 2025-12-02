@@ -21,12 +21,13 @@
         {
             "id": "slash",
             "cardName": "Slash",
-            "description": "Deal 6 damage to an enemy.",
+            "description": "[REACTION] Deal up to 12 damage to an enemy.",
             "cost": 1,
             "type": "spell",
             "isRanged": true,
+            "minigameId": "reaction",
             "effectId": "damage_enemy",
-            "effectValue": 6
+            "effectValue": 12
         },
         {
             "id": "healinghands",

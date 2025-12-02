@@ -43,21 +43,45 @@ public class CardInstance
         IsInHand = false;
         IsOnBoard = true;
         HasBeenPlayed = true;
-        
+
+        // Check if this card has a minigame
+        if (Data.minigamePrefab != null && MinigameManager.Instance != null)
+        {
+            // Play minigame first, then resolve effects with the result
+            MinigameManager.Instance.StartMinigame(
+                Data.minigamePrefab,
+                minigameResult =>
+                {
+                    // Minigame result is 0-1, use it as a multiplier for effects
+                    ResolveCardWithMinigameResult(targetSlot, spellTarget, minigameResult);
+                });
+        }
+        else
+        {
+            // No minigame, resolve normally
+            ResolveCardWithMinigameResult(targetSlot, spellTarget, 1.0f);
+        }
+    }
+
+    private void ResolveCardWithMinigameResult(BoardSlot targetSlot, EntityBase spellTarget, float minigameMultiplier)
+    {
         if (!IsMinion)
         {
+            // SPELLS: Resolve effects with minigame multiplier
             EntityBase target = spellTarget ?? targetSlot?.currentCard?.Owner;
-            ResolveSpellEffects(Owner, target);
+            ResolveSpellEffects(Owner, target, minigameMultiplier);
         }
+        // MINIONS: Summon effects are handled separately in BoardManager after placement
+        // Minigame support for minions can be added later if needed
 
         OnCardPlayed?.Invoke();
     }
 
 
     // SPELLS ONLY
-    public void ResolveSpellEffects(EntityBase caster, EntityBase target)
+    public void ResolveSpellEffects(EntityBase caster, EntityBase target, float minigameMultiplier = 1.0f)
     {
-        Execute(Data?.effects, caster, target);
+        Execute(Data?.effects, caster, target, minigameMultiplier);
 
         var minions = UnityEngine.Object.FindObjectsOfType<MinionEntity>();
         foreach (var m in minions)
@@ -73,13 +97,13 @@ public class CardInstance
     }
 
     // MINIONS ONLY
-    public void ResolveMinionSummonEffects(EntityBase caster, EntityBase target)
-        => Execute(Data?.onSummonBindings, caster, target);
+    public void ResolveMinionSummonEffects(EntityBase caster, EntityBase target, float minigameMultiplier = 1.0f)
+        => Execute(Data?.onSummonBindings, caster, target, minigameMultiplier);
 
     public void ResolveMinionDeathEffects()
-        => Execute(Data?.onDeathBindings, Owner, null);
+        => Execute(Data?.onDeathBindings, Owner, null, 1.0f);
 
-    private void Execute(List<CardData.EffectBinding> list, EntityBase caster, EntityBase target)
+    private void Execute(List<CardData.EffectBinding> list, EntityBase caster, EntityBase target, float minigameMultiplier = 1.0f)
     {
         if (list == null || list.Count == 0) return;
         foreach (var b in list)
@@ -88,8 +112,12 @@ public class CardInstance
             var effectType = b.effect.GetType().Name;
             string casterName = caster != null ? caster.entityName ?? caster.name : "(none)";
             string targetName = target != null ? target.entityName ?? target.name : "(none)";
-            Debug.Log($"[CardInstance] Executing effect {effectType} from card {Data?.cardName} by {casterName} targeting {targetName} value={b.value}");
-            b.effect.Execute(caster, target, b.value);
+            
+            // Apply minigame multiplier to effect value (round to int for damage/healing)
+            int adjustedValue = Mathf.RoundToInt(b.value * minigameMultiplier);
+            
+            Debug.Log($"[CardInstance] Executing effect {effectType} from card {Data?.cardName} by {casterName} targeting {targetName} value={adjustedValue} (base={b.value}, multiplier={minigameMultiplier:F2})");
+            b.effect.Execute(caster, target, adjustedValue);
         }
     }
 
