@@ -83,6 +83,25 @@ public class ClickManager : MonoBehaviour
 
         if (State.TrySelectOrMoveToNode(nv.NodeData))
         {
+            // Initialize combat data if this is a combat node
+            if (nv.NodeData.Definition.nodeType == NodeType.Combat)
+            {
+                string enemyName = CombatNodeEnemyAssigner.GetEnemyDefinitionName(nv.NodeData);
+                if (string.IsNullOrWhiteSpace(enemyName))
+                {
+                    // Use default enemy if none is assigned
+                    enemyName = "Gary Goblin";
+                    Debug.LogWarning($"[ClickManager] Combat node has no enemy assigned. Using default enemy: {enemyName}");
+                }
+                else
+                {
+                    Debug.Log($"[ClickManager] Initialized combat with enemy: {enemyName}");
+                }
+                
+                // Always initialize combat node data, even with default enemy
+                CombatNodeDataInitializer.InitializeCombatNode(enemyName);
+            }
+
             var sceneManagerObj = GameObject.Find("SceneManager");
             if (sceneManagerObj == null) return;
 

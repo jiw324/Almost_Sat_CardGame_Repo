@@ -5,18 +5,18 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/CardBoardScene.unity
     guid: c7bfa527b572747f89c4bffa7a538d2d
+  - enabled: 1
+    path: Assets/Scenes/Bootstrap.unity
+    guid: 966cd0ca90a01f547862e94c4fe4ca18
   - enabled: 1
     path: Assets/Scenes/MainMenu.unity
     guid: 9270b51ce4c464e4299293baf8ef84b0
   - enabled: 0
     path: Assets/Scenes/Map.unity
     guid: 5c11ed0c32fdb244dbd4f8e067c28dd2
-  - enabled: 0
-    path: Assets/Scenes/Bootstrap.unity
-    guid: 966cd0ca90a01f547862e94c4fe4ca18
   - enabled: 1
     path: Assets/Scenes/ForestBattle.unity
     guid: 537b86293e300a8449bb01e9581b5bff

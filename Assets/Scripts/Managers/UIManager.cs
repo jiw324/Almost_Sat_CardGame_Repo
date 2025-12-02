@@ -7,29 +7,49 @@ public class UIManager : MonoBehaviour
 
     public void InitializeUI(int playerHealth, int playerMana, int enemyHealth, int enemyMana)
     {
-        playerUI.SetHealth(playerHealth);
-        playerUI.SetMana(playerMana);
-        enemyUI.SetHealth(enemyHealth);
-        enemyUI.SetMana(enemyMana);
+        if (playerUI != null)
+        {
+            playerUI.SetHealth(playerHealth);
+            playerUI.SetMana(playerMana);
+        }
+        else
+        {
+            Debug.LogWarning("[UIManager] PlayerUI is not assigned.");
+        }
+
+        if (enemyUI != null)
+        {
+            enemyUI.SetHealth(enemyHealth);
+            enemyUI.SetMana(enemyMana);
+        }
+        else
+        {
+            Debug.LogWarning("[UIManager] EnemyUI is not assigned.");
+        }
     }
 
     public void UpdatePlayerHealth(int newHealth)
     {
-        playerUI.SetHealth(newHealth);
+        if (playerUI != null)
+            playerUI.SetHealth(newHealth);
     }
 
     public void UpdatePlayerMana(int newMana)
     {
-        playerUI.SetMana(newMana);
+        if (playerUI != null)
+            playerUI.SetMana(newMana);
     }
 
     public void UpdateEnemyHealth(int newHealth)
     {
-        enemyUI.SetHealth(newHealth);
+        if (enemyUI != null)
+            enemyUI.SetHealth(newHealth);
     }
 
     public void UpdateEnemyMana(int newMana)
     {
-        enemyUI.SetMana(newMana);
+        if (enemyUI != null)
+            enemyUI.SetMana(newMana);
     }
+    
 }

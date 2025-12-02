@@ -5,9 +5,10 @@ public class ISessionNodeData { }
 [System.Serializable]
 public class CombatNodeData : ISessionNodeData
 {
+    public string enemyDefinitionName; // Name/path to EnemyDefinition asset
     public int enemyHealth = 10;
     public int enemyMana = 1;
-    public List<CardInstance> enemyDeck = new List<CardInstance>();
+    public DeckInstance enemyDeck = new DeckInstance();
 }
 
 [System.Serializable]

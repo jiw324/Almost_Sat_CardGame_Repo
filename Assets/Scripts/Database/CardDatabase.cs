@@ -6,7 +6,7 @@ public class CardDatabase : MonoBehaviour
 {
     public static CardDatabase Instance { get; private set; }
 
-    private Dictionary<string, CardJSON> cardLookup = new();
+    private readonly Dictionary<CardId, CardJSON> cardLookup = new();
 
     private void Awake()
     {
@@ -23,8 +23,14 @@ public class CardDatabase : MonoBehaviour
 
         foreach (var card in wrapper.cards)
         {
-            if (!cardLookup.ContainsKey(card.id))
-                cardLookup.Add(card.id, card);
+            if (!CardIdExtensions.TryParse(card.id, out var cardId))
+            {
+                Debug.LogError($"[CardDatabase] Unable to parse card id '{card.id}' into CardId enum.");
+                continue;
+            }
+
+            if (!cardLookup.ContainsKey(cardId))
+                cardLookup.Add(cardId, card);
             else
                 Debug.LogWarning($"Duplicate card ID found: {card.id}");
         }
@@ -32,7 +38,7 @@ public class CardDatabase : MonoBehaviour
         Debug.Log($"[CardDatabase] Loaded {cardLookup.Count} cards");
     }
 
-    public CardJSON GetCardById(string id)
+    public CardJSON GetCardById(CardId id)
     {
         return cardLookup.TryGetValue(id, out var card) ? card : null;
     }
@@ -44,5 +50,24 @@ public class CardDatabase : MonoBehaviour
         foreach (var kvp in cardLookup)
             if (index-- == 0) return kvp.Value;
         return null;
+    }
+
+    public bool TryGetRandomCardId(out CardId cardId)
+    {
+        cardId = default;
+        if (cardLookup.Count == 0)
+            return false;
+
+        int index = Random.Range(0, cardLookup.Count);
+        foreach (var kvp in cardLookup)
+        {
+            if (index-- == 0)
+            {
+                cardId = kvp.Key;
+                return true;
+            }
+        }
+
+        return false;
     }
 }
