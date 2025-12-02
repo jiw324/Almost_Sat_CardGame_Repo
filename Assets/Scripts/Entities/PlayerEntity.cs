@@ -2,12 +2,8 @@ using UnityEngine;
 
 public class PlayerEntity : EntityBase
 {
-    public int mana = 3;
-
-    private void Start()
+    private void Awake()
     {
-        entityName = "Test Player";
-        maxHealth = 30;
-        currentHealth = maxHealth;
+        entityName = "Player";
     }
 }

@@ -54,6 +54,42 @@ public class TurnBanner : MonoBehaviour
         yield return ShowBannerRoutine("enemy");
     }
 
+    public void ShowPersistentEndBanner(string message)
+    {
+        if (isShowing) return;
+        isShowing = true;
+        Time.timeScale = 0f; // pause gameplay while showing banner
+
+        if (background) background.SetActive(true);
+        animator.ResetTrigger("Show");
+        animator.SetTrigger("Show");
+
+        if (turnText)
+        {
+            turnText.gameObject.SetActive(true);
+            turnText.text = message;
+        }
+        if (battleStartText) battleStartText.SetActive(false);
+    }
+
+    public void HideBanner()
+    {
+        if (!isShowing) return;
+        if (background) background.SetActive(false);
+        if (turnText) turnText.gameObject.SetActive(false);
+        if (battleStartText) battleStartText.SetActive(false);
+        Time.timeScale = 1f; // resume gameplay
+        isShowing = false;
+    }
+
+    public IEnumerator ShowEndBannerEnumerator(string message, float duration = 1.6f)
+    {
+        Debug.Log($"[TurnBanner] Showing end banner: {message}");
+        ShowPersistentEndBanner(message);
+        yield return new WaitForSecondsRealtime(duration);
+        HideBanner();
+    }
+
 
     private IEnumerator ShowBannerRoutine(string type)
     {

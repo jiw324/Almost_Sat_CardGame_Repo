@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,28 +11,39 @@ public class PlayerTurnState : TurnStateBase
     {
         Debug.Log("[TurnStates] 1. Enter Player Turn");
 
+        // Reset player mana at start of their turn
+        if (BattleManager.Instance != null)
+        {
+            BattleManager.Instance.playerMana = BattleManager.Instance.playerMaxMana;
+            if (BattleManager.Instance.uiManager != null) BattleManager.Instance.uiManager.UpdatePlayerMana(BattleManager.Instance.playerMana);
+        }
+
         turnManager.turnBanner.ShowPlayerTurnBanner();
 
         // Subscribe to EndTurn input event (for testing)
         turnManager.InputActions.Player.NextTurn.performed += OnEndTurn;
     }
 
-    public override void Update()
-    {
-        // Game logic
-    }
+    public override void Update() { }
 
     public override void Exit()
     {
         Debug.Log("[TurnStates] 3. Exit Player Turn");
-
         turnManager.InputActions.Player.NextTurn.performed -= OnEndTurn;
     }
 
     private void OnEndTurn(InputAction.CallbackContext ctx)
     {
         Debug.Log("[TurnStates] 2. Player ended turn");
-        turnManager.ChangeState(turnManager.EnemyTurnState);
+
+        var bm = BattleManager.Instance;
+        if (bm != null)
+        {
+            bm.playerMana = 0;
+            if (bm.uiManager != null) bm.uiManager.UpdatePlayerMana(bm.playerMana);
+        }
+
+        turnManager.EndCurrentTurn();
     }
 }
 
@@ -44,20 +56,25 @@ public class EnemyTurnState : TurnStateBase
     {
         Debug.Log("[TurnStates] 4. Enemy turn started...");
 
-        turnManager.turnBanner.ShowEnemyTurnBanner();
+        // Reset enemy mana at start of their turn
+        if (BattleManager.Instance != null)
+        {
+            BattleManager.Instance.enemyMana = BattleManager.Instance.enemyMaxMana;
+            if (BattleManager.Instance.uiManager != null) BattleManager.Instance.uiManager.UpdateEnemyMana(BattleManager.Instance.enemyMana);
+        }
 
-        // Call to enemy action
         turnManager.StartCoroutine(EnemyActionRoutine());
     }
 
     private IEnumerator EnemyActionRoutine()
     {
-        yield return new WaitForSeconds(1f);
-        Debug.Log("[TurnStates] 5. Enemy made a decision");
-        turnManager.ChangeState(turnManager.EndTurnState);
+        yield return turnManager.turnBanner.ShowEnemyTurnBannerEnumerator();
+
+        yield return EnemyAI.ExecuteTurn(turnManager);
+
+        turnManager.EndCurrentTurn();
     }
 }
-
 
 public class EndTurnState : TurnStateBase
 {
@@ -72,7 +89,42 @@ public class EndTurnState : TurnStateBase
 
     private IEnumerator ResolveRoutine()
     {
+        // Resolve damage for the side that ended their turn
+        bool fromPlayer = TurnManager.Instance.SideEndingTurn == TurnManager.Side.Player;
+
+        // First, resolve any spells placed on board for this side
+        //BoardManager.Instance.ResolveAndClearSpellsForSide(fromPlayer);
+
+        // Then, resolve minion damage
+        if (BattleManager.Instance != null)
+        {
+            // resolve all minion attacks simultaneously (both sides)
+            BattleManager.Instance.ResolveAllMinionDamage();
+        }
+
         yield return new WaitForSeconds(0.5f);
-        turnManager.ChangeState(turnManager.PlayerTurnState);
+
+        // Check for victory/defeat
+        if (BattleManager.Instance != null)
+        {
+            if (BattleManager.Instance.playerHealth <= 0)
+            {
+                Debug.Log("[EndTurn] Player has been defeated.");
+                turnManager.turnBanner.ShowPersistentEndBanner("You were defeated");
+                yield break;
+            }
+            if (BattleManager.Instance.enemyHealth <= 0)
+            {
+                Debug.Log("[EndTurn] Enemy has been defeated.");
+                turnManager.turnBanner.ShowPersistentEndBanner("Enemy defeated");
+                yield break;
+            }
+        }
+
+        // Switch to the other player's turn
+        if (TurnManager.Instance.SideEndingTurn == TurnManager.Side.Player)
+            turnManager.ChangeState(turnManager.EnemyTurnState);
+        else
+            turnManager.ChangeState(turnManager.PlayerTurnState);
     }
 }

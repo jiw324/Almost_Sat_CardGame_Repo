@@ -3,22 +3,30 @@
         {
             "id": "fireball",
             "cardName": "Fireball",
-            "description": "Deal 8 damage to an enemy.",
+            "description": "Deal damage to all enemies.",
             "cost": 3,
             "type": "spell",
             "isRanged": true,
-            "effectId": "damage",
-            "damage": 8
+            "effects": [
+                {
+                    "effectId": "aoe_damage",
+                    "effectValue": 4
+                },
+                {
+                    "effectId": "damage_enemy",
+                    "effectValue": 6
+                }
+            ]
         },
         {
             "id": "slash",
             "cardName": "Slash",
-            "description": "Deal 4 damage to an enemy.",
+            "description": "Deal 6 damage to an enemy.",
             "cost": 1,
             "type": "spell",
             "isRanged": true,
-            "effectId": "damage",
-            "damage": 4
+            "effectId": "damage_enemy",
+            "effectValue": 6
         },
         {
             "id": "healinghands",
@@ -27,8 +35,8 @@
             "cost": 2,
             "type": "spell",
             "isRanged": true,
-            "effectId": "heal",
-            "damage": 0
+            "effectId": "gain_shield",
+            "effectValue": 5
         },
         {
             "id": "warrior",
@@ -37,18 +45,32 @@
             "cost": 1,
             "type": "minion",
             "isRanged": false,
-            "effectId": "damage",
-            "damage": 2
+            "isMinion": true,
+            "minionAttack": 2,
+            "minionHealth": 6,
+            "onSummon": [
+                {
+                    "effectId": "gain_shield",
+                    "effectValue": 5
+                }
+            ]
         },
         {
             "id": "archer",
             "cardName": "Archer",
-            "description": "Deals 5 damage each turn",
+            "description": "Deals 2 damage each turn",
             "cost": 2,
             "type": "minion",
             "isRanged": true,
-            "effectId": "damage",
-            "damage": 5
+            "isMinion": true,
+            "minionAttack": 4,
+            "minionHealth": 2,
+            "onSummon": [
+                {
+                    "effectId": "damage_enemy",
+                    "effectValue": 3
+                }
+            ]
         }
     ]
 }

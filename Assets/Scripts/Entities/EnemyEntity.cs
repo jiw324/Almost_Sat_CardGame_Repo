@@ -6,6 +6,11 @@ public class EnemyEntity : EntityBase
     public int maxMana = 1;
     private DeckInstance deckInstance;
 
+    private void Awake()
+    {
+        entityName = "Enemy";
+    }
+
     public void Initialize(EnemyDefinition enemyDef)
     {
         if (enemyDef == null)
@@ -43,5 +48,12 @@ public class EnemyEntity : EntityBase
     public void AddMana(int amount)
     {
         SetMana(mana + amount);
+    }
+
+    public override void Die()
+    {
+        base.Die();
+        if (BattleManager.Instance != null)
+            BattleManager.Instance.RemoveDeadEnemy(this);
     }
 }

@@ -331,4 +331,14 @@ public class HandManager : MonoBehaviour
             (list[i], list[swapIndex]) = (list[swapIndex], list[i]);
         }
     }
+
+    public void RemoveByInstance(CardInstance instance)
+    {
+        if (instance == null) return;
+        int idx = cardsInHand.IndexOf(instance);
+        if (idx >= 0)
+        {
+            cardsInHand.RemoveAt(idx);
+        }
+    }
 }
