@@ -43,15 +43,10 @@ public class ClickManager : MonoBehaviour
         NodeView nv = obj.GetComponentInParent<NodeView>();
         if (nv == null) return;
 
-        if (State == null) return;
-
-        bool isAvailable = State
-            .GetAvailableNodes()
-            .Any(n => n.Id == nv.NodeData.Id);
-
-        if (isAvailable)
-            nv.ShowHover();
+        if (State.IsNodeInteractable(nv.NodeData))
+            nv.ShowAvailable(true);
     }
+
 
     private void EndHover(GameObject obj)
     {

@@ -32,10 +32,20 @@ public class NodeMapSpawner
 
             if (node.Definition?.revealedPrefab != null)
             {
-                GameObject nodeObj = Object.Instantiate(node.Definition.revealedPrefab, worldPos, Quaternion.identity, nodeParent);
-                NodeView view = nodeObj.GetComponent<NodeView>() ?? nodeObj.AddComponent<NodeView>();
+                GameObject revealed = Object.Instantiate(node.Definition.revealedPrefab, worldPos, Quaternion.identity, nodeParent);
+
+                NodeView view = revealed.GetComponent<NodeView>() ?? revealed.AddComponent<NodeView>();
                 view.Initialize(node);
                 spawnedNodes.Add(view);
+
+                if (node.Definition.hiddenPrefab != null)
+                {
+                    GameObject hidden = Object.Instantiate(node.Definition.hiddenPrefab, revealed.transform);
+                    hidden.transform.localPosition = Vector3.zero;
+                    hidden.transform.localRotation = Quaternion.identity;
+
+                    view.SetHiddenVisualRoot(hidden);
+                }
             }
 
             foreach (Node next in node.NextNodes)
@@ -47,22 +57,6 @@ public class NodeMapSpawner
                 if (path != null)
                     spawnedPaths.Add(path);
             }
-        }
-
-        if (map.BossNode != null)
-        {
-            Vector3 bossPos = map.Grid.GridToWorld(map.BossNode.GridPos.x, map.BossNode.GridPos.y);
-            UpdateBounds(bossPos, ref min, ref max);
-
-            var combatDef = map.Factory.GetDefinition(NodeType.Combat);
-            GameObject prefab = combatDef.revealedPrefab;
-
-            GameObject bossObj = Object.Instantiate(prefab, bossPos, Quaternion.identity, nodeParent);
-            bossObj.transform.localScale *= 2.5f;
-
-            NodeView bossView = bossObj.GetComponent<NodeView>() ?? bossObj.AddComponent<NodeView>();
-            bossView.Initialize(map.BossNode);
-            spawnedNodes.Add(bossView);
         }
 
         Bounds bounds = new Bounds();
@@ -91,6 +85,7 @@ public class NodeMapSpawner
 
         Vector3 scale = pathObj.transform.localScale;
         scale.z = distance;
+        scale.x = _pathThickness;
         pathObj.transform.localScale = scale;
 
         return pathObj;

@@ -8,17 +8,47 @@ public class NodeView : MonoBehaviour
 
     private NodeGlowView glow;
 
+    [SerializeField] private GameObject revealedVisualRoot;
+    private GameObject hiddenVisualRoot;
+
+    private bool isHidden;
+
     public void Initialize(Node node)
     {
         NodeData = node;
         gameObject.name = $"NodeView_{node.Id}_{node.Definition.nodeType}";
+
         glow = GetComponentInChildren<NodeGlowView>(true);
+
+        if (revealedVisualRoot == null)
+            revealedVisualRoot = gameObject;
+
+        SetHidden(false);
         UpdateGlow();
+    }
+
+    public void SetHiddenVisualRoot(GameObject obj)
+    {
+        hiddenVisualRoot = obj;
+        if (hiddenVisualRoot != null)
+            hiddenVisualRoot.SetActive(false);
+    }
+
+    public void SetHidden(bool hidden)
+    {
+        isHidden = hidden;
+
+        if (revealedVisualRoot != null)
+            revealedVisualRoot.SetActive(!hidden);
+
+        if (hiddenVisualRoot != null)
+            hiddenVisualRoot.SetActive(hidden);
     }
 
     public void UpdateGlow()
     {
-        if (glow == null) return;
+        if (glow == null || NodeData == null)
+            return;
 
         var state = MapStateManager.Instance;
 
@@ -37,16 +67,14 @@ public class NodeView : MonoBehaviour
         glow.ClearGlow();
     }
 
-    public void ShowAvailable()
+    public void ShowAvailable(bool hover = false)
     {
         if (glow == null) return;
-        glow.SetAvailable();
-    }
 
-    public void ShowHover()
-    {
-        if (glow == null) return;
-        glow.SetHover();
+        if (hover)
+            glow.SetHover();
+        else
+            glow.SetAvailable();
     }
 
     public void ClearHoverGlow()

@@ -17,26 +17,31 @@ public class FogController : MonoBehaviour
         _bounds = mapBounds;
         _state = MapStateManager.Instance;
 
-        UpdateFog();
-        _state.OnNodeChanged += UpdateFog;
+        UpdateFogAndVisibility();
+        _state.OnNodeChanged += UpdateFogAndVisibility;
     }
 
     private void OnDestroy()
     {
         if (_state != null)
-            _state.OnNodeChanged -= UpdateFog;
+            _state.OnNodeChanged -= UpdateFogAndVisibility;
     }
 
-    public void UpdateFog()
+    private void UpdateFogAndVisibility()
     {
         if (_map == null || _state == null)
             return;
 
+        UpdateFogPlane();
+        UpdateNodeHiddenStates();
+    }
+
+    private void UpdateFogPlane()
+    {
         Node current = _state.GetCurrentNode();
         int currentFloor = current != null ? current.GridPos.y : 0;
 
-        int fogStartFloor = currentFloor + revealRadius;
-        fogStartFloor = Mathf.Clamp(fogStartFloor, 0, _map.MapHeight - 1);
+        int fogStartFloor = Mathf.Clamp(currentFloor + revealRadius, 0, _map.MapHeight - 1);
 
         Vector3 fogStartWorld = _map.Grid.GridToWorld(0, fogStartFloor);
         float fogStartZ = fogStartWorld.z + 0.5f;
@@ -56,5 +61,26 @@ public class FogController : MonoBehaviour
             1f,
             fogLength / 10f
         );
+    }
+
+    private void UpdateNodeHiddenStates()
+    {
+        var views = Object.FindObjectsByType<NodeView>(FindObjectsSortMode.None);
+        if (views == null || views.Length == 0)
+            return;
+
+        Node current = _state.GetCurrentNode();
+        int currentFloor = current != null ? current.GridPos.y : 0;
+
+        int fogStartFloor = Mathf.Clamp(currentFloor + revealRadius, 0, _map.MapHeight - 1);
+
+        int hideStartFloor = fogStartFloor + 1;
+
+        foreach (var view in views)
+        {
+            int nodeFloor = view.NodeData.GridPos.y;
+            bool hidden = nodeFloor >= hideStartFloor;
+            view.SetHidden(hidden);
+        }
     }
 }
