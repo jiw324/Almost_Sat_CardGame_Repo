@@ -6,7 +6,7 @@ public class BoardSlot : MonoBehaviour
     [SerializeField] private Transform pedestal;
     public bool isOccupied;
     public CardInstance currentCard;
-
+    private GameObject spawnedObject;
     public bool PlaceCard(CardInstance card)
     {
         if (card == null)
@@ -14,11 +14,13 @@ public class BoardSlot : MonoBehaviour
             Debug.LogError("[BoardSlot] Tried to place a null CardInstance!");
             return false;
         }
-        if (card.Data.type == "spell")
-        {
-            Debug.LogWarning($"[BoardSlot] You can't place spell cards on the board!");
-            return false;
-        }
+
+        // if (card.Data.type == "spell")
+        // {
+        //     Debug.LogWarning($"[BoardSlot] You can't place spell cards on the board!");
+        //     return false;
+        // }
+
         if (card.Data.isRanged != isRanged)
         {
             Debug.LogWarning($"[BoardSlot] Tried to place a " +
@@ -54,18 +56,38 @@ public class BoardSlot : MonoBehaviour
             return false;
         }
 
-        GameObject cardObject = Instantiate(prefab, spawnPos, Quaternion.identity, transform);
-        cardObject.name = card.Data.name;
+        spawnedObject = Instantiate(prefab, spawnPos, Quaternion.identity, transform);
+        spawnedObject.name = card.Data.name;
         Debug.Log($"**** Assigned name: {card.Data.name}");
 
-        // Initialize its visual info
-        var controller = cardObject.GetComponent<Card3DController>();
-        if (controller != null)
-            controller.Initialize(card);
-        else
-            Debug.LogError("[BoardSlot] 3D card prefab missing Card3DController component!");
+
+        var controller = spawnedObject.GetComponent<Card3DController>();
+        if (controller != null) controller.Initialize(card);
+        else Debug.LogWarning("[BoardSlot] 3D card prefab missing Card3DController component!");
+
+        if (card.IsMinion)
+        {
+            var mb = spawnedObject.GetComponent<MinionBehaviour>() ?? spawnedObject.AddComponent<MinionBehaviour>();
+            mb.Initialize(this, card);
+
+            // NEW: add MinionEntity so ScriptableObject effects can target minions
+            var me = spawnedObject.GetComponent<MinionEntity>() ?? spawnedObject.AddComponent<MinionEntity>();
+            me.Initialize(mb);
+
+            Debug.Log($"[BoardSlot] Summoned minion {card.Data.cardName} (ATK {card.Attack}/{card.CurrentHP} HP).");
+            return true;
+        }
 
         Debug.Log($"[BoardSlot] Placed {card.Data.cardName} on {(isRanged ? "ranged" : "melee")} row.");
         return true;
     }
+
+    public void ClearSlotAndDestroy()
+    {
+        if (spawnedObject) Destroy(spawnedObject);
+        spawnedObject = null;
+        currentCard = null;
+        isOccupied = false;
+    }
+
 }

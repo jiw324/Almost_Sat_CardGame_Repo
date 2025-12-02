@@ -7,7 +7,22 @@ public class CardJSON
     public int cost;
     public string type;
     public bool isRanged;
+
+    public string effectId;      
+    public int effectValue;      
+
+    public CardJSONEffectEntry[] effects;
+
+    public bool isMinion;       
+    public int minionAttack;    
+    public int minionHealth;    
+    public CardJSONEffectEntry[] onSummon;  
+    public CardJSONEffectEntry[] onDeath;   
+}
+
+[System.Serializable]
+public class CardJSONEffectEntry
+{
     public string effectId;
-    public int damage;
-    public string spriteName; // Optional: if not set, will use CardId name
+    public int effectValue;
 }
