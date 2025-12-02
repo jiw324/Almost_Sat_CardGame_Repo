@@ -4,6 +4,7 @@ using UnityEngine;
 public class NodeDefinition : ScriptableObject
 {
     public NodeType nodeType;
-    public GameObject prefab;
+    public GameObject revealedPrefab;
+    public GameObject hiddenPrefab;
     public string nodeSceneName; // Scene to load when visited
 }

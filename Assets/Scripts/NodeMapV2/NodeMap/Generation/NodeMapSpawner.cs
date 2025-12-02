@@ -30,9 +30,9 @@ public class NodeMapSpawner
             Vector3 worldPos = map.Grid.GridToWorld(node.GridPos.x, node.GridPos.y);
             UpdateBounds(worldPos, ref min, ref max);
 
-            if (node.Definition?.prefab != null)
+            if (node.Definition?.revealedPrefab != null)
             {
-                GameObject nodeObj = Object.Instantiate(node.Definition.prefab, worldPos, Quaternion.identity, nodeParent);
+                GameObject nodeObj = Object.Instantiate(node.Definition.revealedPrefab, worldPos, Quaternion.identity, nodeParent);
                 NodeView view = nodeObj.GetComponent<NodeView>() ?? nodeObj.AddComponent<NodeView>();
                 view.Initialize(node);
                 spawnedNodes.Add(view);
@@ -55,7 +55,7 @@ public class NodeMapSpawner
             UpdateBounds(bossPos, ref min, ref max);
 
             var combatDef = map.Factory.GetDefinition(NodeType.Combat);
-            GameObject prefab = combatDef.prefab;
+            GameObject prefab = combatDef.revealedPrefab;
 
             GameObject bossObj = Object.Instantiate(prefab, bossPos, Quaternion.identity, nodeParent);
             bossObj.transform.localScale *= 2.5f;

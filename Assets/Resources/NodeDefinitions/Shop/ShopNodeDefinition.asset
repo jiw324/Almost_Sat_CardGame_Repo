@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: ShopNodeDefinition
   m_EditorClassIdentifier: 
   nodeType: 1
-  prefab: {fileID: 9068755077185543241, guid: 89f3ac9d6390e8c4198723f3b5040e39, type: 3}
+  revealedPrefab: {fileID: 9068755077185543241, guid: 89f3ac9d6390e8c4198723f3b5040e39, type: 3}
+  hiddenPrefab: {fileID: 4530968154965542551, guid: 973b3df2dc20d6f47abf1d25b287b3af, type: 3}
   nodeSceneName: Shop

@@ -13,5 +13,9 @@ MonoBehaviour:
   m_Name: CombatNodeDefinition
   m_EditorClassIdentifier: 
   nodeType: 0
-  prefab: {fileID: 6430799345589326161, guid: b26293249188e2243ba5f8f36fe419ac, type: 3}
+  revealedPrefab: {fileID: 6430799345589326161, guid: b26293249188e2243ba5f8f36fe419ac, type: 3}
+  hiddenPrefab: {fileID: 4530968154965542551, guid: 973b3df2dc20d6f47abf1d25b287b3af, type: 3}
   nodeSceneName: Combat
+  enemyDefinitionName: 
+  enemyPool: []
+  useRandomPool: 0
