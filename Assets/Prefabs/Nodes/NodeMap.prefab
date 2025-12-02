@@ -48,8 +48,8 @@ MonoBehaviour:
   mapHeight: 15
   gridXSpacing: 1.25
   gridYSpacing: 1.5
-  branchChance: 0.8
-  straightBias: 0.5
-  maxXOffset: 0.15
-  maxYOffset: 0.15
-  offsetStdDevFactor: 0.5
+  branchChance: 0.725
+  straightBias: 0.45
+  maxXOffset: 0.25
+  maxYOffset: 0.25
+  offsetStdDevFactor: 0.4
