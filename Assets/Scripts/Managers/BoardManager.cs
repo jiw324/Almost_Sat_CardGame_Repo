@@ -183,14 +183,38 @@ public class BoardManager : MonoBehaviour
         // 3) If an on-board minion is selected, second click chooses the target to attack/effect
         if (selectedMinion != null)
         {
+            // First try to get a direct entity from the click
             var target = ResolveClickToEntityStrict(hit);
+
+            // Detect self (minion should not attack itself)
+            var selfEntity = selectedMinion.GetComponent<MinionEntity>();
+            if (target != null && selfEntity != null && ReferenceEquals(target, selfEntity))
+            {
+                // If we clicked on ourselves, treat as "no valid target"
+                target = null;
+            }
+
+            // If no direct entity, but we clicked something like an empty slot,
+            // make the minion behave like a spell: attack the enemy hero.
+            if (target == null)
+            {
+                var slot = hit.collider.GetComponentInParent<BoardSlot>();
+                if (slot != null && !slot.isOccupied)
+                {
+                    target = GetDefaultEnemyHero();
+                }
+            }
+
+            // Only attack if we ended up with a valid target
             if (target != null)
             {
                 selectedMinion.AttackTarget(target);
                 selectedMinion = null; // done
             }
+
             return;
         }
+
 
         // 4) Nothing selected yet: first click on a *friendly* minion selects it (for directed attack)
         {
@@ -387,4 +411,27 @@ public class BoardManager : MonoBehaviour
         if (m != null) return $"Minion:{m.entityName}";
         return target.entityName ?? target.name ?? target.GetType().Name;
     }
+
+    private EnemyEntity GetDefaultEnemyHero()
+    {
+        var bm = BattleManager.Instance;
+        if (bm == null) return null;
+
+        // Prefer enemies list if present
+        if (bm.enemies != null && bm.enemies.Count > 0)
+        {
+            foreach (var e in bm.enemies)
+            {
+                if (e != null && e.currentHealth > 0)
+                    return e;
+            }
+        }
+
+        // Fallback to single enemyEntity
+        if (bm.enemyEntity != null && bm.enemyEntity.currentHealth > 0)
+            return bm.enemyEntity;
+
+        return null;
+    }
+
 }
