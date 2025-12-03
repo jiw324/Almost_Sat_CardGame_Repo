@@ -48,7 +48,6 @@ public class TypingMinigame : MonoBehaviour, IMinigame
         currentWordIndex = 0;
         currentInput = "";
         wordsCompleted = 0;
-        // Calculate total time: 0.75 seconds per word
         timeRemaining = totalWords * secondsPerWord;
         isActive = true;
         

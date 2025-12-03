@@ -41,14 +41,12 @@ public class BoardManager : MonoBehaviour
     {
         inputActions.Enable();
         inputActions.Player.Click.performed += OnClickPerformed;
-        inputActions.Player.Minigame.performed += OnTestMinigame;
     }
 
     private void OnDisable()
     {
         Debug.Log("[BoardManager] OnDisable called.");
         inputActions.Player.Click.performed -= OnClickPerformed;
-        inputActions.Player.Minigame.performed -= OnTestMinigame;
         inputActions.Disable();
     }
 
