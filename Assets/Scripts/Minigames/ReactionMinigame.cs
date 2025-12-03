@@ -4,8 +4,9 @@ using TMPro;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Unity.VisualScripting;
+using System.Threading.Tasks;
 
-public class Reaction : MonoBehaviour, IMinigame, IPointerClickHandler
+public class ReactionMinigame : MonoBehaviour, IMinigame, IPointerClickHandler
 {
     [SerializeField] private Transform gameArea;
     [SerializeField] private TextMeshProUGUI gameText;
@@ -16,7 +17,8 @@ public class Reaction : MonoBehaviour, IMinigame, IPointerClickHandler
     [SerializeField] private float worstReactionTime = 1.0f;
     [SerializeField] private float timeBeforeMaxChance = 3.0f;
 
-	private Action<float> finishResult;
+	private TaskCompletionSource<float> completionSource;
+
     private float reactionTime;
     private float normalizedResult;
     private bool difficult = false;
@@ -26,10 +28,19 @@ public class Reaction : MonoBehaviour, IMinigame, IPointerClickHandler
     private float timeAtChange;
     private bool colorChanged = false;
 
-    public void Initialize(Action<float> finishResult)
+    public async Task<float> PlayAsync()
     {
-        this.finishResult = finishResult;
-        if (otherColors.Length > 0) difficult = true;
+        completionSource = new TaskCompletionSource<float>();
+
+        if (otherColors.Length > 0)
+            difficult = true;
+
+        gameText.text = "Wait for green!";
+        elapsed = 0f;
+        clicks = 0;
+        colorChanged = false;
+
+        return await completionSource.Task;
     }
 
     void Update()
@@ -126,7 +137,8 @@ public class Reaction : MonoBehaviour, IMinigame, IPointerClickHandler
 
     private void FinishGame()
     {
-        finishResult?.Invoke(normalizedResult);
+        completionSource?.TrySetResult(normalizedResult);
+        gameObject.SetActive(false);
     }
 
 }

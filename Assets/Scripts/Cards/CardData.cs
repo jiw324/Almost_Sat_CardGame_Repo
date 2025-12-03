@@ -30,6 +30,9 @@ public class CardData : ScriptableObject
     public int minionHealth = 5;
     public List<EffectBinding> onSummonBindings = new List<EffectBinding>();
     public List<EffectBinding> onDeathBindings = new List<EffectBinding>();
+    
+    [Header("Minigame")]
+    public GameObject minigamePrefab;  // Optional: Prefab for the minigame to play when this card is played
     public string PrintCard()
     {
         return $"id: [{id}], name: [{cardName}], cost: [{cost}], type: [{type}], ranged: [{isRanged}], effects: [{effects?.Count ?? 0}]\ndescritpion: [{description}]";

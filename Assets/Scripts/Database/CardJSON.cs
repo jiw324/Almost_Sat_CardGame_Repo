@@ -18,6 +18,9 @@ public class CardJSON
     public int minionHealth;    
     public CardJSONEffectEntry[] onSummon;  
     public CardJSONEffectEntry[] onDeath;   
+    
+    // Minigame support
+    public string minigameId;   // Optional: ID of the minigame to play when this card is played
 }
 
 [System.Serializable]

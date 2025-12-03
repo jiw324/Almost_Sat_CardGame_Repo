@@ -7,7 +7,9 @@ public class GainShieldEffect : CardEffect
 
     public override void Execute(EntityBase caster, EntityBase target, int value)
     {
-        int shield = value > 0 ? value : amount;
+        // Use the provided value directly (0 is valid - means no effect from minigame failure)
+        // Only fall back to default amount if value is negative (shouldn't happen in normal flow)
+        int shield = value >= 0 ? value : amount;
         var bm = BattleManager.Instance;
         if (bm == null)
         {

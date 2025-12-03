@@ -19,9 +19,6 @@ public class PlayerTurnState : TurnStateBase
         }
 
         turnManager.turnBanner.ShowPlayerTurnBanner();
-
-        // Subscribe to EndTurn input event (for testing)
-        turnManager.InputActions.Player.NextTurn.performed += OnEndTurn;
     }
 
     public override void Update() { }
@@ -29,7 +26,6 @@ public class PlayerTurnState : TurnStateBase
     public override void Exit()
     {
         Debug.Log("[TurnStates] 3. Exit Player Turn");
-        turnManager.InputActions.Player.NextTurn.performed -= OnEndTurn;
     }
 
     private void OnEndTurn(InputAction.CallbackContext ctx)

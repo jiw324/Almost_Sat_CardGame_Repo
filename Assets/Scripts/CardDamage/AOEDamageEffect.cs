@@ -7,7 +7,9 @@ public class AOEDamageEffect : CardEffect
 
     public override void Execute(EntityBase caster, EntityBase target, int value)
     {
-        int dmg = value > 0 ? value : damageAmount;
+        // Use the provided value directly (0 is valid - means no damage from minigame failure)
+        // Only fall back to default damageAmount if value is negative (shouldn't happen in normal flow)
+        int dmg = value >= 0 ? value : damageAmount;
 
         var bm = BattleManager.Instance;
         if (bm == null)

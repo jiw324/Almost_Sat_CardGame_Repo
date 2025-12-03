@@ -1,5 +1,6 @@
-using UnityEngine;
 using System;
+using System.Threading.Tasks;
+using UnityEngine;
 
 public class MinigameManager : MonoBehaviour
 {
@@ -17,20 +18,19 @@ public class MinigameManager : MonoBehaviour
         overlayPanel.SetActive(false);
     }
 
-    public void StartMinigame(GameObject minigamePrefab, Action<float> onComplete)
+    public async Task<float> StartMinigameAsync(GameObject minigamePrefab)
     {
-        if (isActive) return;
+        if (isActive) return 0f;
         isActive = true;
         overlayPanel.SetActive(true);
 
         GameObject instance = Instantiate(minigamePrefab, minigameContainer);
         var controller = instance.GetComponent<IMinigame>();
 
-        controller.Initialize(result =>
-        {
-            onComplete?.Invoke(result);
-            EndMinigame(instance);
-        });
+        float result = await controller.PlayAsync();
+
+        EndMinigame(instance);
+        return result;
     }
 
     private void EndMinigame(GameObject instance)

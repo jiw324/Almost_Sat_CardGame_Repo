@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -164,7 +165,7 @@ public class BoardManager : MonoBehaviour
                 }
 
                 Debug.Log($"[BoardManager] Casting spell {inst.Data.cardName} by Player targeting {GetTargetDescription(targetEntity)}");
-                inst.PlayCard(null, targetEntity);
+                _ = inst.PlayCardAsync(null, targetEntity);
 
                 if (bm != null && bm.uiManager != null)
                 {
@@ -204,21 +205,23 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    private void OnTestMinigame(InputAction.CallbackContext ctx)
+    private async void PlayReactionCard()
     {
         if (MinigameManager.Instance == null)
         {
             Debug.LogWarning("[BoardManager] No MinigameManager instance found!");
             return;
         }
-
         Debug.Log("[BoardManager] Launching Reaction Minigame!");
-        MinigameManager.Instance.StartMinigame(
-            reactionMinigamePrefab,
-            result =>
-            {
-                Debug.Log($"[BoardManager] Minigame complete. Score: {result:F2}");
-            });
+        {
+            float result = await MinigameManager.Instance.StartMinigameAsync(reactionMinigamePrefab);
+            Debug.Log($"[BoardManager] Minigame complete. Score: {result:F2}");
+        }
+    }
+
+    private void OnTestMinigame(InputAction.CallbackContext ctx)
+    {
+        PlayReactionCard();
     }
 
     public bool IsSelectedCard(CardUIController card)
@@ -288,7 +291,7 @@ public class BoardManager : MonoBehaviour
             if (bm.uiManager != null) bm.uiManager.UpdatePlayerMana(bm.playerMana);
         }
 
-        inst.PlayCard(slot);
+        _ = inst.PlayCardAsync(slot);
         if (slot.PlaceCard(inst))
         {
             var hm = FindFirstObjectByType<HandManager>();
