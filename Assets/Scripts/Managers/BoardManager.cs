@@ -192,15 +192,20 @@ public class BoardManager : MonoBehaviour
             return;
         }
 
-        // 4) Nothing selected yet: first click on a minion selects it (for directed attack)
+        // 4) Nothing selected yet: first click on a *friendly* minion selects it (for directed attack)
         {
             var clickedMinion = hit.collider.GetComponentInParent<MinionBehaviour>();
-            if (clickedMinion != null)
+            if (clickedMinion != null && clickedMinion.instance != null)
             {
-                selectedMinion = clickedMinion; // first click selects; no immediate attack
+                // Only allow selecting player-owned minions
+                if (clickedMinion.instance.Owner is PlayerEntity)
+                {
+                    selectedMinion = clickedMinion; // first click selects; no immediate attack
+                }
                 return;
             }
         }
+
     }
 
     private async void PlayReactionCard()

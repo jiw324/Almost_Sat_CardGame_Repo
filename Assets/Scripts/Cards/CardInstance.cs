@@ -108,20 +108,29 @@ public class CardInstance
     private void Execute(List<CardData.EffectBinding> list, EntityBase caster, EntityBase target, float minigameMultiplier = 1.0f)
     {
         if (list == null || list.Count == 0) return;
+
         foreach (var b in list)
         {
             if (b?.effect == null) continue;
+
             var effectType = b.effect.GetType().Name;
             string casterName = caster != null ? caster.entityName ?? caster.name : "(none)";
             string targetName = target != null ? target.entityName ?? target.name : "(none)";
-            
-            // Apply minigame multiplier to effect value (round to int for damage/healing)
-            int adjustedValue = Mathf.RoundToInt(b.value * minigameMultiplier);
-            
-            Debug.Log($"[CardInstance] Executing effect {effectType} from card {Data?.cardName} by {casterName} targeting {targetName} value={adjustedValue} (base={b.value}, multiplier={minigameMultiplier:F2})");
-            b.effect.Execute(caster, target, adjustedValue);
+
+            // use sign of base value as a flag (e.g., negative => "hit everything"),
+            // while applying the minigame multiplier to the magnitude.
+            int baseValue = b.value;
+            bool flagIsNegative = baseValue < 0;                 // e.g. negative => global AOE
+            int magnitude = Mathf.Abs(baseValue);
+
+            int adjustedMagnitude = Mathf.RoundToInt(magnitude * minigameMultiplier);
+            int finalValue = flagIsNegative ? -adjustedMagnitude : adjustedMagnitude;
+
+            Debug.Log($"[CardInstance] Executing effect {effectType} from card {Data?.cardName} by {casterName} targeting {targetName} value={finalValue} (base={baseValue}, multiplier={minigameMultiplier:F2})");
+            b.effect.Execute(caster, target, finalValue);
         }
     }
+
 
     public void TakeDamage(int amount)
     {

@@ -91,13 +91,6 @@ public class EndTurnState : TurnStateBase
         // First, resolve any spells placed on board for this side
         //BoardManager.Instance.ResolveAndClearSpellsForSide(fromPlayer);
 
-        // Then, resolve minion damage
-        if (BattleManager.Instance != null)
-        {
-            // resolve all minion attacks simultaneously (both sides)
-            BattleManager.Instance.ResolveAllMinionDamage();
-        }
-
         yield return new WaitForSeconds(0.5f);
 
         // Check for victory/defeat

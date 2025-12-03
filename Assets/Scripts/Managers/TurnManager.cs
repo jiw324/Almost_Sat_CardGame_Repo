@@ -18,7 +18,11 @@ public class TurnManager : MonoBehaviour
     public TurnStateBase EnemyTurnState => enemyTurnState;
     public TurnStateBase EndTurnState => endTurnState;
 
+    public bool IsPlayerTurn => currentState == playerTurnState;
+
     public event Action<TurnStateBase> OnStateChanged;
+    public event Action OnPlayerTurnStarted;
+    public event Action OnEnemyTurnStarted;
 
     public InputSystem_Actions InputActions { get; private set; }
 
@@ -77,6 +81,9 @@ public class TurnManager : MonoBehaviour
         {
             if (newState == enemyTurnState)
             {
+                //NEW: enemy turn started
+                OnEnemyTurnStarted?.Invoke();
+
                 bm.enemyMana = bm.enemyMaxMana;
                 if (bm.uiManager != null) bm.uiManager.UpdateEnemyMana(bm.enemyMana);
 
@@ -85,6 +92,9 @@ public class TurnManager : MonoBehaviour
             }
             else if (newState == playerTurnState)
             {
+                //NEW: player turn started
+                OnPlayerTurnStarted?.Invoke();
+
                 bm.playerMana = bm.playerMaxMana;
                 if (bm.uiManager != null) bm.uiManager.UpdatePlayerMana(bm.playerMana);
 
@@ -93,6 +103,7 @@ public class TurnManager : MonoBehaviour
             }
         }
     }
+
 
     public void EndCurrentTurn()
     {

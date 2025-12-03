@@ -22,10 +22,20 @@
                 {
                     "effectId": "aoe_damage",
                     "effectValue": 4
-                },
+                }
+            ]
+        },
+        {
+            "id": "Apocalypse",
+            "cardName": "Apocalypse",
+            "description": "Deal 4 damage to all enemies.",
+            "cost": 3,
+            "type": "spell",
+            "isRanged": true,
+            "effects": [
                 {
-                    "effectId": "damage_enemy",
-                    "effectValue": 6
+                    "effectId": "aoe_damage",
+                    "effectValue": -4
                 }
             ]
         },
