@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 [Serializable]
@@ -32,7 +33,7 @@ public class CardInstance
             CurrentHP = Data.minionHealth;
     }
 
-    public void PlayCard(BoardSlot targetSlot, EntityBase spellTarget = null)
+    public async Task PlayCardAsync(BoardSlot targetSlot, EntityBase spellTarget = null)
     {
         if (HasBeenPlayed)
         {
@@ -45,22 +46,23 @@ public class CardInstance
         HasBeenPlayed = true;
 
         // Check if this card has a minigame
+        float minigameMultiplier = 1.0f;
         if (Data.minigamePrefab != null && MinigameManager.Instance != null)
         {
             // Play minigame first, then resolve effects with the result
-            MinigameManager.Instance.StartMinigame(
-                Data.minigamePrefab,
-                minigameResult =>
-                {
-                    // Minigame result is 0-1, use it as a multiplier for effects
-                    ResolveCardWithMinigameResult(targetSlot, spellTarget, minigameResult);
-                });
+            minigameMultiplier = await MinigameManager.Instance.StartMinigameAsync(Data.minigamePrefab);
+            Debug.Log($"[CardInstance] Minigame completed with multiplier: {minigameMultiplier:F2}");
         }
-        else
-        {
-            // No minigame, resolve normally
-            ResolveCardWithMinigameResult(targetSlot, spellTarget, 1.0f);
-        }
+
+        // Resolve card effects with minigame multiplier
+        ResolveCardWithMinigameResult(targetSlot, spellTarget, minigameMultiplier);
+    }
+
+    // Synchronous wrapper for backward compatibility (calls async version without awaiting)
+    public void PlayCard(BoardSlot targetSlot, EntityBase spellTarget = null)
+    {
+        // Fire and forget - for places that can't await
+        _ = PlayCardAsync(targetSlot, spellTarget);
     }
 
     private void ResolveCardWithMinigameResult(BoardSlot targetSlot, EntityBase spellTarget, float minigameMultiplier)

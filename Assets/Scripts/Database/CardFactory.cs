@@ -41,16 +41,6 @@ public static class CardFactory
             }
         }
 
-        // Load minigame prefab if minigameId is specified (for both spells and minions)
-        if (!string.IsNullOrEmpty(data.minigameId) && MinigameRegistry.Instance != null)
-        {
-            cardData.minigamePrefab = MinigameRegistry.Instance.GetMinigamePrefab(data.minigameId);
-            if (cardData.minigamePrefab == null)
-            {
-                Debug.LogWarning($"[CardFactory] Minigame '{data.minigameId}' not found in registry for card '{data.id}'");
-            }
-        }
-
         if (!data.isMinion)
         {
             // SPELL PATH ONLY: populate 'effects'; ignore minion fields entirely
@@ -60,17 +50,18 @@ public static class CardFactory
                 Fill(new[] { new CardJSONEffectEntry { effectId = data.effectId, effectValue = data.effectValue } }, cardData.effects, data.id);
 
             cardData.isMinion = false;
-            return new CardInstance(cardData, owner);
+        }
+        else
+        {
+            // MINION PATH ONLY: populate stats + triggers; do NOT populate 'effects'
+            cardData.isMinion = true;
+            cardData.minionAttack = data.minionAttack;
+            cardData.minionHealth = data.minionHealth;
+            Fill(data.onSummon, cardData.onSummonBindings, data.id);
+            Fill(data.onDeath, cardData.onDeathBindings, data.id);
         }
 
-        // MINION PATH ONLY: populate stats + triggers; do NOT populate 'effects'
-        cardData.isMinion = true;
-        cardData.minionAttack = data.minionAttack;
-        cardData.minionHealth = data.minionHealth;
-        Fill(data.onSummon, cardData.onSummonBindings, data.id);
-        Fill(data.onDeath, cardData.onDeathBindings, data.id);
-
-        // Load minigame prefab if minigameId is specified
+        // Load minigame prefab if minigameId is specified (for both spells and minions)
         if (!string.IsNullOrEmpty(data.minigameId) && MinigameRegistry.Instance != null)
         {
             cardData.minigamePrefab = MinigameRegistry.Instance.GetMinigamePrefab(data.minigameId);

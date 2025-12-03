@@ -4,6 +4,7 @@ public enum CardId
     Slash,
     HealingHands,
     Warrior,
-    Archer
+    Archer,
+    MagicMissile
 }
 

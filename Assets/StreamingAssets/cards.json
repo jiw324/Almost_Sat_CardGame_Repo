@@ -1,6 +1,17 @@
 ﻿{
     "cards": [
         {
+            "id": "magicmissile",
+            "cardName": "Magic Missile",
+            "description": "[TYPING] Deal up to 4 damage to an enemy.",
+            "cost": 1,
+            "type": "spell",
+            "isRanged": true,
+            "minigameId": "typing",
+            "effectId": "damage_enemy",
+            "effectValue": 4
+        },
+        {
             "id": "fireball",
             "cardName": "Fireball",
             "description": "Deal damage to all enemies.",
@@ -21,13 +32,13 @@
         {
             "id": "slash",
             "cardName": "Slash",
-            "description": "[REACTION] Deal up to 12 damage to an enemy.",
-            "cost": 1,
+            "description": "[REACTION] Deal up to 10 damage to an enemy.",
+            "cost": 2,
             "type": "spell",
             "isRanged": true,
             "minigameId": "reaction",
             "effectId": "damage_enemy",
-            "effectValue": 12
+            "effectValue": 10
         },
         {
             "id": "healinghands",

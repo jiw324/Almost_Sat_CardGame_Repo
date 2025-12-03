@@ -165,7 +165,7 @@ public class BoardManager : MonoBehaviour
                 }
 
                 Debug.Log($"[BoardManager] Casting spell {inst.Data.cardName} by Player targeting {GetTargetDescription(targetEntity)}");
-                inst.PlayCard(null, targetEntity);
+                _ = inst.PlayCardAsync(null, targetEntity);
 
                 if (bm != null && bm.uiManager != null)
                 {
@@ -291,7 +291,7 @@ public class BoardManager : MonoBehaviour
             if (bm.uiManager != null) bm.uiManager.UpdatePlayerMana(bm.playerMana);
         }
 
-        inst.PlayCard(slot);
+        _ = inst.PlayCardAsync(slot);
         if (slot.PlaceCard(inst))
         {
             var hm = FindFirstObjectByType<HandManager>();
