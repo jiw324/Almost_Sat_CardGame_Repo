@@ -23,6 +23,9 @@ public class MapGenerationManager : MonoBehaviour
     private SessionNodeMapData SessionMap =>
         GameSession.Instance?.gameSessionData?.sessionNodeMapData;
 
+    private SessionNodeMapData TutorialSessionMap =>
+        GameSession.Instance?.gameSessionData?.tutorialNodeMapData;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -37,6 +40,15 @@ public class MapGenerationManager : MonoBehaviour
 
     public void InitializeMapFromSession()
     {
+        // Force tutorial when debugSeed is -999
+        if (debugSeed == -999)
+        {
+            InitializeTutorialFromSession();
+            return;
+        }
+
+        GameSession.Instance.IsTutorialMode = false;
+
         var sm = SessionMap;
 
         if (sm == null || sm.mapSeed == 0)
@@ -50,20 +62,57 @@ public class MapGenerationManager : MonoBehaviour
 
     public void StartNewRun()
     {
+        GameSession.Instance.IsTutorialMode = false;
+
         int seed = useRandomSeed ? Random.Range(int.MinValue, int.MaxValue) : debugSeed;
 
         GenerateFromSeed(seed);
 
-        SessionMap.mapSeed = seed;
-        SessionMap.currentNodeId = null;
-        SessionMap.visitedNodeIds.Clear();
-        SessionMap.completedNodeIds.Clear();
+        if (SessionMap != null)
+        {
+            SessionMap.mapSeed = seed;
+            SessionMap.currentNodeId = null;
+            SessionMap.visitedNodeIds.Clear();
+            SessionMap.completedNodeIds.Clear();
+        }
 
         SessionSaveManager.SaveGameSession(GameSession.Instance.gameSessionData);
     }
 
+    private void InitializeTutorialFromSession()
+    {
+        GameSession.Instance.IsTutorialMode = true;
+
+        var tMap = TutorialSessionMap;
+        if (tMap == null)
+        {
+            GameSession.Instance.gameSessionData.tutorialNodeMapData = new SessionNodeMapData();
+        }
+
+        tMap = TutorialSessionMap;
+
+        if (tMap.mapSeed == 0)
+        {
+            int seed = 1;
+            GenerateTutorialFromSeed(seed);
+
+            tMap.mapSeed = seed;
+            tMap.currentNodeId = null;
+            tMap.visitedNodeIds.Clear();
+            tMap.completedNodeIds.Clear();
+
+            SessionSaveManager.SaveGameSession(GameSession.Instance.gameSessionData);
+        }
+        else
+        {
+            GenerateTutorialFromSeed(tMap.mapSeed);
+        }
+    }
+
     public void GenerateFromSeed(int seed)
     {
+        GameSession.Instance.IsTutorialMode = false;
+
         // Grab seed and initialize Random class with seed
         _currentSeed = seed;
         Random.InitState(seed);
@@ -111,7 +160,7 @@ public class MapGenerationManager : MonoBehaviour
             cam.SetBoundsUsingWorldBounds(finalBounds);
 
         // Spawn fog over map
-        if (fogPrefab != null)
+        if (!GameSession.Instance.IsTutorialMode && fogPrefab != null)
         {
             GameObject fogObj = Instantiate(fogPrefab, _activeMap.transform);
             fogObj.name = "Fog";
@@ -122,6 +171,42 @@ public class MapGenerationManager : MonoBehaviour
         }
     }
 
+    private void GenerateTutorialFromSeed(int seed)
+    {
+        GameSession.Instance.IsTutorialMode = true;
+
+        _currentSeed = seed;
+        Random.InitState(seed);
+
+        if (_activeMap != null)
+            Destroy(_activeMap.gameObject);
+
+        NodeMap map = Instantiate(nodeMapPrefab);
+        Scene mapScene = SceneManager.GetSceneByName("Map");
+        if (mapScene.IsValid())
+            SceneManager.MoveGameObjectToScene(map.gameObject, mapScene);
+
+        _activeMap = map;
+
+        map.GenerateTutorial();
+
+        AssignEnemiesToCombatNodes(map);
+
+        MapStateManager.Instance.Initialize(map);
+
+        var spawner = new NodeMapSpawner();
+        _visualContext = spawner.Spawn(map, map.transform);
+
+        var env = new MapEnvironmentSpawner();
+        env.SpawnEnvironment(_visualContext, map.transform);
+
+        Bounds finalBounds = _visualContext.MapBounds;
+
+        var cam = FindFirstObjectByType<MapCameraController>();
+        if (cam != null)
+            cam.SetBoundsUsingWorldBounds(finalBounds);
+    }
+
     /// <summary>
     /// Assigns random enemies to all combat nodes in the map.
     /// </summary>
@@ -129,7 +214,7 @@ public class MapGenerationManager : MonoBehaviour
     {
         // Dynamically load all enemies from Resources/Enemies/
         EnemyDefinition[] enemyDefinitions = Resources.LoadAll<EnemyDefinition>("Enemies");
-        
+
         if (enemyDefinitions == null || enemyDefinitions.Length == 0)
         {
             Debug.LogWarning("[MapGenerationManager] No enemies found in Resources/Enemies/. Using fallback.");
@@ -172,4 +257,3 @@ public class MapGenerationManager : MonoBehaviour
         Debug.Log($"[MapGenerationManager] Assigned enemies to {assignedCount} combat nodes.");
     }
 }
-

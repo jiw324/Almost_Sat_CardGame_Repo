@@ -47,6 +47,44 @@ public class NodeMap : MonoBehaviour
         Debug.Log($"Generated NodeMap structure: {mapWidth}x{mapHeight} with {AllNodes.Count()} nodes (+ BossNode).");
     }
 
+    public void GenerateTutorial()
+    {
+        _generated = false;
+
+        mapWidth = 1;
+        mapHeight = 5;
+
+        InitializeGrid();
+
+        NodeType[] types =
+        {
+        NodeType.Combat,
+        NodeType.Shop,
+        NodeType.Event,
+        NodeType.Loot,
+        NodeType.Rest
+    };
+
+        for (int y = 0; y < mapHeight; y++)
+        {
+            NodeDefinition def = Factory.GetDefinition(types[y]);
+            var node = new Node(def, new Vector2Int(0, y));
+            Floors[y].Add(node);
+
+            if (y > 0)
+            {
+                var prev = Floors[y - 1][0];
+                prev.ConnectTo(node);
+            }
+        }
+
+        BossNode = null;
+        _generated = true;
+
+        Debug.Log("Generated tutorial NodeMap with 5 linear nodes (Combat -> Shop -> Event -> Loot -> Rest).");
+    }
+
+
     private void InitializeGrid()
     {
         Grid = new NodeGrid(mapWidth, mapHeight, gridXSpacing, gridYSpacing, Vector3.zero);
