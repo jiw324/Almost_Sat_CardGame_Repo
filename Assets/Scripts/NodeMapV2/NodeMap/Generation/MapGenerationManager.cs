@@ -40,7 +40,6 @@ public class MapGenerationManager : MonoBehaviour
 
     public void InitializeMapFromSession()
     {
-        // Force tutorial when debugSeed is -999
         if (debugSeed == -999)
         {
             InitializeTutorialFromSession();
@@ -79,7 +78,7 @@ public class MapGenerationManager : MonoBehaviour
         SessionSaveManager.SaveGameSession(GameSession.Instance.gameSessionData);
     }
 
-    private void InitializeTutorialFromSession()
+    public void InitializeTutorialFromSession()
     {
         GameSession.Instance.IsTutorialMode = true;
 

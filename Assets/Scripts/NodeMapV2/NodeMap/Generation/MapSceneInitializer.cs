@@ -4,9 +4,14 @@ public class MapSceneInitializer : MonoBehaviour
 {
     private void Awake()
     {
-        if (MapGenerationManager.Instance.ActiveMap == null)
+        var mgm = MapGenerationManager.Instance;
+
+        if (mgm.ActiveMap == null)
         {
-            MapGenerationManager.Instance.InitializeMapFromSession();
+            if (GameSession.Instance.IsTutorialMode)
+                mgm.InitializeTutorialFromSession();
+            else
+                mgm.InitializeMapFromSession();
         }
     }
 
