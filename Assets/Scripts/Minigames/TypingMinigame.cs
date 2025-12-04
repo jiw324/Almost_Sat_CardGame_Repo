@@ -310,22 +310,24 @@ public class TypingMinigame : MonoBehaviour, IMinigame
         // Base score: percentage of words completed
         float completionRatio = (float)wordsCompleted / words.Count;
         
+        // Map to 0-2 range: 0 = failure, 1.0 = default/normal, 2.0 = perfect
         // Bonus for completing all words
         if (wordsCompleted == words.Count)
         {
-            // Perfect score
-            return 1.0f;
+            // Perfect score - return 2.0
+            return 2.0f;
         }
         else if (wordsCompleted == 0)
         {
-            // Failed
+            // Failed - return 0.0
             return 0.0f;
         }
         else
         {
-            // Partial completion: scale from 0.3 to 0.9 based on completion
+            // Partial completion: scale from 0.6 to 1.8 based on completion
             // This gives some credit for partial completion but rewards full completion
-            return 0.3f + (completionRatio * 0.6f);
+            // Maps to range where 1.0 is achievable with decent performance
+            return 0.6f + (completionRatio * 1.2f);
         }
     }
 

@@ -123,8 +123,10 @@ public class ReactionMinigame : MonoBehaviour, IMinigame, IPointerClickHandler
         }
 
         reactionTime = Time.time - timeAtChange;
-        normalizedResult = Mathf.Clamp01(
+        // Map to 0-2 range: 0 = worst, 1.0 = default/normal, 2.0 = perfect
+        float normalized01 = Mathf.Clamp01(
             Mathf.InverseLerp(worstReactionTime, bestReactionTime, reactionTime));
+        normalizedResult = normalized01 * 2.0f; // Scale from 0-1 to 0-2
 
         string result =
             reactionTime < bestReactionTime ? "Nice!"

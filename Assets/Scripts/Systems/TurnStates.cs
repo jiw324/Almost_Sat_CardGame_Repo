@@ -93,6 +93,15 @@ public class EndTurnState : TurnStateBase
 
         yield return new WaitForSeconds(0.5f);
 
+        // Resolve all minion combat damage (positional combat system)
+        if (BattleManager.Instance != null)
+        {
+            BattleManager.Instance.ResolveAllMinionDamage();
+            
+            // Wait a moment for damage animations/effects to process
+            yield return new WaitForSeconds(0.5f);
+        }
+
         // Check for victory/defeat
         if (BattleManager.Instance != null)
         {
