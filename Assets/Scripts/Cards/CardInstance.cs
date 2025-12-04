@@ -46,7 +46,7 @@ public class CardInstance
         HasBeenPlayed = true;
 
         // Check if this card has a minigame
-        // Only players play minigames - enemies use default 1.0 multiplier
+        // enemies use default 1.0 multiplier
         float minigameMultiplier = 1.0f;
         if (Data.minigamePrefab != null && MinigameManager.Instance != null && Owner is PlayerEntity)
         {

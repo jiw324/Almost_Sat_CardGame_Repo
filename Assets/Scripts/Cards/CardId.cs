@@ -7,7 +7,6 @@ public enum CardId
     Archer,
     Rune,
     Apocalypse,
-    MagicMissile,
     RunicBlast
 }
 
