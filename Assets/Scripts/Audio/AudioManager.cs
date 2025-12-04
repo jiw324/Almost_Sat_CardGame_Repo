@@ -12,6 +12,13 @@ public class AudioManager : MonoBehaviour
     [Header("Audio Channels")]
     public AudioChannels channels = new AudioChannels();
 
+    [Header("Channel Volumes")]
+    [Range(0f, 1f)] public float uiVolume = 1f;
+    [Range(0f, 1f)] public float mapVolume = 1f;
+    [Range(0f, 1f)] public float combatVolume = 1f;
+    [Range(0f, 1f)] public float ambientVolume = 1f;
+
+
     private Dictionary<string, SoundLibrary.SoundEntry> sfxDict;
     private Dictionary<string, AudioClip> musicDict;
 
@@ -66,26 +73,42 @@ public class AudioManager : MonoBehaviour
     {
         if (!sfxDict.TryGetValue(id, out var entry))
         {
-            Debug.LogWarning($"AudioManager: Sound '{id}' not found.");
+            Debug.LogWarning("AudioManager: Sound '" + id + "' not found.");
             return;
         }
 
         AudioSource src = GetChannelSource(entry.channel);
+
         if (src != null)
             src.PlayOneShot(entry.clip);
     }
 
+
     private AudioSource GetChannelSource(SoundChannel ch)
     {
-        return ch switch
+        switch (ch)
         {
-            SoundChannel.UI => channels.ui,
-            SoundChannel.Map => channels.map,
-            SoundChannel.Combat => channels.combat,
-            SoundChannel.Ambient => channels.ambient,
-            _ => channels.ui,
-        };
+            case SoundChannel.UI:
+                channels.ui.volume = uiVolume;
+                return channels.ui;
+
+            case SoundChannel.Map:
+                channels.map.volume = mapVolume;
+                return channels.map;
+
+            case SoundChannel.Combat:
+                channels.combat.volume = combatVolume;
+                return channels.combat;
+
+            case SoundChannel.Ambient:
+                channels.ambient.volume = ambientVolume;
+                return channels.ambient;
+
+            default:
+                return channels.ui;
+        }
     }
+
     public void PlayMusicById(string id)
     {
         if (!musicDict.TryGetValue(id, out var clip))

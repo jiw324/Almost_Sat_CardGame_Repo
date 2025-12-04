@@ -12,5 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f65dd0bf0894fec449d67a9ba259625b, type: 3}
   m_Name: SoundLibrary
   m_EditorClassIdentifier: 
-  sounds: []
-  music: []
+  sounds:
+  - id: UIButton
+    clip: {fileID: 8300000, guid: 8e67cf42ca927a849a514f73a80e3507, type: 3}
+    channel: 0
+  - id: UIButtonError
+    clip: {fileID: 8300000, guid: 1ded0051564d6084096721f1547d329e, type: 3}
+    channel: 0
+  - id: Coins
+    clip: {fileID: 8300000, guid: 23722a2d9f933f34485a57bac4c551f6, type: 3}
+    channel: 0
+  - id: Cards
+    clip: {fileID: 8300000, guid: c24149216af0f6b43b9b40ef3f861789, type: 3}
+    channel: 0
+  music:
+  - id: Menu
+    clip: {fileID: 8300000, guid: 6e9e896269326864894f323686b40aee, type: 3}
+  - id: Map
+    clip: {fileID: 8300000, guid: 495660551c2736541a4e2d3924a81908, type: 3}
+  - id: Combat
+    clip: {fileID: 8300000, guid: aa448a5aa2a01f54093223d003008da6, type: 3}

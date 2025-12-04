@@ -471,6 +471,61 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fadeImage: {fileID: 674414197}
   fadeDuration: 0.5
+--- !u!1 &741646231
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 741646233}
+  - component: {fileID: 741646232}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &741646232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 741646231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bb252fd2b2038f4b8516a147dd38167, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  library: {fileID: 11400000, guid: 8ba4013db21886446bfd8e474f37a876, type: 2}
+  channels:
+    ui: {fileID: 0}
+    map: {fileID: 0}
+    combat: {fileID: 0}
+    ambient: {fileID: 0}
+    music: {fileID: 0}
+  uiVolume: 0.15
+  mapVolume: 0.5
+  combatVolume: 0.1
+  ambientVolume: 1
+--- !u!4 &741646233
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 741646231}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1371.2378, y: 0, z: 1474.1093}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &942600268
 GameObject:
   m_ObjectHideFlags: 0
@@ -482,6 +537,7 @@ GameObject:
   - component: {fileID: 942600271}
   - component: {fileID: 942600270}
   - component: {fileID: 942600272}
+  - component: {fileID: 942600273}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -599,6 +655,14 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!81 &942600273
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 942600268}
+  m_Enabled: 0
 --- !u!1 &1151479351
 GameObject:
   m_ObjectHideFlags: 0
@@ -704,3 +768,4 @@ SceneRoots:
   - {fileID: 5233793}
   - {fileID: 46919003}
   - {fileID: 183742320}
+  - {fileID: 741646233}

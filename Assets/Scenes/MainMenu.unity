@@ -194,6 +194,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7219302}
   m_CullTransparentMesh: 1
+--- !u!1 &141850923
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 141850925}
+  - component: {fileID: 141850924}
+  m_Layer: 0
+  m_Name: UIAudioBridge
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &141850924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 141850923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 258e80b38a8b853438cd8cf8105c7990, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickSoundId: UIButton
+  clickErrorSoundId: UIButtonError
+--- !u!4 &141850925
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 141850923}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1371.2378, y: 0, z: 1474.1093}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &162472924
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -870,8 +916,16 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7067794476584810610, guid: 83f938d1f686a2c4e90617e9329f77e2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1385203179}
   m_SourcePrefab: {fileID: 100100000, guid: 83f938d1f686a2c4e90617e9329f77e2, type: 3}
+--- !u!1 &933989563 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7067794476584810610, guid: 83f938d1f686a2c4e90617e9329f77e2, type: 3}
+  m_PrefabInstance: {fileID: 933989562}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1008313679
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1074,6 +1128,18 @@ MonoBehaviour:
       - m_Target: {fileID: 1385468995}
         m_TargetAssemblyTypeName: MenuNavigationManager, Assembly-CSharp
         m_MethodName: PlayTutorial
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 141850924}
+        m_TargetAssemblyTypeName: UIAudioBridge, Assembly-CSharp
+        m_MethodName: PlayClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1482,8 +1548,16 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7067794476584810610, guid: 83f938d1f686a2c4e90617e9329f77e2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1454389680}
   m_SourcePrefab: {fileID: 100100000, guid: 83f938d1f686a2c4e90617e9329f77e2, type: 3}
+--- !u!1 &1259887857 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7067794476584810610, guid: 83f938d1f686a2c4e90617e9329f77e2, type: 3}
+  m_PrefabInstance: {fileID: 1259887856}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1281199281
 GameObject:
   m_ObjectHideFlags: 0
@@ -1833,7 +1907,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1353597821}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 141850924}
+        m_TargetAssemblyTypeName: UIAudioBridge, Assembly-CSharp
+        m_MethodName: PlayClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1353597821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1890,6 +1976,62 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 5784963247727028776, guid: 83f938d1f686a2c4e90617e9329f77e2, type: 3}
   m_PrefabInstance: {fileID: 933989562}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1385203179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 933989563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 0}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 141850924}
+        m_TargetAssemblyTypeName: UIAudioBridge, Assembly-CSharp
+        m_MethodName: PlayClickError
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1385468994
 GameObject:
   m_ObjectHideFlags: 0
@@ -2054,7 +2196,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1448143192}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 141850924}
+        m_TargetAssemblyTypeName: UIAudioBridge, Assembly-CSharp
+        m_MethodName: PlayClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1448143192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2098,6 +2252,62 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 5784963247727028776, guid: 83f938d1f686a2c4e90617e9329f77e2, type: 3}
   m_PrefabInstance: {fileID: 1259887856}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1454389680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1259887857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 0}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 141850924}
+        m_TargetAssemblyTypeName: UIAudioBridge, Assembly-CSharp
+        m_MethodName: PlayClickError
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1522812130 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7067794476584810610, guid: 83f938d1f686a2c4e90617e9329f77e2, type: 3}
@@ -2164,6 +2374,18 @@ MonoBehaviour:
           m_StringArgument: Map
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 141850924}
+        m_TargetAssemblyTypeName: UIAudioBridge, Assembly-CSharp
+        m_MethodName: PlayClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1526975020 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8588090210634442870, guid: 9f65ad61904a7d44ab0d2a4e5881cfcf, type: 3}
@@ -2221,6 +2443,18 @@ MonoBehaviour:
       - m_Target: {fileID: 1385468995}
         m_TargetAssemblyTypeName: MenuNavigationManager, Assembly-CSharp
         m_MethodName: QuitGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 141850924}
+        m_TargetAssemblyTypeName: UIAudioBridge, Assembly-CSharp
+        m_MethodName: PlayClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2431,7 +2665,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1654911590}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 141850924}
+        m_TargetAssemblyTypeName: UIAudioBridge, Assembly-CSharp
+        m_MethodName: PlayClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1654911590 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8588090210634442864, guid: 9f65ad61904a7d44ab0d2a4e5881cfcf, type: 3}
@@ -2958,7 +3204,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2113527912}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 141850924}
+        m_TargetAssemblyTypeName: UIAudioBridge, Assembly-CSharp
+        m_MethodName: PlayClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2113527912
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3006,3 +3264,4 @@ SceneRoots:
   - {fileID: 1854129089}
   - {fileID: 1291677454}
   - {fileID: 1385468996}
+  - {fileID: 141850925}

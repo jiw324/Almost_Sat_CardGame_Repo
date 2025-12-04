@@ -2339,7 +2339,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 546613297}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2010142896}
+        m_TargetAssemblyTypeName: UIAudioBridge, Assembly-CSharp
+        m_MethodName: PlayCards
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &546613297
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2561,6 +2573,7 @@ Transform:
   - {fileID: 1365711335}
   - {fileID: 1060245582}
   - {fileID: 1799213667}
+  - {fileID: 834377126}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &714929534
@@ -3046,12 +3059,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 834377124}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 595.03564, y: 0, z: 1173.1382}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 708116677}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &836694143 stripped
 Transform:
@@ -3579,7 +3592,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 323480549}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2010142896}
+        m_TargetAssemblyTypeName: UIAudioBridge, Assembly-CSharp
+        m_MethodName: PlayCards
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &970061057
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4036,7 +4061,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1041062194}
-  m_Enabled: 0
+  m_Enabled: 1
 --- !u!20 &1041062196
 Camera:
   m_ObjectHideFlags: 0
@@ -6853,6 +6878,50 @@ MonoBehaviour:
   damageEnemyEffect: {fileID: 11400000, guid: 536df94452bf2fe4bb8157d11326188a, type: 2}
   aoeDamageEffect: {fileID: 11400000, guid: 1e03532fc5918e5478b537253e470b6a, type: 2}
   gainShieldEffect: {fileID: 11400000, guid: e6a12fe06a9e42949bc526792c105f26, type: 2}
+--- !u!1 &2010142895
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2010142897}
+  - component: {fileID: 2010142896}
+  m_Layer: 0
+  m_Name: UIAudioBridge
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2010142896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2010142895}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 258e80b38a8b853438cd8cf8105c7990, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &2010142897
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2010142895}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 521.2333, y: 0, z: 935.20135}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &2026214912 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7533795812152726194, guid: 7bf8953ae397ffd409a19928405575cb, type: 3}
@@ -7353,14 +7422,126 @@ PrefabInstance:
       propertyPath: screenDim
       value: 
       objectReference: {fileID: 1644420939}
+    - target: {fileID: 1160095507284084250, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1160095507284084250, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1160095507284084250, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 2010142896}
+    - target: {fileID: 1160095507284084250, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1160095507284084250, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: PlayClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 1160095507284084250, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: UIAudioBridge, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1160095507284084250, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 2258684217780471479, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2258684217780471479, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2258684217780471479, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 2010142896}
+    - target: {fileID: 2258684217780471479, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2258684217780471479, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: PlayClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 2258684217780471479, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: UIAudioBridge, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2258684217780471479, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 2702133294552861159, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
       propertyPath: m_Name
       value: Pause Menu
+      objectReference: {fileID: 0}
+    - target: {fileID: 3426707276436030459, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3426707276436030459, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3426707276436030459, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 2010142896}
+    - target: {fileID: 3426707276436030459, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3426707276436030459, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: PlayClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 3426707276436030459, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: UIAudioBridge, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 3426707276436030459, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 4012043311971583266, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4012043311971583266, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4012043311971583266, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 834377125}
+    - target: {fileID: 4012043311971583266, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
+      value: 
+      objectReference: {fileID: 2010142896}
+    - target: {fileID: 4012043311971583266, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4012043311971583266, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
+      value: PlayClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 4012043311971583266, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
+      value: UIAudioBridge, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 4012043311971583266, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 8452386238634930892, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -7441,6 +7622,34 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8724527757320673420, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8724527757320673420, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8724527757320673420, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 2010142896}
+    - target: {fileID: 8724527757320673420, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8724527757320673420, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: PlayClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 8724527757320673420, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: UIAudioBridge, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8724527757320673420, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -7454,7 +7663,6 @@ SceneRoots:
   - {fileID: 1549448651}
   - {fileID: 439926850}
   - {fileID: 475837629}
-  - {fileID: 834377126}
   - {fileID: 1236540285}
   - {fileID: 339591127}
   - {fileID: 708116677}
@@ -7464,3 +7672,4 @@ SceneRoots:
   - {fileID: 1405136341}
   - {fileID: 1564785289}
   - {fileID: 1737230485}
+  - {fileID: 2010142897}

@@ -2,7 +2,6 @@ using System;
 
 public static class SoundEvents
 {
-    // Generic sound request
     public static event Action<string> OnSoundRequested;
 
     /// <summary>
@@ -14,7 +13,6 @@ public static class SoundEvents
         OnSoundRequested?.Invoke(soundId);
     }
 
-    // Generic music request
     public static event Action<string> OnMusicRequested;
 
     public static void PlayMusic(string musicId)
