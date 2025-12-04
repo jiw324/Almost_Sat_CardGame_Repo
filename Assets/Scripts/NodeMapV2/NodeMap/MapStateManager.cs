@@ -16,7 +16,7 @@ public class MapStateManager : MonoBehaviour
     private string _currentNodeId;
 
     private SessionNodeMapData SessionMap =>
-        GameSession.Instance?.gameSessionData?.sessionNodeMapData;
+        GameSession.Instance?.GetActiveNodeMapData();
 
     private void Awake()
     {

@@ -19,9 +19,18 @@ public static class SessionSaveManager
                 Directory.CreateDirectory(saveDirectoryPath);
             }
 
-            if (sessionData.sessionNodeMapData.currentNodeData != null)
+            if (sessionData.sessionNodeMapData != null &&
+                sessionData.sessionNodeMapData.currentNodeData != null)
             {
-                sessionData.sessionNodeMapData.currentNodeJson = JsonUtility.ToJson(sessionData.sessionNodeMapData.currentNodeData, true);
+                sessionData.sessionNodeMapData.currentNodeJson =
+                    JsonUtility.ToJson(sessionData.sessionNodeMapData.currentNodeData, true);
+            }
+
+            if (sessionData.tutorialNodeMapData != null &&
+                sessionData.tutorialNodeMapData.currentNodeData != null)
+            {
+                sessionData.tutorialNodeMapData.currentNodeJson =
+                    JsonUtility.ToJson(sessionData.tutorialNodeMapData.currentNodeData, true);
             }
 
             string gameSessionJson = JsonUtility.ToJson(sessionData, true);
@@ -55,31 +64,67 @@ public static class SessionSaveManager
             string gameSessionJson = File.ReadAllText(savePath);
             loadedSessionData = JsonUtility.FromJson<GameSessionData>(gameSessionJson);
 
-            switch (loadedSessionData.sessionNodeMapData.currentNodeType)
+            // Main run node data
+            if (loadedSessionData.sessionNodeMapData != null &&
+                !string.IsNullOrEmpty(loadedSessionData.sessionNodeMapData.currentNodeJson))
             {
-                case NodeType.Combat:
-                    loadedSessionData.sessionNodeMapData.currentNodeData =
-                        JsonUtility.FromJson<CombatNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
-                    break;
+                switch (loadedSessionData.sessionNodeMapData.currentNodeType)
+                {
+                    case NodeType.Combat:
+                        loadedSessionData.sessionNodeMapData.currentNodeData =
+                            JsonUtility.FromJson<CombatNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
+                        break;
 
-                case NodeType.Shop:
-                    loadedSessionData.sessionNodeMapData.currentNodeData =
-                        JsonUtility.FromJson<ShopNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
-                    break;
+                    case NodeType.Shop:
+                        loadedSessionData.sessionNodeMapData.currentNodeData =
+                            JsonUtility.FromJson<ShopNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
+                        break;
 
-                case NodeType.Event:
-                    loadedSessionData.sessionNodeMapData.currentNodeData =
-                        JsonUtility.FromJson<EventNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
-                    break;
-                case NodeType.Rest:
-                    loadedSessionData.sessionNodeMapData.currentNodeData =
-                        JsonUtility.FromJson<RestNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
-                    break;
-                case NodeType.Loot:
-                    loadedSessionData.sessionNodeMapData.currentNodeData =
-                        JsonUtility.FromJson<LootNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
-                    break;
-            }          
+                    case NodeType.Event:
+                        loadedSessionData.sessionNodeMapData.currentNodeData =
+                            JsonUtility.FromJson<EventNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
+                        break;
+                    case NodeType.Rest:
+                        loadedSessionData.sessionNodeMapData.currentNodeData =
+                            JsonUtility.FromJson<RestNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
+                        break;
+                    case NodeType.Loot:
+                        loadedSessionData.sessionNodeMapData.currentNodeData =
+                            JsonUtility.FromJson<LootNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
+                        break;
+                }
+            }
+
+            // Tutorial node data
+            if (loadedSessionData.tutorialNodeMapData != null &&
+                !string.IsNullOrEmpty(loadedSessionData.tutorialNodeMapData.currentNodeJson))
+            {
+                switch (loadedSessionData.tutorialNodeMapData.currentNodeType)
+                {
+                    case NodeType.Combat:
+                        loadedSessionData.tutorialNodeMapData.currentNodeData =
+                            JsonUtility.FromJson<CombatNodeData>(loadedSessionData.tutorialNodeMapData.currentNodeJson);
+                        break;
+
+                    case NodeType.Shop:
+                        loadedSessionData.tutorialNodeMapData.currentNodeData =
+                            JsonUtility.FromJson<ShopNodeData>(loadedSessionData.tutorialNodeMapData.currentNodeJson);
+                        break;
+
+                    case NodeType.Event:
+                        loadedSessionData.tutorialNodeMapData.currentNodeData =
+                            JsonUtility.FromJson<EventNodeData>(loadedSessionData.tutorialNodeMapData.currentNodeJson);
+                        break;
+                    case NodeType.Rest:
+                        loadedSessionData.tutorialNodeMapData.currentNodeData =
+                            JsonUtility.FromJson<RestNodeData>(loadedSessionData.tutorialNodeMapData.currentNodeJson);
+                        break;
+                    case NodeType.Loot:
+                        loadedSessionData.tutorialNodeMapData.currentNodeData =
+                            JsonUtility.FromJson<LootNodeData>(loadedSessionData.tutorialNodeMapData.currentNodeJson);
+                        break;
+                }
+            }
         }
         catch (Exception e)
         {
