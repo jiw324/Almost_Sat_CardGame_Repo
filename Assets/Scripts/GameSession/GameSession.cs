@@ -27,15 +27,15 @@ public class GameSession : MonoBehaviour
 
     private void OnEnable()
     {
-        saveAction = new InputAction(binding: "<Keyboard>/s");
+        saveAction = new InputAction(binding: "<Keyboard>/ctrl+s");
         saveAction.performed += _ => SessionSaveManager.SaveGameSession(gameSessionData);
         saveAction.Enable();
 
-        loadAction = new InputAction(binding: "<Keyboard>/l");
+        loadAction = new InputAction(binding: "<Keyboard>/ctrl+l");
         loadAction.performed += _ => LoadGameSession("Save");
         loadAction.Enable();
 
-        resetAction = new InputAction(binding: "<Keyboard>/r");
+        resetAction = new InputAction(binding: "<Keyboard>/ctrl+r");
         resetAction.performed += _ => ResetGameSessionData();
         resetAction.Enable();
     }
