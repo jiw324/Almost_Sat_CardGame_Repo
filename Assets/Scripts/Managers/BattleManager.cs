@@ -17,8 +17,8 @@ public class BattleManager : MonoBehaviour
     public UIManager uiManager;
     public PlayerEntity playerEntity;
     public EnemyEntity enemyEntity;
-    [SerializeField] private HandManager playerHandManager;
-    [SerializeField] private HandManager enemyHandManager;
+    public HandManager playerHandManager;
+    public HandManager enemyHandManager;
 
     public int playerHealth;
     public int playerMana;

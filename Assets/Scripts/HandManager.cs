@@ -14,6 +14,7 @@ public class HandManager : MonoBehaviour
     [SerializeField] private int maxHandSize = 10;
     [SerializeField] private int openingHandSize = 4;
     [SerializeField] private int mulliganSampleSize = 8;
+    [SerializeField] private int cardsPerTurn = 5;  // Number of cards to draw at start of each turn
 
     private readonly List<CardInstance> cardsInHand = new();
     private readonly Queue<CardId> drawPile = new();
@@ -292,6 +293,66 @@ public class HandManager : MonoBehaviour
 
         RemoveCardFromHand(card);
         AddToDiscard(card.Data.id);
+    }
+
+    /// <summary>
+    /// Discards all cards currently in hand to the discard pile.
+    /// </summary>
+    public void DiscardAllHand()
+    {
+        if (cardsInHand == null || cardsInHand.Count == 0)
+        {
+            Debug.Log("[HandManager] No cards in hand to discard.");
+            return;
+        }
+
+        int discardedCount = 0;
+        // Create a copy of the list to avoid modification during iteration
+        List<CardInstance> cardsToDiscard = new List<CardInstance>(cardsInHand);
+        
+        foreach (var card in cardsToDiscard)
+        {
+            if (card != null && card.Data != null)
+            {
+                AddToDiscard(card.Data.id);
+                discardedCount++;
+            }
+        }
+
+        // Clear hand and destroy UI elements
+        ClearHand();
+        
+        Debug.Log($"[HandManager] Discarded {discardedCount} cards from hand to discard pile.");
+    }
+
+    /// <summary>
+    /// Draws a specific number of cards from the deck.
+    /// </summary>
+    public void DrawCards(int count)
+    {
+        if (count <= 0)
+        {
+            Debug.Log("[HandManager] Draw count must be positive.");
+            return;
+        }
+
+        int drawn = 0;
+        for (int i = 0; i < count; i++)
+        {
+            if (!DrawCardFromDeck())
+                break;
+            drawn++;
+        }
+
+        Debug.Log($"[HandManager] Drew {drawn} cards (requested {count}).");
+    }
+
+    /// <summary>
+    /// Gets the number of cards to draw at the start of each turn.
+    /// </summary>
+    public int GetCardsPerTurn()
+    {
+        return cardsPerTurn;
     }
 
     public void ShuffleDiscardIntoDeck()

@@ -108,7 +108,7 @@
         {
             "id": "runicblast",
             "cardName": "Runic Blast",
-            "description": "[TYPING] Deal damage based on the number of runes you control. Words = number of runes.",
+            "description": "[TYPING] Deal damage based on the number of runes you control.",
             "cost": 2,
             "type": "spell",
             "isRanged": true,

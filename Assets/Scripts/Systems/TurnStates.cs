@@ -16,6 +16,13 @@ public class PlayerTurnState : TurnStateBase
         {
             BattleManager.Instance.playerMana = BattleManager.Instance.playerMaxMana;
             if (BattleManager.Instance.uiManager != null) BattleManager.Instance.uiManager.UpdatePlayerMana(BattleManager.Instance.playerMana);
+            
+            // Draw cards at start of turn
+            if (BattleManager.Instance.playerHandManager != null)
+            {
+                int cardsToDraw = BattleManager.Instance.playerHandManager.GetCardsPerTurn();
+                BattleManager.Instance.playerHandManager.DrawCards(cardsToDraw);
+            }
         }
 
         turnManager.turnBanner.ShowPlayerTurnBanner();
@@ -57,6 +64,13 @@ public class EnemyTurnState : TurnStateBase
         {
             BattleManager.Instance.enemyMana = BattleManager.Instance.enemyMaxMana;
             if (BattleManager.Instance.uiManager != null) BattleManager.Instance.uiManager.UpdateEnemyMana(BattleManager.Instance.enemyMana);
+            
+            // Draw cards at start of turn
+            if (BattleManager.Instance.enemyHandManager != null)
+            {
+                int cardsToDraw = BattleManager.Instance.enemyHandManager.GetCardsPerTurn();
+                BattleManager.Instance.enemyHandManager.DrawCards(cardsToDraw);
+            }
         }
 
         turnManager.StartCoroutine(EnemyActionRoutine());
@@ -87,6 +101,19 @@ public class EndTurnState : TurnStateBase
     {
         // Resolve damage for the side that ended their turn
         bool fromPlayer = TurnManager.Instance.SideEndingTurn == TurnManager.Side.Player;
+
+        // Discard hand of the player who just ended their turn
+        if (BattleManager.Instance != null)
+        {
+            if (fromPlayer && BattleManager.Instance.playerHandManager != null)
+            {
+                BattleManager.Instance.playerHandManager.DiscardAllHand();
+            }
+            else if (!fromPlayer && BattleManager.Instance.enemyHandManager != null)
+            {
+                BattleManager.Instance.enemyHandManager.DiscardAllHand();
+            }
+        }
 
         // First, resolve any spells placed on board for this side
         //BoardManager.Instance.ResolveAndClearSpellsForSide(fromPlayer);
