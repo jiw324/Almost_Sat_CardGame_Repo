@@ -121,4 +121,16 @@ public class GameSession : MonoBehaviour
     {
         gameSessionData.sessionPlayerData.gold = gold;
     }
+
+    public void SetPlayerDeck(DeckInstance newDeck)
+    {
+        if (gameSessionData == null || gameSessionData.sessionPlayerData == null)
+        {
+            Debug.LogError("Cannot set player deck: GameSessionData is null");
+            return;
+        }
+
+        gameSessionData.sessionPlayerData.deck = newDeck;
+        Debug.Log($"Player deck updated with {newDeck.Cards.Count} cards");
+    }
 }
