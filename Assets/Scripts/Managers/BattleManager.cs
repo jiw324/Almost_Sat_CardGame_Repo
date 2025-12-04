@@ -270,6 +270,32 @@ public class BattleManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Counts the number of "Rune" minions on the board owned by the player.
+    /// </summary>
+    public int CountPlayerRunes()
+    {
+        int runeCount = 0;
+        var slots = FindObjectsOfType<BoardSlot>();
+        if (slots == null || slots.Length == 0) return 0;
+
+        foreach (var slot in slots)
+        {
+            if (slot.currentCard == null || !slot.currentCard.IsMinion) continue;
+            if (!(slot.currentCard.Owner is PlayerEntity)) continue;
+            
+            // Check if it's a Rune card (by name or ID)
+            if (slot.currentCard.Data != null && 
+                (slot.currentCard.Data.cardName.Equals("Rune", System.StringComparison.OrdinalIgnoreCase) ||
+                 slot.currentCard.Data.id.ToString().Equals("rune", System.StringComparison.OrdinalIgnoreCase)))
+            {
+                runeCount++;
+            }
+        }
+
+        return runeCount;
+    }
+
     public void ResolveMinionDamage(bool fromPlayer)
     {
         Debug.Log($"[BattleManager] Resolving minion damage. FromPlayer={fromPlayer}");

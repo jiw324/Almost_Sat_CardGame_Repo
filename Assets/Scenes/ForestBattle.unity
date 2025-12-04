@@ -6853,6 +6853,7 @@ MonoBehaviour:
   damageEnemyEffect: {fileID: 11400000, guid: 536df94452bf2fe4bb8157d11326188a, type: 2}
   aoeDamageEffect: {fileID: 11400000, guid: 1e03532fc5918e5478b537253e470b6a, type: 2}
   gainShieldEffect: {fileID: 11400000, guid: e6a12fe06a9e42949bc526792c105f26, type: 2}
+  runicBlastEffect: {fileID: 11400000, guid: c91a4605d9ae1453fb6b810d41cf1b7d, type: 2}
 --- !u!4 &2026214912 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7533795812152726194, guid: 7bf8953ae397ffd409a19928405575cb, type: 3}

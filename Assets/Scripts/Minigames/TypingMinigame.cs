@@ -16,6 +16,12 @@ public class TypingMinigame : MonoBehaviour, IMinigame
     [Header("Game Settings")]
     [SerializeField] private int totalWords = 3;              // Number of words to type (scalable)
     private const float secondsPerWord = 1.0f;               // Time per word (total time = totalWords * secondsPerWord)
+    
+    // Allow setting word count dynamically (for rune-based minigames)
+    public void SetWordCount(int wordCount)
+    {
+        totalWords = Mathf.Max(1, wordCount); // Ensure at least 1 word
+    }
 
     private List<string> words;
     private List<WordPanel> wordPanels = new();

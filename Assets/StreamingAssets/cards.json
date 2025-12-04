@@ -93,6 +93,27 @@
                     "effectValue": 3
                 }
             ]
+        },
+        {
+            "id": "rune",
+            "cardName": "Rune",
+            "description": "A magical rune that powers up runic spells.",
+            "cost": 1,
+            "type": "minion",
+            "isRanged": false,
+            "isMinion": true,
+            "minionAttack": 0,
+            "minionHealth": 1
+        },
+        {
+            "id": "runicblast",
+            "cardName": "Runic Blast",
+            "description": "[TYPING] Deal damage based on the number of runes you control. Words = number of runes.",
+            "cost": 2,
+            "type": "spell",
+            "isRanged": true,
+            "effectId": "runic_blast",
+            "effectValue": 2
         }
     ]
 }

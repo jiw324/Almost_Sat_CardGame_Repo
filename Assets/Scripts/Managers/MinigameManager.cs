@@ -33,6 +33,28 @@ public class MinigameManager : MonoBehaviour
         return result;
     }
 
+    /// <summary>
+    /// Starts a minigame with a configuration callback before playing.
+    /// </summary>
+    public async Task<float> StartMinigameAsync(GameObject minigamePrefab, System.Action<GameObject> configureCallback)
+    {
+        if (isActive) return 0f;
+        isActive = true;
+        overlayPanel.SetActive(true);
+
+        GameObject instance = Instantiate(minigamePrefab, minigameContainer);
+        
+        // Allow configuration before playing
+        configureCallback?.Invoke(instance);
+        
+        var controller = instance.GetComponent<IMinigame>();
+
+        float result = await controller.PlayAsync();
+
+        EndMinigame(instance);
+        return result;
+    }
+
     private void EndMinigame(GameObject instance)
     {
         Destroy(instance);
