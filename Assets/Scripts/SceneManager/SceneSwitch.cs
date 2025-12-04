@@ -22,6 +22,9 @@ public class SceneSwitch : MonoBehaviour
             case "Rest":
                 gameRoute = GameRoute.Rest;
                 break;
+            case "Loot":
+                gameRoute = GameRoute.Loot;
+                break;
             default:
                 gameRoute = GameRoute.MainMenu;
                 break;
