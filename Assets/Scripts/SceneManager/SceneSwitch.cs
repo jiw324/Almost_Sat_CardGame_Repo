@@ -27,6 +27,12 @@ public class SceneSwitch : MonoBehaviour
                 break;
         }
 
+        if (SceneLoader.Instance == null)
+        {
+            Debug.LogError("[SceneSwitch] SceneLoader.Instance is null! Make sure SceneLoader exists in the scene and has been initialized.");
+            return;
+        }
+
         SceneLoader.Instance.Go(gameRoute);
     }
 }

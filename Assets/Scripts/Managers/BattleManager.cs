@@ -35,6 +35,7 @@ public class BattleManager : MonoBehaviour
     public int enemyMaxHealth = 20;
 
     private bool endSequenceStarted = false;
+    public bool IsBattleEnded => endSequenceStarted;
 
 
     private void Awake()
@@ -225,6 +226,20 @@ public class BattleManager : MonoBehaviour
         }
     }
 
+
+    public void CheckBattleEnd()
+    {
+        if (endSequenceStarted) return;
+        
+        if (playerHealth <= 0)
+        {
+            EndBattle("You were defeated");
+        }
+        else if (enemyHealth <= 0)
+        {
+            EndBattle("Enemy defeated");
+        }
+    }
 
     public void EndBattle(string message)
     {

@@ -24,6 +24,9 @@ public abstract class EntityBase : MonoBehaviour
                 bm.enemyHealth = currentHealth;
                 if (bm.uiManager != null) bm.uiManager.UpdateEnemyHealth(currentHealth);
             }
+            
+            // Check if battle should end immediately
+            bm.CheckBattleEnd();
         }
 
         if (currentHealth <= 0) Die();

@@ -120,19 +120,12 @@ public class EndTurnState : TurnStateBase
 
         yield return new WaitForSeconds(0.5f);
 
-        // Check for victory/defeat
+        // Check for victory/defeat (backup check in case health changed during turn resolution)
         if (BattleManager.Instance != null)
         {
-            if (BattleManager.Instance.playerHealth <= 0)
+            BattleManager.Instance.CheckBattleEnd();
+            if (BattleManager.Instance.IsBattleEnded)
             {
-                Debug.Log("[EndTurn] Player has been defeated.");
-                turnManager.turnBanner.ShowPersistentEndBanner("You were defeated");
-                yield break;
-            }
-            if (BattleManager.Instance.enemyHealth <= 0)
-            {
-                Debug.Log("[EndTurn] Enemy has been defeated.");
-                turnManager.turnBanner.ShowPersistentEndBanner("Enemy defeated");
                 yield break;
             }
         }
