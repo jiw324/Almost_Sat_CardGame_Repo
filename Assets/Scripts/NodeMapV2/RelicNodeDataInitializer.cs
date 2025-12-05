@@ -1,16 +1,16 @@
 using UnityEngine;
 
 /// <summary>
-/// Helper to handle loot node behavior: pick a random relic from JSON,
-/// grant it to the player, and record it in the session's LootNodeData.
-/// Call this when entering a loot node.
+/// Helper to handle relic node behavior: pick a random relic from JSON,
+/// grant it to the player, and record it in the session's RelicNodeData.
+/// Call this when entering a relic node.
 /// </summary>
-public static class LootNodeDataInitializer
+public static class RelicNodeDataInitializer
 {
     /// <summary>
-    /// Initialize loot for a node. If fromEvent is true, this loot came from an Event node.
+    /// Initialize relic for a node. If fromEvent is true, this relic came from an Event node.
     /// </summary>
-    public static void InitializeLootNode(bool fromEvent)
+    public static void InitializeRelicNode(bool fromEvent)
     {
         GameSession session = SessionGrabber.getGameSession();
         if (session == null)
@@ -28,8 +28,8 @@ public static class LootNodeDataInitializer
         // If this loot node was already resolved in this session, don't grant again
         var mapData = session.gameSessionData.sessionNodeMapData;
         if (mapData != null &&
-            mapData.currentNodeType == NodeType.Loot &&
-            mapData.currentNodeData is LootNodeData existingLoot &&
+            mapData.currentNodeType == NodeType.Event &&
+            mapData.currentNodeData is EventNodeData existingLoot &&
             !string.IsNullOrEmpty(existingLoot.grantedRelicId))
         {
             Debug.Log("[LootNodeDataInitializer] Loot for this node was already granted, skipping.");
@@ -64,13 +64,13 @@ public static class LootNodeDataInitializer
         }
 
         // Store simple node data for saving/loading
-        LootNodeData lootData = new LootNodeData
+        EventNodeData lootData = new EventNodeData
         {
             grantedRelicId = relicJson.id,
             fromEvent = fromEvent
         };
 
-        session.gameSessionData.sessionNodeMapData.currentNodeType = NodeType.Loot;
+        session.gameSessionData.sessionNodeMapData.currentNodeType = NodeType.Event;
         session.gameSessionData.sessionNodeMapData.currentNodeData = lootData;
 
         Debug.Log($"[LootNodeDataInitializer] Granted relic '{relicJson.id}' to player.");

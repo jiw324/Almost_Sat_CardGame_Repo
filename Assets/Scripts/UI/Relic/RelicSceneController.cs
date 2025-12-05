@@ -41,7 +41,7 @@ public class RelicSceneController : MonoBehaviour
         if (mapData == null || mapData.currentNodeData == null)
             return "You got a relic!";
 
-        if (mapData.currentNodeData is LootNodeData lootData && lootData.fromEvent)
+        if (mapData.currentNodeData is RelicNodeData lootData && lootData.fromEvent)
         {
             return "You gain an relic";
         }
