@@ -154,12 +154,30 @@ public class MinionBehaviour : MonoBehaviour
             return;
         }
 
-        target.TakeDamage(atk);
+        // --- NEW: apply status multiplier from MinionEntity, if present ---
+        int finalDamage = atk;
+        var minionEntity = GetComponent<MinionEntity>();
+        if (minionEntity != null)
+        {
+            float mult = minionEntity.GetOutgoingDamageMultiplier();
+            finalDamage = Mathf.RoundToInt(atk * mult);
+        }
+
+        if (finalDamage <= 0)
+        {
+            Debug.Log($"[MinionBehaviour] {instance.Data.cardName}'s modified attack is <= 0, no damage dealt.");
+        }
+        else
+        {
+            target.TakeDamage(finalDamage);
+        }
+
         hasActedThisTurn = true;
 
         string targetName = !string.IsNullOrEmpty(target.entityName) ? target.entityName : target.name;
-        Debug.Log($"[MinionBehaviour] {instance.Data.cardName} attacked {targetName} for {atk}");
+        Debug.Log($"[MinionBehaviour] {instance.Data.cardName} attacked {targetName} for {finalDamage}");
     }
+
 
     public void ReceiveDamage(int amount)
     {

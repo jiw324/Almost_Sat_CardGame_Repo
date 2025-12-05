@@ -107,8 +107,8 @@ public class GameSession : MonoBehaviour
 
         // Reset run-specific stats but keep the deck
         playerData.health = playerData.maxHealth;
-        playerData.mana = 1;
-        playerData.gold = 10;
+        playerData.mana = 3;
+        playerData.gold = 5;
         playerData.isInActiveRun = true;
 
         gameSessionData.sessionNodeMapData.ResetSessionData();

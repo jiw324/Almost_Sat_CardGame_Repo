@@ -115,6 +115,7 @@ public class EndTurnState : TurnStateBase
             }
         }
 
+        StatusSystem.OnTurnEnd(turnManager.SideEndingTurn);
         // First, resolve any spells placed on board for this side
         //BoardManager.Instance.ResolveAndClearSpellsForSide(fromPlayer);
 

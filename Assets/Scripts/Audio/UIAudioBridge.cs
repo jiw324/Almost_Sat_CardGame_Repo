@@ -5,6 +5,7 @@ public class UIAudioBridge : MonoBehaviour
     private string clickSoundId = "UIButton";
     private string clickErrorSoundId = "UIButtonError";
     private string cardsSoundId = "Cards";
+    private string openRelicsId = "OpenRelics";
 
     /// <summary>
     /// Plays the default click sound.
@@ -26,6 +27,12 @@ public class UIAudioBridge : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(cardsSoundId))
             SoundEvents.Play(cardsSoundId);
+    }
+
+    public void PlayOpenRelics()
+    {
+        if (!string.IsNullOrEmpty(openRelicsId))
+            SoundEvents.Play(openRelicsId);
     }
 
     /// <summary>

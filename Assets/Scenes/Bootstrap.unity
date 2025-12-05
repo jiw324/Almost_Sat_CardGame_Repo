@@ -171,6 +171,10 @@ MonoBehaviour:
       gold: 5
       deck:
         cardIds: 
+      relicInventory:
+        relicNames: []
+      relics: []
+      isInActiveRun: 0
     sessionNodeMapData:
       mapSeed: 0
       currentNodeId: 
@@ -185,7 +189,7 @@ MonoBehaviour:
       completedNodeIds: []
       currentNodeType: 0
       currentNodeJson: 
-  startingPlayerDeck: {fileID: 11400000, guid: 916edf27dad83432184d81ee8d6c07cd, type: 2}
+  startingPlayerDeck: {fileID: 11400000, guid: 14f9705b56c666b4887ca14ffc9e6dff, type: 2}
 --- !u!1 &46919001
 GameObject:
   m_ObjectHideFlags: 0
@@ -316,9 +320,9 @@ MonoBehaviour:
     ambient: {fileID: 0}
     music: {fileID: 0}
   uiVolume: 0.15
-  mapVolume: 0.5
+  mapVolume: 0.35
   combatVolume: 0.5
-  ambientVolume: 0.5
+  ambientVolume: 0.3
 --- !u!4 &475012744
 Transform:
   m_ObjectHideFlags: 0

@@ -7,7 +7,6 @@ public class AudioChannels
     public AudioSource ui;        // UI sounds
     public AudioSource map;       // Map node sounds
     public AudioSource combat;    // Combat SFX
-    public AudioSource ambient;   // Ambient loops
     public AudioSource music;     // Background music
 
     public void Initialize(GameObject parent)
@@ -15,7 +14,6 @@ public class AudioChannels
         ui = CreateSource(parent, "UI_Channel");
         map = CreateSource(parent, "Map_Channel");
         combat = CreateSource(parent, "Combat_Channel");
-        ambient = CreateSource(parent, "Ambient_Channel");
         music = CreateSource(parent, "Music_Channel", loop: true);
     }
 

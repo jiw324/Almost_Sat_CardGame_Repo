@@ -245,6 +245,8 @@ public class BattleManager : MonoBehaviour
     {
         if (endSequenceStarted) return;
         endSequenceStarted = true;
+        SessionGrabber.getGameSession().SetPlayerGold(
+            SessionGrabber.getGameSession().GetPlayerGold() + 10); // reward 10 gold for winning
         StartCoroutine(ShowEndBannerAndReturnToMap(message));
     }
 
@@ -259,13 +261,16 @@ public class BattleManager : MonoBehaviour
         // Wait a moment to let UI update; then load map
         yield return new WaitForSecondsRealtime(1f);
 
-        // Go to Map route
-        if (SceneLoader.Instance != null)
+        if (tb != null)
         {
-            if (tb != null)
-                tb.HideBanner();
-
-            SceneLoader.Instance.Go(GameRoute.Map);
+            tb.HideBanner();
+        }
+        // Go to Map route
+        var msm = FindFirstObjectByType<MapStateManager>();
+        if (msm != null)
+        {
+            msm.MarkCompleted(msm.GetCurrentNode());
+            msm.ReturnToMapScene();
         }
     }
 

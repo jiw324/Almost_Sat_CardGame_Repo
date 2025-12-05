@@ -15,5 +15,12 @@ public class RestPlayerButton : MonoBehaviour
         {
             Debug.LogWarning("No active GameSession found.");
         }
+
+        var msm = FindFirstObjectByType<MapStateManager>();
+        if (msm != null)
+        {
+            msm.MarkCompleted(msm.GetCurrentNode());
+            msm.ReturnToMapScene();
+        }
     }
 }

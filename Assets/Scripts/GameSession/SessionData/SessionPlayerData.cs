@@ -5,9 +5,9 @@ using UnityEngine;
 public class SessionPlayerData
 {
     public int maxHealth = 30;
-    public int health = 10;
-    public int mana = 1;
-    public int gold = 10;
+    public int health = 30;
+    public int mana = 3;
+    public int gold = 5;
     public DeckInstance deck = new DeckInstance();
     public RelicInventory relicInventory = new RelicInventory();
     public List<RelicData> relics = new List<RelicData>();
@@ -17,8 +17,8 @@ public class SessionPlayerData
     {
         maxHealth = 30;
         health = 30;
-        mana = 1;
-        gold = 10;
+        mana = 3;
+        gold = 5;
         isInActiveRun = false;
         if (deck == null)
             deck = new DeckInstance();

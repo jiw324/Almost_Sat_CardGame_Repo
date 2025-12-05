@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 public class MapEnvironmentSpawner
@@ -51,6 +52,44 @@ public class MapEnvironmentSpawner
 
         SpawnGroundPlane(b, envRoot, groundExtent);
         SpawnForestRing(b, envRoot);
+    }
+
+    public IEnumerator SpawnEnvironmentAsync(NodeMapVisualContext ctx, Transform parent, int batchSize = 64)
+    {
+        if (ctx == null)
+            yield break;
+
+        Bounds b = ctx.MapBounds;
+
+        Transform envRoot = new GameObject("Environment").transform;
+        envRoot.SetParent(parent);
+
+        float forestOuterRadius = _treePadding + (_ringRows - 1) * _rowSpacing;
+        float groundExtent = Mathf.Max(_groundPadding, forestOuterRadius + _groundMargin);
+
+        SpawnGroundPlane(b, envRoot, groundExtent);
+
+        if (_tree1Prefab == null || _tree2Prefab == null)
+            yield break;
+
+        for (int row = 0; row < _ringRows; row++)
+        {
+            float offset = _treePadding + row * _rowSpacing;
+
+            float xMin = b.min.x - offset;
+            float xMax = b.max.x + offset;
+            float zMin = b.min.z - offset;
+            float zMax = b.max.z + offset;
+
+            // Bottom edge
+            yield return SpawnTreeLineAsync(new Vector3(xMin, 0, zMin), new Vector3(xMax, 0, zMin), envRoot, batchSize);
+            // Top edge
+            yield return SpawnTreeLineAsync(new Vector3(xMin, 0, zMax), new Vector3(xMax, 0, zMax), envRoot, batchSize);
+            // Left edge
+            yield return SpawnTreeLineAsync(new Vector3(xMin, 0, zMin), new Vector3(xMin, 0, zMax), envRoot, batchSize);
+            // Right edge
+            yield return SpawnTreeLineAsync(new Vector3(xMax, 0, zMin), new Vector3(xMax, 0, zMax), envRoot, batchSize);
+        }
     }
 
     private void SpawnGroundPlane(Bounds b, Transform parent, float padding)
@@ -122,13 +161,39 @@ public class MapEnvironmentSpawner
             pos.z += Random.Range(-0.3f, 0.3f);
 
             GameObject randomTree = Random.value < 0.5f ? _tree1Prefab : _tree2Prefab;
-
-            GameObject tree = Object.Instantiate(randomTree, pos, Quaternion.identity, parent);
-
-            tree.transform.rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
-
-            float s = Random.Range(0.9f, 1.3f);
-            tree.transform.localScale = new Vector3(s, s, s);
+            Object.Instantiate(randomTree, pos, Quaternion.identity, parent);
         }
     }
+
+    private IEnumerator SpawnTreeLineAsync( Vector3 start, Vector3 end, Transform parent, int batchSize)
+    {
+        Vector3 direction = (end - start).normalized;
+        float length = Vector3.Distance(start, end);
+
+        float dist = 0f;
+        int counter = 0;
+
+        while (dist < length)
+        {
+            float step = Random.Range(_treeSpacingMin, _treeSpacingMax);
+            dist += step;
+            if (dist > length)
+                break;
+
+            Vector3 pos = start + direction * dist;
+            pos.x += Random.Range(-0.3f, 0.3f);
+            pos.z += Random.Range(-0.3f, 0.3f);
+
+            GameObject randomTree = Random.value < 0.5f ? _tree1Prefab : _tree2Prefab;
+            Object.Instantiate(randomTree, pos, Quaternion.identity, parent);
+
+            counter++;
+            if (counter >= batchSize)
+            {
+                counter = 0;
+                yield return null;
+            }
+        }
+    }
+
 }

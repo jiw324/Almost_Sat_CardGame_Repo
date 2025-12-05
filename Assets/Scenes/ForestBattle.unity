@@ -1192,6 +1192,9 @@ MonoBehaviour:
   entityName: Player
   maxHealth: 0
   currentHealth: 0
+  strengthTurnsRemaining: 0
+  weaknessTurnsRemaining: 0
+  poisonStacks: 0
 --- !u!1001 &255812272
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1654,8 +1657,8 @@ RectTransform:
   - {fileID: 892741975}
   - {fileID: 90462794}
   - {fileID: 937715132}
-  - {fileID: 1644420940}
   - {fileID: 307778057}
+  - {fileID: 1644420940}
   - {fileID: 524618044}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2219,8 +2222,8 @@ MonoBehaviour:
   m_StartAxis: 0
   m_CellSize: {x: 200, y: 300}
   m_Spacing: {x: 30, y: 30}
-  m_Constraint: 0
-  m_ConstraintCount: 3
+  m_Constraint: 1
+  m_ConstraintCount: 5
 --- !u!114 &528477015
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4673,6 +4676,9 @@ MonoBehaviour:
   entityName: 
   maxHealth: 0
   currentHealth: 0
+  strengthTurnsRemaining: 0
+  weaknessTurnsRemaining: 0
+  poisonStacks: 0
   mana: 1
   maxMana: 1
 --- !u!1 &1256648284
@@ -6998,6 +7004,9 @@ MonoBehaviour:
   aoeDamageEffect: {fileID: 11400000, guid: 1e03532fc5918e5478b537253e470b6a, type: 2}
   gainShieldEffect: {fileID: 11400000, guid: e6a12fe06a9e42949bc526792c105f26, type: 2}
   runicBlastEffect: {fileID: 11400000, guid: c91a4605d9ae1453fb6b810d41cf1b7d, type: 2}
+  strengthEffect: {fileID: 11400000, guid: a9ec8420cd1fc8c49a9a31a6713ae8b5, type: 2}
+  weaknessEffect: {fileID: 11400000, guid: 164de42a25d12804d8efa9bbb96dbf8b, type: 2}
+  poisonEffect: {fileID: 11400000, guid: 79ac9b8487ea91542a2749fc2dd001b3, type: 2}
 --- !u!4 &2026214912 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7533795812152726194, guid: 7bf8953ae397ffd409a19928405575cb, type: 3}

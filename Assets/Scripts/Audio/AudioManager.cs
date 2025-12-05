@@ -16,11 +16,10 @@ public class AudioManager : MonoBehaviour
     [Range(0f, 1f)] public float uiVolume = 1f;
     [Range(0f, 1f)] public float mapVolume = 1f;
     [Range(0f, 1f)] public float combatVolume = 1f;
-    [Range(0f, 1f)] public float ambientVolume = 1f;
 
 
     private Dictionary<string, SoundLibrary.SoundEntry> sfxDict;
-    private Dictionary<string, AudioClip> musicDict;
+    private Dictionary<string, SoundLibrary.MusicEntry> musicDict;
 
     private Coroutine musicFadeRoutine;
 
@@ -54,7 +53,7 @@ public class AudioManager : MonoBehaviour
     private void BuildDictionaries()
     {
         sfxDict = new Dictionary<string, SoundLibrary.SoundEntry>();
-        musicDict = new Dictionary<string, AudioClip>();
+        musicDict = new Dictionary<string, SoundLibrary.MusicEntry>();
 
         foreach (var entry in library.sounds)
         {
@@ -65,7 +64,7 @@ public class AudioManager : MonoBehaviour
         foreach (var entry in library.music)
         {
             if (!musicDict.ContainsKey(entry.id))
-                musicDict.Add(entry.id, entry.clip);
+                musicDict.Add(entry.id, entry);
         }
     }
 
@@ -100,10 +99,6 @@ public class AudioManager : MonoBehaviour
                 channels.combat.volume = combatVolume;
                 return channels.combat;
 
-            case SoundChannel.Ambient:
-                channels.ambient.volume = ambientVolume;
-                return channels.ambient;
-
             default:
                 return channels.ui;
         }
@@ -111,13 +106,13 @@ public class AudioManager : MonoBehaviour
 
     public void PlayMusicById(string id)
     {
-        if (!musicDict.TryGetValue(id, out var clip))
+        if (!musicDict.TryGetValue(id, out var entry))
         {
             Debug.LogWarning($"AudioManager: Music '{id}' not found.");
             return;
         }
 
-        PlayMusic(clip);
+        PlayMusic(entry.clip);
     }
 
     public void PlayMusic(AudioClip clip, float fade = 1f)
