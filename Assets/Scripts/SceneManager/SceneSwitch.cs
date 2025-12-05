@@ -64,11 +64,11 @@ public class SceneSwitch : MonoBehaviour
                 break;
 
             case GameRoute.Shop:
-                //SoundEvents.PlayMusic("ShopTheme");
+                SoundEvents.PlayMusic("Shop");
                 break;
 
             case GameRoute.Loot:
-                SoundEvents.PlayMusic("Menu");
+                SoundEvents.PlayMusic("Map");
                 break;
 
             case GameRoute.Rest:

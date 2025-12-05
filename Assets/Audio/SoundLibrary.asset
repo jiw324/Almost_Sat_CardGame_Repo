@@ -40,6 +40,9 @@ MonoBehaviour:
   - id: MinionAttack
     clip: {fileID: 8300000, guid: 5682dd95e2997d5458f5abb21d064095, type: 3}
     channel: 2
+  - id: LootFind
+    clip: {fileID: 8300000, guid: 4e7f6865c62d2bc46ba15d79bed8d239, type: 3}
+    channel: 3
   music:
   - id: Menu
     clip: {fileID: 8300000, guid: 6e9e896269326864894f323686b40aee, type: 3}
@@ -49,3 +52,5 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: aa448a5aa2a01f54093223d003008da6, type: 3}
   - id: Rest
     clip: {fileID: 8300000, guid: a2ba8e6f2c12aac4ea6f0dec46ed24c0, type: 3}
+  - id: Shop
+    clip: {fileID: 8300000, guid: c5c52cc9a1c512c49ba3e8137e985689, type: 3}

@@ -27,6 +27,7 @@ public class LootSceneController : MonoBehaviour
 
         // Start text animation
         speechBubbleObject.SetActive(true);
+        SoundEvents.Play("LootFind");
     }
 
     // Called by Continue button

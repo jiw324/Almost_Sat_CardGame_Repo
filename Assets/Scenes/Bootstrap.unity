@@ -322,7 +322,7 @@ MonoBehaviour:
   uiVolume: 0.15
   mapVolume: 0.35
   combatVolume: 0.5
-  ambientVolume: 0.5
+  ambientVolume: 0.3
 --- !u!4 &475012744
 Transform:
   m_ObjectHideFlags: 0
