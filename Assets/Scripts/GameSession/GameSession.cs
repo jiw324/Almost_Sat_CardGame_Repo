@@ -105,15 +105,11 @@ public class GameSession : MonoBehaviour
             gameSessionData.tutorialNodeMapData = new SessionNodeMapData();
 
         var playerData = gameSessionData.sessionPlayerData;
-        if (playerData.deck == null || playerData.deck.Cards == null)
+
+        // Always ensure deck object exists
+        if (playerData.deck == null)
         {
-            playerData.deck = startingPlayerDeck != null
-                ? new DeckInstance(startingPlayerDeck.CardIds)
-                : new DeckInstance();
-        }
-        else if (playerData.deck.Cards.Count == 0 && startingPlayerDeck != null)
-        {
-            playerData.deck = new DeckInstance(startingPlayerDeck.CardIds);
+            playerData.deck = new DeckInstance();
         }
     }
 
@@ -132,6 +128,43 @@ public class GameSession : MonoBehaviour
         if (gameSessionData.sessionNodeMapData == null)
             gameSessionData.sessionNodeMapData = new SessionNodeMapData();
         return gameSessionData.sessionNodeMapData;
+    }
+    
+    // Check if player is currently in an active run
+    public bool IsInActiveRun()
+    {
+        return gameSessionData != null &&
+               gameSessionData.sessionPlayerData != null &&
+               gameSessionData.sessionPlayerData.isInActiveRun;
+    }
+
+    // Start a new run - resets health/mana/map but keeps the deck
+    public void StartNewRun()
+    {
+        if (gameSessionData == null || gameSessionData.sessionPlayerData == null)
+            return;
+
+        var playerData = gameSessionData.sessionPlayerData;
+
+        // Reset run-specific stats but keep the deck
+        playerData.health = playerData.maxHealth;
+        playerData.mana = 1;
+        playerData.gold = 10;
+        playerData.isInActiveRun = true;
+
+        gameSessionData.sessionNodeMapData.ResetSessionData();
+
+        // Deck stays the same from previous run
+        Debug.Log($"Starting new run with {playerData.deck.Cards.Count} card deck");
+    }
+
+    public void EndRun()
+    {
+        if (gameSessionData == null || gameSessionData.sessionPlayerData == null)
+            return;
+
+        gameSessionData.sessionPlayerData.isInActiveRun = false;
+        Debug.Log("Run ended");
     }
 
     public int GetPlayerHealth()
@@ -172,5 +205,17 @@ public class GameSession : MonoBehaviour
     public RelicInventory GetPlayerRelicInventory()
     {
         return gameSessionData.sessionPlayerData.relicInventory;
+    }
+
+    public void SetPlayerDeck(DeckInstance newDeck)
+    {
+        if (gameSessionData == null || gameSessionData.sessionPlayerData == null)
+        {
+            Debug.LogError("Cannot set player deck: GameSessionData is null");
+            return;
+        }
+
+        gameSessionData.sessionPlayerData.deck = newDeck;
+        Debug.Log($"Player deck updated with {newDeck.Cards.Count} cards");
     }
 }

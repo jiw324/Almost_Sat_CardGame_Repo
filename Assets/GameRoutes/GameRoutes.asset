@@ -28,3 +28,9 @@ MonoBehaviour:
   - route: 1
     sceneAsset: {fileID: 102900000, guid: 16ef7d33fbe6dfc4bb843fcc46a1a2e1, type: 3}
     scenePath: Assets/Scenes/Map3D.unity
+  - route: 7
+    sceneAsset: {fileID: 102900000, guid: 770f379aedcf23f46af20df2dac8a319, type: 3}
+    scenePath: Assets/Scenes/ForestLoot.unity
+  - route: 8
+    sceneAsset: {fileID: 102900000, guid: 758ad8a1d967a4d4f9116c90f49e61a8, type: 3}
+    scenePath: Assets/Scenes/DeckBuilder.unity

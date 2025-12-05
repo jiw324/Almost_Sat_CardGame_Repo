@@ -7,5 +7,6 @@ public enum GameRoute
     Deck,
     Event,
     Rest,
-    Loot
+    Loot,
+    DeckBuilder
 }
