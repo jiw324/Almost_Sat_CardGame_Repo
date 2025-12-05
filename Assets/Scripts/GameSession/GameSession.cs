@@ -22,31 +22,49 @@ public class GameSession : MonoBehaviour
         EnsurePlayerDeckInitialized();
     }
 
-    //-------Temporary for testing Reset/Save/Load - Need to hook up to pause menu--------------------
-    private InputAction saveAction;
-    private InputAction loadAction;
-    private InputAction resetAction;
-
-    private void OnEnable()
+    // Debug methods for pause menu (to be expanded later)
+    public void SaveGame()
     {
-        saveAction = new InputAction(binding: "<Keyboard>/s");
-        saveAction.performed += _ => SessionSaveManager.SaveGameSession(gameSessionData);
-        saveAction.Enable();
-
-        loadAction = new InputAction(binding: "<Keyboard>/l");
-        loadAction.performed += _ => LoadGameSession("Save");
-        loadAction.Enable();
-
-        resetAction = new InputAction(binding: "<Keyboard>/r");
-        resetAction.performed += _ => ResetGameSessionData();
-        resetAction.Enable();
+        if (gameSessionData != null)
+        {
+            SessionSaveManager.SaveGameSession(gameSessionData);
+            Debug.Log("[GameSession] Game saved successfully.");
+        }
+        else
+        {
+            Debug.LogWarning("[GameSession] Cannot save: gameSessionData is null.");
+        }
     }
 
-    private void OnDisable()
+    public void LoadGame()
     {
-        saveAction.Disable();
-        loadAction.Disable();
-        resetAction.Disable();
+        LoadGameSession("Save");
+        Debug.Log("[GameSession] Game loaded successfully.");
+    }
+
+    //-------Temporary for testing Reset/Save/Load - Ctrl+Key functionality--------------------
+    private void Update()
+    {
+        var kb = UnityEngine.InputSystem.Keyboard.current;
+        if (kb == null) return;
+
+        // Check for Ctrl+S (Save)
+        if (kb.ctrlKey.isPressed && kb.sKey.wasPressedThisFrame)
+        {
+            SaveGame();
+        }
+
+        // Check for Ctrl+L (Load)
+        if (kb.ctrlKey.isPressed && kb.lKey.wasPressedThisFrame)
+        {
+            LoadGame();
+        }
+
+        // Check for Ctrl+R (Reset)
+        if (kb.ctrlKey.isPressed && kb.rKey.wasPressedThisFrame)
+        {
+            ResetGameSessionData();
+        }
     }
     //----------------------------------------------------------------------------------------
 

@@ -110,7 +110,7 @@ public class TurnManager : MonoBehaviour
         if (currentState == playerTurnState)
         {
             SideEndingTurn = Side.Player;
-            ChangeState(enemyTurnState);
+            ChangeState(endTurnState);
             return;
         }
 

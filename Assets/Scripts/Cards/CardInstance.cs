@@ -46,12 +46,18 @@ public class CardInstance
         HasBeenPlayed = true;
 
         // Check if this card has a minigame
+        // enemies use default 1.0 multiplier
         float minigameMultiplier = 1.0f;
-        if (Data.minigamePrefab != null && MinigameManager.Instance != null)
+        if (Data.minigamePrefab != null && MinigameManager.Instance != null && Owner is PlayerEntity)
         {
             // Play minigame first, then resolve effects with the result
             minigameMultiplier = await MinigameManager.Instance.StartMinigameAsync(Data.minigamePrefab);
             Debug.Log($"[CardInstance] Minigame completed with multiplier: {minigameMultiplier:F2}");
+        }
+        else if (Data.minigamePrefab != null && Owner is EnemyEntity)
+        {
+            // Enemies don't play minigames - use default 1.0 multiplier
+            Debug.Log($"[CardInstance] Enemy playing card with minigame - using default multiplier 1.0");
         }
 
         // Resolve card effects with minigame multiplier

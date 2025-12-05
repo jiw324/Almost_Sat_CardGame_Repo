@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class MulliganOverlay : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class MulliganOverlay : MonoBehaviour
     [SerializeField] private MulliganCardOption cardOptionPrefab;
     [SerializeField] private Button confirmButton;
     [SerializeField] private TurnManager turnManager;
+    [SerializeField] private TextMeshProUGUI mulliganText;
 
     private readonly List<MulliganCardOption> activeOptions = new();
     private Action<List<CardInstance>, List<CardInstance>> onComplete;
@@ -50,6 +52,9 @@ public class MulliganOverlay : MonoBehaviour
             confirmButton.onClick.AddListener(OnConfirm);
             UpdateConfirmButtonState();
         }
+
+        if (mulliganText != null)
+            mulliganText.text = $"Choose {requiredSelection} extra cards to start with!";
 
         SetRootActive(true);
     }

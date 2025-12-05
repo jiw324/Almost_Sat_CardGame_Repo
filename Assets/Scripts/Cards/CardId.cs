@@ -5,7 +5,8 @@ public enum CardId
     HealingHands,
     Warrior,
     Archer,
-    MagicMissile,
-    Apocalypse
+    Rune,
+    Apocalypse,
+    RunicBlast
 }
 

@@ -6,6 +6,7 @@ public class CardEffectInitializer : MonoBehaviour
     [SerializeField] private DamageEnemyEffect damageEnemyEffect;
     [SerializeField] private AOEDamageEffect aoeDamageEffect;
     [SerializeField] private GainShieldEffect gainShieldEffect;
+    [SerializeField] private RunicBlastEffect runicBlastEffect;
 
     private void Awake()
     {
@@ -13,5 +14,6 @@ public class CardEffectInitializer : MonoBehaviour
         CardEffectLibrary.RegisterEffect("damage_enemy", damageEnemyEffect);
         CardEffectLibrary.RegisterEffect("aoe_damage", aoeDamageEffect);
         CardEffectLibrary.RegisterEffect("gain_shield", gainShieldEffect);
+        CardEffectLibrary.RegisterEffect("runic_blast", runicBlastEffect);
     }
 }

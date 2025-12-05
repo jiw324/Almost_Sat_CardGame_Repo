@@ -1,17 +1,6 @@
 ﻿{
     "cards": [
         {
-            "id": "magicmissile",
-            "cardName": "Magic Missile",
-            "description": "[TYPING] Deal up to 4 damage to an enemy.",
-            "cost": 1,
-            "type": "spell",
-            "isRanged": true,
-            "minigameId": "typing",
-            "effectId": "damage_enemy",
-            "effectValue": 4
-        },
-        {
             "id": "fireball",
             "cardName": "Fireball",
             "description": "Deal damage to all enemies.",
@@ -42,13 +31,13 @@
         {
             "id": "slash",
             "cardName": "Slash",
-            "description": "[REACTION] Deal up to 10 damage to an enemy.",
+            "description": "[REACTION] Deal 5 damage to an enemy.",
             "cost": 2,
             "type": "spell",
             "isRanged": true,
             "minigameId": "reaction",
             "effectId": "damage_enemy",
-            "effectValue": 10
+            "effectValue": 5
         },
         {
             "id": "healinghands",
@@ -93,6 +82,27 @@
                     "effectValue": 3
                 }
             ]
+        },
+        {
+            "id": "rune",
+            "cardName": "Rune",
+            "description": "A magical rune that powers up runic spells.",
+            "cost": 1,
+            "type": "minion",
+            "isRanged": false,
+            "isMinion": true,
+            "minionAttack": 0,
+            "minionHealth": 1
+        },
+        {
+            "id": "runicblast",
+            "cardName": "Runic Blast",
+            "description": "[TYPING] Deal damage based on the number of runes you control.",
+            "cost": 2,
+            "type": "spell",
+            "isRanged": true,
+            "effectId": "runic_blast",
+            "effectValue": 2
         }
     ]
 }

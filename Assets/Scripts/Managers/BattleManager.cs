@@ -17,8 +17,8 @@ public class BattleManager : MonoBehaviour
     public UIManager uiManager;
     public PlayerEntity playerEntity;
     public EnemyEntity enemyEntity;
-    [SerializeField] private HandManager playerHandManager;
-    [SerializeField] private HandManager enemyHandManager;
+    public HandManager playerHandManager;
+    public HandManager enemyHandManager;
 
     public int playerHealth;
     public int playerMana;
@@ -35,6 +35,7 @@ public class BattleManager : MonoBehaviour
     public int enemyMaxHealth = 20;
 
     private bool endSequenceStarted = false;
+    public bool IsBattleEnded => endSequenceStarted;
 
 
     private void Awake()
@@ -226,6 +227,20 @@ public class BattleManager : MonoBehaviour
     }
 
 
+    public void CheckBattleEnd()
+    {
+        if (endSequenceStarted) return;
+        
+        if (playerHealth <= 0)
+        {
+            EndBattle("You were defeated");
+        }
+        else if (enemyHealth <= 0)
+        {
+            EndBattle("Enemy defeated");
+        }
+    }
+
     public void EndBattle(string message)
     {
         if (endSequenceStarted) return;
@@ -268,6 +283,32 @@ public class BattleManager : MonoBehaviour
             enemies.Remove(e);
             Debug.Log($"{e.name} removed from enemy list.");
         }
+    }
+
+    /// <summary>
+    /// Counts the number of "Rune" minions on the board owned by the player.
+    /// </summary>
+    public int CountPlayerRunes()
+    {
+        int runeCount = 0;
+        var slots = FindObjectsOfType<BoardSlot>();
+        if (slots == null || slots.Length == 0) return 0;
+
+        foreach (var slot in slots)
+        {
+            if (slot.currentCard == null || !slot.currentCard.IsMinion) continue;
+            if (!(slot.currentCard.Owner is PlayerEntity)) continue;
+            
+            // Check if it's a Rune card (by name or ID)
+            if (slot.currentCard.Data != null && 
+                (slot.currentCard.Data.cardName.Equals("Rune", System.StringComparison.OrdinalIgnoreCase) ||
+                 slot.currentCard.Data.id.ToString().Equals("rune", System.StringComparison.OrdinalIgnoreCase)))
+            {
+                runeCount++;
+            }
+        }
+
+        return runeCount;
     }
 
     public void ResolveMinionDamage(bool fromPlayer)

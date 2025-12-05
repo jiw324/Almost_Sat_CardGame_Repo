@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -8,6 +9,8 @@ public static class EnemyAI
 {
     private const int MaxAttempts = 8;
     private const float ActionDelay = 0.5f;
+
+    private enum EnemyPlaystyle { Offensive, Defensive }
 
     /// <summary>
     /// Executes the enemy's turn, playing cards until out of mana or max attempts reached.
@@ -29,6 +32,10 @@ public static class EnemyAI
             Debug.LogWarning("[EnemyAI] No enemy Entity found to own cards.");
             yield break;
         }
+
+        // Determine playstyle based on enemy name (simple mapping)
+        EnemyPlaystyle playstyle = DeterminePlaystyleForEnemy(enemyOwner.entityName);
+        Debug.Log($"[EnemyAI] Enemy '{enemyOwner.entityName}' selected playstyle: {playstyle}");
 
         int attempts = 0;
 
@@ -65,16 +72,47 @@ public static class EnemyAI
                 break;
             }
 
-            if (inst.IsMinion)
+            // Defensive playstyle: prefer heals and minions; avoid direct damage spells
+            if (playstyle == EnemyPlaystyle.Defensive)
             {
-                if (!TryPlayMinion(inst, enemyOwner, bm))
+                if (inst.IsMinion)
                 {
-                    break;
+                    if (!TryPlayMinion(inst, enemyOwner, bm))
+                        break;
+                }
+                else
+                {
+                    // prefer healing spells
+                    string idStr = inst.Data.id.ToString().ToLowerInvariant();
+                    string nameStr = (inst.Data.cardName ?? string.Empty).ToLowerInvariant();
+
+                    bool isHealing = idStr.Contains("healing") || nameStr.Contains("heal") || nameStr.Contains("shield");
+
+                    if (isHealing)
+                    {
+                        // Play heal/self-buff targeting enemy (self)
+                        TryPlaySpell(inst, enemyOwner, bm);
+                    }
+                    else
+                    {
+                        // Skip aggressive/damage spells while defensive
+                        Debug.Log($"[EnemyAI] Defensive playstyle: skipping aggressive spell {inst.Data.cardName}.");
+                        // allow next attempt to draw a different card
+                        continue;
+                    }
                 }
             }
-            else
+            else // Offensive (existing behavior)
             {
-                TryPlaySpell(inst, enemyOwner, bm);
+                if (inst.IsMinion)
+                {
+                    if (!TryPlayMinion(inst, enemyOwner, bm))
+                        break;
+                }
+                else
+                {
+                    TryPlaySpell(inst, enemyOwner, bm);
+                }
             }
 
             yield return new WaitForSecondsRealtime(ActionDelay);
@@ -88,6 +126,20 @@ public static class EnemyAI
             bm.enemyMana = 0;
             if (bm.uiManager != null) bm.uiManager.UpdateEnemyMana(bm.enemyMana);
         }
+    }
+
+    private static EnemyPlaystyle DeterminePlaystyleForEnemy(string enemyName)
+    {
+        if (string.IsNullOrWhiteSpace(enemyName)) return EnemyPlaystyle.Offensive;
+        string lower = enemyName.ToLowerInvariant();
+        // Daniel Demon and Wendy Wraith are offensive
+        if (lower.Contains("daniel") || lower.Contains("wendy") || lower.Contains("demon") || lower.Contains("wraith"))
+            return EnemyPlaystyle.Offensive;
+        // Evan Elf and Gary Goblin are defensive
+        if (lower.Contains("evan") || lower.Contains("elf") || lower.Contains("gary") || lower.Contains("goblin"))
+            return EnemyPlaystyle.Defensive;
+        // default
+        return EnemyPlaystyle.Offensive;
     }
 
     /// <summary>
@@ -154,7 +206,7 @@ public static class EnemyAI
         }
 
         EntityBase target = chosenTarget ?? (EntityBase)bm.player;
-        Debug.Log($"[EnemyAI] Playing spell {inst.Data.cardName} (cost {inst.Data.cost}) targeting {(chosenTarget != null ? chosenTarget.entityName : "player side")}");
+        Debug.Log($"[EnemyAI] Playing spell {inst.Data.cardName} (cost {inst.Data.cost}) targeting {(chosenTarget != null ? chosenTarget.entityName : "player side")} ");
         inst.PlayCard(null, target);
 
         bm.enemyMana -= inst.Data.cost;
@@ -184,7 +236,7 @@ public static class EnemyAI
     /// </summary>
     private static MinionEntity FindPlayerMinionTarget()
     {
-        var allMinions = Object.FindObjectsOfType<MinionEntity>();
+        var allMinions = UnityEngine.Object.FindObjectsOfType<MinionEntity>();
         foreach (var me in allMinions)
         {
             var mb = me.GetComponent<MinionBehaviour>();
@@ -202,7 +254,7 @@ public static class EnemyAI
     /// </summary>
     private static BoardSlot FindEnemyBoardSlot(bool isRanged)
     {
-        var slots = Object.FindObjectsOfType<BoardSlot>();
+        var slots = UnityEngine.Object.FindObjectsOfType<BoardSlot>();
         foreach (var s in slots)
         {
             if (s.isOccupied) continue;

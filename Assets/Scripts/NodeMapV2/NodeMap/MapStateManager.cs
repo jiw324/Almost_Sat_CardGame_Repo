@@ -33,7 +33,7 @@ public class MapStateManager : MonoBehaviour
     private void Update()
     {
         var kb = UnityEngine.InputSystem.Keyboard.current;
-        if (kb != null && kb.cKey.wasPressedThisFrame)
+        if (kb != null && kb.ctrlKey.isPressed && kb.cKey.wasPressedThisFrame)
         {
             Node current = GetCurrentNode();
             if (current != null)

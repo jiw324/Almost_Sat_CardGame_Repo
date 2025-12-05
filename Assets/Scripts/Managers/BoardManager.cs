@@ -8,7 +8,6 @@ public class BoardManager : MonoBehaviour
     public static BoardManager Instance { get; private set; }
     [SerializeField] public GameObject cardPrefab3D;
     [SerializeField] private Camera mainCamera;
-    [SerializeField] private GameObject reactionMinigamePrefab;
 
     private CardUIController selectedCard;
     private MinionBehaviour selectedMinion;
@@ -230,25 +229,6 @@ public class BoardManager : MonoBehaviour
             }
         }
 
-    }
-
-    private async void PlayReactionCard()
-    {
-        if (MinigameManager.Instance == null)
-        {
-            Debug.LogWarning("[BoardManager] No MinigameManager instance found!");
-            return;
-        }
-        Debug.Log("[BoardManager] Launching Reaction Minigame!");
-        {
-            float result = await MinigameManager.Instance.StartMinigameAsync(reactionMinigamePrefab);
-            Debug.Log($"[BoardManager] Minigame complete. Score: {result:F2}");
-        }
-    }
-
-    private void OnTestMinigame(InputAction.CallbackContext ctx)
-    {
-        PlayReactionCard();
     }
 
     public bool IsSelectedCard(CardUIController card)
