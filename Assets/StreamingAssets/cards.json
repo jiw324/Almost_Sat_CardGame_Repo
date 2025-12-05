@@ -140,7 +140,7 @@
         },
         {
             "id": "StrengthSpell",
-            "cardName": "StrengthSpell",
+            "cardName": "Strength",
             "description": "Give a unit Strength for 2 turns (+25% damage).",
             "cost": 1,
             "type": "spell",
@@ -155,7 +155,7 @@
         },
         {
             "id": "WeaknessHex",
-            "cardName": "WeaknessHex",
+            "cardName": "Hex",
             "description": "Give a unit Weakness  for 2 turns (-25% damage).",
             "cost": 1,
             "type": "spell",
@@ -170,7 +170,7 @@
         },
         {
             "id": "PoisonDart",
-            "cardName": "PoisonDart",
+            "cardName": "Poison Dart",
             "description": "Apply 8 Poison stacks to a hero or minion.",
             "cost": 1,
             "type": "spell",

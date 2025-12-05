@@ -945,7 +945,7 @@ MonoBehaviour:
   cancelButton: {fileID: 0}
   clearDeckButton: {fileID: 0}
   maxDeckSize: 15
-  minDeckSize: 5
+  minDeckSize: 10
 --- !u!4 &569705389
 Transform:
   m_ObjectHideFlags: 0
