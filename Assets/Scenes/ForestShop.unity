@@ -6708,8 +6708,8 @@ MonoBehaviour:
   m_StartAxis: 0
   m_CellSize: {x: 200, y: 300}
   m_Spacing: {x: 30, y: 30}
-  m_Constraint: 0
-  m_ConstraintCount: 3
+  m_Constraint: 1
+  m_ConstraintCount: 5
 --- !u!1001 &1825106881
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -1657,8 +1657,8 @@ RectTransform:
   - {fileID: 892741975}
   - {fileID: 90462794}
   - {fileID: 937715132}
-  - {fileID: 1644420940}
   - {fileID: 307778057}
+  - {fileID: 1644420940}
   - {fileID: 524618044}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2222,8 +2222,8 @@ MonoBehaviour:
   m_StartAxis: 0
   m_CellSize: {x: 200, y: 300}
   m_Spacing: {x: 30, y: 30}
-  m_Constraint: 0
-  m_ConstraintCount: 3
+  m_Constraint: 1
+  m_ConstraintCount: 5
 --- !u!114 &528477015
 MonoBehaviour:
   m_ObjectHideFlags: 0

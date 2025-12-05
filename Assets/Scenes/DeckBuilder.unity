@@ -1659,8 +1659,8 @@ MonoBehaviour:
   m_StartAxis: 0
   m_CellSize: {x: 200, y: 300}
   m_Spacing: {x: 30, y: 30}
-  m_Constraint: 0
-  m_ConstraintCount: 3
+  m_Constraint: 1
+  m_ConstraintCount: 5
 --- !u!1 &1423899536
 GameObject:
   m_ObjectHideFlags: 0
@@ -2407,6 +2407,14 @@ PrefabInstance:
     - target: {fileID: 4012043311971583266, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: SceneChanger
+      objectReference: {fileID: 0}
+    - target: {fileID: 8255443406694065510, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_text
+      value: Changes made to the deck will be lost
+      objectReference: {fileID: 0}
+    - target: {fileID: 8255443406694065510, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
+      propertyPath: m_fontSize
+      value: 60.35
       objectReference: {fileID: 0}
     - target: {fileID: 8452386238634930892, guid: 0d96b82cc1d024b4f8b0c128ddbf0fbc, type: 3}
       propertyPath: m_Pivot.x
