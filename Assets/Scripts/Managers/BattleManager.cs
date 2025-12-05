@@ -144,10 +144,10 @@ public class BattleManager : MonoBehaviour
     private void Start()
     {
         if (boardManager == null)
-            boardManager = FindObjectOfType<BoardManager>();
+            boardManager = FindFirstObjectByType<BoardManager>();
 
         if (player == null)
-            player = FindObjectOfType<PlayerEntity>();
+            player = FindFirstObjectByType<PlayerEntity>();
 
         // auto-gather all enemies under parent or scene (support multiple enemies)
         if (enemies.Count == 0)
@@ -158,7 +158,7 @@ public class BattleManager : MonoBehaviour
             }
             else
             {
-                enemies.AddRange(FindObjectsOfType<EnemyEntity>());
+                enemies.AddRange(FindObjectsByType<EnemyEntity>(FindObjectsSortMode.None));
             }
         }
 
@@ -250,7 +250,7 @@ public class BattleManager : MonoBehaviour
 
     private IEnumerator ShowEndBannerAndReturnToMap(string message)
     {
-        var tb = Object.FindObjectOfType<TurnBanner>();
+        var tb = Object.FindFirstObjectByType<TurnBanner>();
         if (tb != null)
         {
             tb.ShowPersistentEndBanner(message);
@@ -291,7 +291,7 @@ public class BattleManager : MonoBehaviour
     public int CountPlayerRunes()
     {
         int runeCount = 0;
-        var slots = FindObjectsOfType<BoardSlot>();
+        var slots = FindObjectsByType<BoardSlot>(FindObjectsSortMode.None);
         if (slots == null || slots.Length == 0) return 0;
 
         foreach (var slot in slots)
@@ -314,7 +314,7 @@ public class BattleManager : MonoBehaviour
     public void ResolveMinionDamage(bool fromPlayer)
     {
         Debug.Log($"[BattleManager] Resolving minion damage. FromPlayer={fromPlayer}");
-        var slots = FindObjectsOfType<BoardSlot>();
+        var slots = FindObjectsByType<BoardSlot>(FindObjectsSortMode.None);
         if (slots == null || slots.Length == 0) return;
 
         foreach (var s in slots)
@@ -366,7 +366,7 @@ public class BattleManager : MonoBehaviour
     public void ResolveAllMinionDamage()
     {
         Debug.Log("[BattleManager] Resolving all minion damage (both sides)");
-        var slots = FindObjectsOfType<BoardSlot>();
+        var slots = FindObjectsByType<BoardSlot>(FindObjectsSortMode.None);
         if (slots == null || slots.Length == 0) return;
 
         var playerMelee = new List<BoardSlot>();

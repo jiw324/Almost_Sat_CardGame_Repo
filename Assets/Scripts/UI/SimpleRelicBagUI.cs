@@ -121,7 +121,7 @@ public class SimpleRelicBagUI : MonoBehaviour
 
     private RelicBag FindOrCreateRelicBag()
     {
-        RelicBag bag = FindObjectOfType<RelicBag>();
+        RelicBag bag = FindFirstObjectByType<RelicBag>();
         
         if (bag == null)
         {

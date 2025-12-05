@@ -38,7 +38,7 @@ public class RelicNodeManager : MonoBehaviour
     private RelicBag FindPlayerRelicBag()
     {
         // Try to find existing relic bag
-        RelicBag bag = FindObjectOfType<RelicBag>();
+        RelicBag bag = FindFirstObjectByType<RelicBag>();
         
         if (bag == null)
         {

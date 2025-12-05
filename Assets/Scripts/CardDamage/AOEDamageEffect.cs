@@ -45,7 +45,7 @@ public class AOEDamageEffect : CardEffect
                 bm.enemyEntity.TakeDamage(dmg);
             }
 
-            var allMinions = Object.FindObjectsOfType<MinionEntity>();
+            var allMinions = Object.FindObjectsByType<MinionEntity>(FindObjectsSortMode.None);
             foreach (var me in allMinions)
             {
                 if (me != null)
@@ -76,7 +76,7 @@ public class AOEDamageEffect : CardEffect
             }
 
             // Hit enemy minions
-            var allMinions = Object.FindObjectsOfType<MinionEntity>();
+            var allMinions = Object.FindObjectsByType<MinionEntity>(FindObjectsSortMode.None);
             foreach (var me in allMinions)
             {
                 if (me == null) continue;
@@ -99,7 +99,7 @@ public class AOEDamageEffect : CardEffect
                 bm.player.TakeDamage(dmg);
 
             // Hit player minions
-            var allMinions = Object.FindObjectsOfType<MinionEntity>();
+            var allMinions = Object.FindObjectsByType<MinionEntity>(FindObjectsSortMode.None);
             foreach (var me in allMinions)
             {
                 if (me == null) continue;

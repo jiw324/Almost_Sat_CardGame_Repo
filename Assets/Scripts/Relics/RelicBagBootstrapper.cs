@@ -134,7 +134,7 @@ public static class RelicBagBootstrapper
 
     private static void EnsureEventSystemExists()
     {
-        if (Object.FindObjectOfType<EventSystem>() != null)
+        if (Object.FindFirstObjectByType<EventSystem>() != null)
             return;
 
         GameObject es = new GameObject("EventSystem");
@@ -144,7 +144,7 @@ public static class RelicBagBootstrapper
 
     private static Canvas FindOrCreateCanvas()
     {
-        Canvas existing = Object.FindObjectOfType<Canvas>();
+        Canvas existing = Object.FindFirstObjectByType<Canvas>();
         if (existing != null)
             return existing;
 

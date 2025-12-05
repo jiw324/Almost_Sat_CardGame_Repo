@@ -236,7 +236,7 @@ public static class EnemyAI
     /// </summary>
     private static MinionEntity FindPlayerMinionTarget()
     {
-        var allMinions = UnityEngine.Object.FindObjectsOfType<MinionEntity>();
+        var allMinions = UnityEngine.Object.FindObjectsByType<MinionEntity>(FindObjectsSortMode.None);
         foreach (var me in allMinions)
         {
             var mb = me.GetComponent<MinionBehaviour>();
@@ -254,7 +254,7 @@ public static class EnemyAI
     /// </summary>
     private static BoardSlot FindEnemyBoardSlot(bool isRanged)
     {
-        var slots = UnityEngine.Object.FindObjectsOfType<BoardSlot>();
+        var slots = UnityEngine.Object.FindObjectsByType<BoardSlot>(FindObjectsSortMode.None);
         foreach (var s in slots)
         {
             if (s.isOccupied) continue;

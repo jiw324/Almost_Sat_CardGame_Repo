@@ -91,7 +91,7 @@ public class CardInstance
     {
         Execute(Data?.effects, caster, target, minigameMultiplier);
 
-        var minions = UnityEngine.Object.FindObjectsOfType<MinionEntity>();
+        var minions = UnityEngine.Object.FindObjectsByType<MinionEntity>(FindObjectsSortMode.None);
         foreach (var m in minions)
         {
             if (m == null) continue;

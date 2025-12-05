@@ -44,7 +44,7 @@ public static class LootNodeDataInitializer
         RelicData relicData = RelicDatabase.Instance.CreateRuntimeRelicData(relicJson);
 
         // Prefer RelicBag component if present (so any UI based on RelicBag stays in sync)
-        var bag = Object.FindObjectOfType<RelicBag>();
+        var bag = Object.FindFirstObjectByType<RelicBag>();
         if (bag != null)
         {
             bag.AddRelic(relicData);

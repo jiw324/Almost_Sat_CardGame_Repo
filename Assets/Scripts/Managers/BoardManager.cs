@@ -348,7 +348,7 @@ public class BoardManager : MonoBehaviour
         var slot = hit.collider.GetComponentInParent<BoardSlot>();
         if (slot != null && !slot.isOccupied)
         {
-            var enemies = FindObjectsOfType<EnemyEntity>();
+            var enemies = FindObjectsByType<EnemyEntity>(FindObjectsSortMode.None);
             if (enemies != null && enemies.Length > 0)
                 return enemies[0];
             return null;
@@ -372,7 +372,7 @@ public class BoardManager : MonoBehaviour
         var slot = hit.collider.GetComponentInParent<BoardSlot>();
         if (slot != null && !slot.isOccupied)
         {
-            var enemies = FindObjectsOfType<EnemyEntity>();
+            var enemies = FindObjectsByType<EnemyEntity>(FindObjectsSortMode.None);
             if (enemies != null && enemies.Length > 0)
                 return enemies[0];
             return null;
