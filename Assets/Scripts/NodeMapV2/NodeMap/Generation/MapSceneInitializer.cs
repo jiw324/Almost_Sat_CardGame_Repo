@@ -4,14 +4,9 @@ public class MapSceneInitializer : MonoBehaviour
 {
     private void Awake()
     {
-        var mgm = MapGenerationManager.Instance;
-
-        if (mgm.ActiveMap == null)
+        if (MapGenerationManager.Instance.ActiveMap == null)
         {
-            if (GameSession.Instance.IsTutorialMode)
-                mgm.InitializeTutorialFromSession();
-            else
-                mgm.InitializeMapFromSession();
+            MapGenerationManager.Instance.InitializeMapFromSession();
         }
     }
 
@@ -19,5 +14,9 @@ public class MapSceneInitializer : MonoBehaviour
     {
         if (MapStateManager.Instance != null)
             MapStateManager.Instance.RefreshAllNodeGlows();
+
+        var fog = FindFirstObjectByType<FogController>();
+        if (fog != null)
+            fog.UpdateFogExternally();
     }
 }

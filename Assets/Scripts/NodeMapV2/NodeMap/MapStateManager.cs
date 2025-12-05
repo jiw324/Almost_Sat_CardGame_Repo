@@ -33,7 +33,7 @@ public class MapStateManager : MonoBehaviour
     private void Update()
     {
         var kb = UnityEngine.InputSystem.Keyboard.current;
-        if (kb != null && kb.numpad4Key.wasPressedThisFrame)
+        if (kb != null && kb.cKey.wasPressedThisFrame)
         {
             Node current = GetCurrentNode();
             if (current != null)
@@ -68,8 +68,12 @@ public class MapStateManager : MonoBehaviour
         _map = map;
         _lookup = _map.AllNodes.ToDictionary(n => n.Id);
 
+        if (_map.BossNode != null && !_lookup.ContainsKey(_map.BossNode.Id))
+            _lookup.Add(_map.BossNode.Id, _map.BossNode);
+
         RestoreFromSession();
     }
+
 
     private void RestoreFromSession()
     {
