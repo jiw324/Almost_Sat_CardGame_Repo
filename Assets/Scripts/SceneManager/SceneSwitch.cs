@@ -25,7 +25,7 @@ public class SceneSwitch : MonoBehaviour
             case "Loot":
                 gameRoute = GameRoute.Loot;
                 break;
-            case "Deck Builder":
+            case "DeckBuilder":
                 gameRoute = GameRoute.DeckBuilder;
                 break;
             default:

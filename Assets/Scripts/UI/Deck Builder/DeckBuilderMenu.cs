@@ -30,7 +30,6 @@ public class DeckBuilderMenu : MonoBehaviour
     // Tracking
     private List<CardId> availableCards = new List<CardId>();
     private List<CardId> currentDeck = new List<CardId>();
-    private Dictionary<CardId, GameObject> poolCardObjects = new Dictionary<CardId, GameObject>();
     private List<GameObject> deckEntryObjects = new List<GameObject>();
 
     private void Awake()
@@ -51,8 +50,7 @@ public class DeckBuilderMenu : MonoBehaviour
     private void InitializeDeckBuilder()
     {
         // Load the player's current deck
-        DeckInstance playerDeck = new DeckInstance();
-        //DeckInstance playerDeck = SessionGrabber.getGameSession().GetPlayerDeck();
+        DeckInstance playerDeck = SessionGrabber.getGameSession().GetPlayerDeck();
         if (playerDeck != null && playerDeck.Cards != null)
         {
             currentDeck = new List<CardId>(playerDeck.Cards);
@@ -274,8 +272,7 @@ public class DeckBuilderMenu : MonoBehaviour
 
         Debug.Log($"Deck saved with {currentDeck.Count} cards!");
 
-        // Optionally close the menu or return to previous scene
-        gameObject.SetActive(false);
+        SessionGrabber.getGameSession().StartNewRun();
     }
 
     private void Cancel()

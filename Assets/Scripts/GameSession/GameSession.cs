@@ -75,16 +75,49 @@ public class GameSession : MonoBehaviour
             return;
 
         var playerData = gameSessionData.sessionPlayerData;
-        if (playerData.deck == null || playerData.deck.Cards == null)
+
+        // Always ensure deck object exists
+        if (playerData.deck == null)
         {
-            playerData.deck = startingPlayerDeck != null
-                ? new DeckInstance(startingPlayerDeck.CardIds)
-                : new DeckInstance();
+            playerData.deck = new DeckInstance();
         }
-        else if (playerData.deck.Cards.Count == 0 && startingPlayerDeck != null)
-        {
-            playerData.deck = new DeckInstance(startingPlayerDeck.CardIds);
-        }
+    }
+
+    // Check if player is currently in an active run
+    public bool IsInActiveRun()
+    {
+        return gameSessionData != null &&
+               gameSessionData.sessionPlayerData != null &&
+               gameSessionData.sessionPlayerData.isInActiveRun;
+    }
+
+    // Start a new run - resets health/mana/map but keeps the deck
+    public void StartNewRun()
+    {
+        if (gameSessionData == null || gameSessionData.sessionPlayerData == null)
+            return;
+
+        var playerData = gameSessionData.sessionPlayerData;
+
+        // Reset run-specific stats but keep the deck
+        playerData.health = playerData.maxHealth;
+        playerData.mana = 1;
+        playerData.gold = 10;
+        playerData.isInActiveRun = true;
+
+        gameSessionData.sessionNodeMapData.ResetSessionData();
+
+        // Deck stays the same from previous run
+        Debug.Log($"Starting new run with {playerData.deck.Cards.Count} card deck");
+    }
+
+    public void EndRun()
+    {
+        if (gameSessionData == null || gameSessionData.sessionPlayerData == null)
+            return;
+
+        gameSessionData.sessionPlayerData.isInActiveRun = false;
+        Debug.Log("Run ended");
     }
 
     public int GetPlayerHealth()

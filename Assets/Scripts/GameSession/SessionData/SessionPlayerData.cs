@@ -6,19 +6,21 @@ public class SessionPlayerData
     public int mana = 1;
     public int gold = 10;
     public DeckInstance deck = new DeckInstance();
+    public bool isInActiveRun = false;
 
     public void ResetSessionData(DeckDefinition defaultDeck = null)
     {
         maxHealth = 30;
-        health = 10;
+        health = 30;
         mana = 1;
         gold = 10;
+        isInActiveRun = false;
         if (deck == null)
             deck = new DeckInstance();
         else
             deck.Clear();
 
-        if (defaultDeck != null)
-            deck = new DeckInstance(defaultDeck.CardIds);
+        //if (defaultDeck != null)
+        //    deck = new DeckInstance(defaultDeck.CardIds);
     }
 }
