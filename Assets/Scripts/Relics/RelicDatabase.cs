@@ -57,6 +57,9 @@ public class RelicDatabase : MonoBehaviour
         Debug.Log($"[RelicDatabase] Loaded {_relics.Count} relics from JSON.");
     }
 
+    /// <summary>
+    /// Look up a relic definition by its ID from the loaded JSON list.
+    /// </summary>
     public bool TryGetRelicById(string id, out RelicJSON relic)
     {
         relic = null;
@@ -105,7 +108,19 @@ public class RelicDatabase : MonoBehaviour
 
         if (!string.IsNullOrWhiteSpace(json.iconResourcePath))
         {
-            data.icon = Resources.Load<Sprite>(json.iconResourcePath);
+            // First try to load from Resources (works in builds)
+            Sprite icon = Resources.Load<Sprite>(json.iconResourcePath);
+
+#if UNITY_EDITOR
+            // If iconResourcePath is a full asset path (e.g. Assets/Art/RelicIcons/Torch.jpg),
+            // try to load it via AssetDatabase in the editor.
+            if (icon == null && json.iconResourcePath.StartsWith("Assets/"))
+            {
+                icon = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(json.iconResourcePath);
+            }
+#endif
+
+            data.icon = icon;
         }
 
         return data;

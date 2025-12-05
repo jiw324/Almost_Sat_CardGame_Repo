@@ -7,7 +7,7 @@
       "rarity": "Common",
       "effectType": "IncreaseVision",
       "effectValue": 1,
-      "iconResourcePath": "Relics/RelicIcon"
+      "iconResourcePath": "Assets/Art/RelicIcons/Torch.jpg"
     }
   ]
 }
