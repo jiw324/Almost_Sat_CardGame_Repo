@@ -35,6 +35,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/DeckBuilder.unity
     guid: 758ad8a1d967a4d4f9116c90f49e61a8
+  - enabled: 1
+    path: Assets/Scenes/ForestRelic.unity
+    guid: edb5712cb57209d458a3987cfaa896c5
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: ded5a4a45fcb5064d848d4d0b841e30d, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
