@@ -32,6 +32,5 @@ public class EventNodeData : ISessionNodeData
 [System.Serializable]
 public class LootNodeData : ISessionNodeData
 {
-    // ID of the relic granted when this loot node is resolved.
-    public string grantedRelicId;
+    public int testLootVal = 0;
 }
