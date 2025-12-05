@@ -692,7 +692,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
+  m_IgnoreReversedGraphics: 0
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
@@ -3412,7 +3412,7 @@ MonoBehaviour:
   exitPanel: {fileID: 1365168392}
   screenDim: {fileID: 1625252493}
   animator: {fileID: 2078242028}
-  pauseAction: {fileID: -5321155110391159766, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  pauseAction: {fileID: 6255657739846126467, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
 --- !u!95 &2078242028
 Animator:
   serializedVersion: 7
