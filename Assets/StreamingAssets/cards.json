@@ -30,7 +30,7 @@
         },
         {
             "id": "slash",
-            "cardName": "Slash",
+            "cardName": "Slash [M]",
             "description": "[REACTION] Deal 4 damage to an enemy.",
             "cost": 1,
             "type": "spell",
@@ -96,18 +96,18 @@
         },
         {
             "id": "runicblast",
-            "cardName": "Runic Blast",
+            "cardName": "Runic Blast [M]",
             "description": "[TYPING] Deal damage based on the number of runes you control.",
             "cost": 2,
             "type": "spell",
             "isRanged": true,
             "effectId": "runic_blast",
-            "effectValue": 2
+            "effectValue": 3
         },
         {
             "id": "spinnysword",
-            "cardName": "Spinny Sword",
-            "description": "Spinny Sword",
+            "cardName": "Spinny Sword [M]",
+            "description": "[CLICK SPEED] Spin a pair of swords and throw them at an enemy.",
             "cost": 1,
             "type": "spell",
             "minigameId": "clickspeed",
@@ -117,8 +117,8 @@
         },
         {
             "id": "cozybuffet",
-            "cardName": "Cozy Buffet",
-            "description": "Cozy Buffet",
+            "cardName": "Cozy Buffet [M]",
+            "description": "[CATCH] Prepare a feast to heal yourself.",
             "cost": 1,
             "type": "spell",
             "minigameId": "catchrecipe",
@@ -128,14 +128,14 @@
         },
         {
             "id": "shmovement",
-            "cardName": "Shmovement",
-            "description": "Shmovement",
+            "cardName": "Shmovement [M]",
+            "description": "[PLATFORMER] Jump over gaps to close distance on an enemy.",
             "cost": 1,
             "type": "spell",
             "minigameId": "platformer",
             "isRanged": false,
             "effectId": "damage_enemy",
-            "effectValue": 3
+            "effectValue": 5
 
         },
         {
