@@ -6,6 +6,7 @@ public class SessionPlayerData
     public int mana = 1;
     public int gold = 10;
     public DeckInstance deck = new DeckInstance();
+    public RelicInventory relicInventory = new RelicInventory();
 
     public void ResetSessionData(DeckDefinition defaultDeck = null)
     {
@@ -20,5 +21,10 @@ public class SessionPlayerData
 
         if (defaultDeck != null)
             deck = new DeckInstance(defaultDeck.CardIds);
+        
+        if (relicInventory == null)
+            relicInventory = new RelicInventory();
+        else
+            relicInventory.Clear();
     }
 }

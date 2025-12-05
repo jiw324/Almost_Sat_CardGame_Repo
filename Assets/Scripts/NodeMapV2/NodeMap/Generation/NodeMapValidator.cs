@@ -88,7 +88,7 @@ public class NodeMapValidator
                         AddRuleHit("AnchorFirstFloor");
                     }
 
-                    var a2 = Rule_AnchorFloors(floor[x], map, Mathf.RoundToInt((map.MapHeight - 1) / 2), NodeType.Loot);
+                    var a2 = Rule_AnchorFloors(floor[x], map, Mathf.RoundToInt((map.MapHeight - 1) / 2), NodeType.Relic);
                     if (a2.ruleViolated)
                     {
                         anyChanges = true;
@@ -362,7 +362,7 @@ public class NodeMapValidator
         if (repeatedType == NodeType.Rest)
             return (r < 0.7f) ? NodeType.Combat : NodeType.Event;
 
-        if (repeatedType == NodeType.Loot)
+        if (repeatedType == NodeType.Relic)
             return (r < 0.7f) ? NodeType.Combat : NodeType.Event;
 
         return NodeType.Combat;

@@ -139,4 +139,9 @@ public class GameSession : MonoBehaviour
     {
         gameSessionData.sessionPlayerData.gold = gold;
     }
+    
+    public RelicInventory GetPlayerRelicInventory()
+    {
+        return gameSessionData.sessionPlayerData.relicInventory;
+    }
 }

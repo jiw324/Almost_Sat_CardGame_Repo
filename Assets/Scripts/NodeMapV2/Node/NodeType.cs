@@ -4,5 +4,5 @@ public enum NodeType
     Shop,
     Event,
     Rest,
-    Loot
+    Relic
 }

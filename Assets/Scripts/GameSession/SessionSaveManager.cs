@@ -75,9 +75,9 @@ public static class SessionSaveManager
                     loadedSessionData.sessionNodeMapData.currentNodeData =
                         JsonUtility.FromJson<RestNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
                     break;
-                case NodeType.Loot:
+                case NodeType.Relic:
                     loadedSessionData.sessionNodeMapData.currentNodeData =
-                        JsonUtility.FromJson<LootNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
+                        JsonUtility.FromJson<RelicNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
                     break;
             }          
         }

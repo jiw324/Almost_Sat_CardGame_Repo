@@ -30,7 +30,7 @@ public class EventNodeData : ISessionNodeData
 }
 
 [System.Serializable]
-public class LootNodeData : ISessionNodeData
+public class RelicNodeData : ISessionNodeData
 {
-    public int testLootVal = 0;
+    public int testRelicVal = 0;
 }

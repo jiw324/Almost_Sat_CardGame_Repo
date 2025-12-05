@@ -26,7 +26,7 @@ public class NodeTypeAssigner
         if (map.Floors.ContainsKey(mid))
         {
             foreach (var node in map.Floors[mid])
-                node.Reassign(_factory.GetDefinition(NodeType.Loot));
+                node.Reassign(_factory.GetDefinition(NodeType.Relic));
         }
 
         if (map.Floors.ContainsKey(0))
@@ -85,7 +85,7 @@ public class NodeTypeAssigner
                 { NodeType.Shop,   0.15f },
                 { NodeType.Event,  0.2f },
                 { NodeType.Rest,   0.25f },
-                { NodeType.Loot,   0.05f }
+                { NodeType.Relic,   0.05f }
             };
         }
         else if (progress < 0.75f)
@@ -96,7 +96,7 @@ public class NodeTypeAssigner
                 { NodeType.Shop,   0.2f },
                 { NodeType.Event,  0.2f },
                 { NodeType.Rest,   0.2f },
-                { NodeType.Loot,   0.05f }
+                { NodeType.Relic,   0.05f }
             };
         }
         else
@@ -107,7 +107,7 @@ public class NodeTypeAssigner
                 { NodeType.Shop,   0.25f },
                 { NodeType.Event,  0.15f },
                 { NodeType.Rest,   0.15f },
-                { NodeType.Loot,   0.1f }
+                { NodeType.Relic,   0.1f }
             };
         }
     }
