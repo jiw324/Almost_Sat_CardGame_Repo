@@ -7,6 +7,9 @@ public enum CardId
     Archer,
     Rune,
     Apocalypse,
-    RunicBlast
+    RunicBlast,
+    SpinnySword,
+    CozyBuffet,
+    Shmovement
 }
 
