@@ -9,17 +9,16 @@ public class SessionPlayerData
     public int mana = 1;
     public int gold = 10;
     public DeckInstance deck = new DeckInstance();
-
-    // Relics currently owned by the player during this run.
-    // These are serialized with the rest of the session.
-    public List<RelicData> relics = new List<RelicData>();
+    public RelicInventory relicInventory = new RelicInventory();
+    public bool isInActiveRun = false;
 
     public void ResetSessionData(DeckDefinition defaultDeck = null)
     {
         maxHealth = 30;
-        health = 10;
+        health = 30;
         mana = 1;
         gold = 10;
+        isInActiveRun = false;
         if (deck == null)
             deck = new DeckInstance();
         else
