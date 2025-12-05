@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: a7818d0682ac9a845977b628dab68616
+guid: c5c40b2e98ae02b4aa1267a5be0d70fb
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -172725170608609398
-    second: Ancient_Cobblestone_5_Height_0
+      213: 6963863700550359913
+    second: Boots_04_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Ancient_Cobblestone_5_Height_0
+      name: Boots_04_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 2048
-        height: 2048
+        x: 20
+        y: 14
+        width: 219
+        height: 216
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a87ea1a5f5b5a9df0800000000000000
-      internalID: -172725170608609398
+      spriteID: 96b9a87b32d94a060800000000000000
+      internalID: 6963863700550359913
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Ancient_Cobblestone_5_Height_0: -172725170608609398
+      Boots_04_0: 6963863700550359913
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

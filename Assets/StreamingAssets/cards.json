@@ -31,13 +31,13 @@
         {
             "id": "slash",
             "cardName": "Slash",
-            "description": "[REACTION] Deal 5 damage to an enemy.",
+            "description": "[REACTION] Deal 4 damage to an enemy.",
             "cost": 2,
             "type": "spell",
             "isRanged": true,
             "minigameId": "reaction",
             "effectId": "damage_enemy",
-            "effectValue": 5
+            "effectValue": 4
         },
         {
             "id": "healinghands",
@@ -103,6 +103,40 @@
             "isRanged": true,
             "effectId": "runic_blast",
             "effectValue": 2
+        },
+        {
+            "id": "spinnysword",
+            "cardName": "Spinny Sword",
+            "description": "Spinny Sword",
+            "cost": 1,
+            "type": "spell",
+            "minigameId": "clickspeed",
+            "isRanged": false,
+            "effectId": "damage_enemy",
+            "effectValue": 4
+        },
+        {
+            "id": "cozybuffet",
+            "cardName": "Cozy Buffet",
+            "description": "Cozy Buffet",
+            "cost": 1,
+            "type": "spell",
+            "minigameId": "catchrecipe",
+            "isRanged": false,
+            "effectId": "gain_shield",
+            "effectValue": 6
+        },
+        {
+            "id": "shmovement",
+            "cardName": "Shmovement",
+            "description": "Shmovement",
+            "cost": 1,
+            "type": "spell",
+            "minigameId": "platformer",
+            "isRanged": false,
+            "effectId": "damage_enemy",
+            "effectValue": 3
+            
         }
     ]
 }

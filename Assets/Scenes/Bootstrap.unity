@@ -185,7 +185,7 @@ MonoBehaviour:
       completedNodeIds: []
       currentNodeType: 0
       currentNodeJson: 
-  startingPlayerDeck: {fileID: 11400000, guid: 5e8d255eb222643af9b19304f1c1dbd7, type: 2}
+  startingPlayerDeck: {fileID: 11400000, guid: 916edf27dad83432184d81ee8d6c07cd, type: 2}
 --- !u!1 &46919001
 GameObject:
   m_ObjectHideFlags: 0
