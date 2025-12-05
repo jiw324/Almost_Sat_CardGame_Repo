@@ -89,23 +89,6 @@ public class GameSession : MonoBehaviour
         }
     }
 
-    public SessionNodeMapData GetActiveNodeMapData()
-    {
-        if (gameSessionData == null)
-            return null;
-
-        if (IsTutorialMode)
-        {
-            if (gameSessionData.tutorialNodeMapData == null)
-                gameSessionData.tutorialNodeMapData = new SessionNodeMapData();
-            return gameSessionData.tutorialNodeMapData;
-        }
-
-        if (gameSessionData.sessionNodeMapData == null)
-            gameSessionData.sessionNodeMapData = new SessionNodeMapData();
-        return gameSessionData.sessionNodeMapData;
-    }
-    
     // Check if player is currently in an active run
     public bool IsInActiveRun()
     {
@@ -171,15 +154,23 @@ public class GameSession : MonoBehaviour
     /// <summary>
     /// Returns the active node map data for the current mode (main run vs tutorial).
     /// Used by map systems to read/write node progression.
+    /// Ensures the underlying data object exists.
     /// </summary>
     public SessionNodeMapData GetActiveNodeMapData()
     {
         if (gameSessionData == null)
             return null;
 
-        return IsTutorialMode
-            ? gameSessionData.tutorialNodeMapData
-            : gameSessionData.sessionNodeMapData;
+        if (IsTutorialMode)
+        {
+            if (gameSessionData.tutorialNodeMapData == null)
+                gameSessionData.tutorialNodeMapData = new SessionNodeMapData();
+            return gameSessionData.tutorialNodeMapData;
+        }
+
+        if (gameSessionData.sessionNodeMapData == null)
+            gameSessionData.sessionNodeMapData = new SessionNodeMapData();
+        return gameSessionData.sessionNodeMapData;
     }
 
     public System.Collections.Generic.IReadOnlyList<RelicData> GetPlayerRelics()

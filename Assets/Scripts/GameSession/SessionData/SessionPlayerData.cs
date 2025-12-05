@@ -10,6 +10,7 @@ public class SessionPlayerData
     public int gold = 10;
     public DeckInstance deck = new DeckInstance();
     public RelicInventory relicInventory = new RelicInventory();
+    public List<RelicData> relics = new List<RelicData>();
     public bool isInActiveRun = false;
 
     public void ResetSessionData(DeckDefinition defaultDeck = null)

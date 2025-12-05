@@ -80,21 +80,22 @@ public static class SessionSaveManager
                             JsonUtility.FromJson<ShopNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
                         break;
 
-                    case NodeType.Event:
-                        loadedSessionData.sessionNodeMapData.currentNodeData =
-                            JsonUtility.FromJson<EventNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
-                        break;
+                case NodeType.Event:
+                    loadedSessionData.sessionNodeMapData.currentNodeData =
+                        JsonUtility.FromJson<EventNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
+                    break;
 
-                    case NodeType.Rest:
-                        loadedSessionData.sessionNodeMapData.currentNodeData =
-                            JsonUtility.FromJson<RestNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
-                        break;
-                    case NodeType.Relic:
-                        loadedSessionData.sessionNodeMapData.currentNodeData =
-                            JsonUtility.FromJson<RelicNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
-                        break;
+                case NodeType.Rest:
+                    loadedSessionData.sessionNodeMapData.currentNodeData =
+                        JsonUtility.FromJson<RestNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
+                    break;
+
+                    case NodeType.Loot:
+                    loadedSessionData.sessionNodeMapData.currentNodeData =
+                            JsonUtility.FromJson<LootNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
+                    break;
                 }
-            }
+            }          
         }
         catch (Exception e)
         {
