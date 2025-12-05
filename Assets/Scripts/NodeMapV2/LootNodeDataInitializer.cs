@@ -7,7 +7,10 @@ using UnityEngine;
 /// </summary>
 public static class LootNodeDataInitializer
 {
-    public static void InitializeLootNode()
+    /// <summary>
+    /// Initialize loot for a node. If fromEvent is true, this loot came from an Event node.
+    /// </summary>
+    public static void InitializeLootNode(bool fromEvent)
     {
         GameSession session = SessionGrabber.getGameSession();
         if (session == null)
@@ -33,7 +36,7 @@ public static class LootNodeDataInitializer
             return;
         }
 
-        // Always grant the Torch relic on visiting a loot node
+        // Always grant the Torch relic on visiting a loot/event node
         if (!RelicDatabase.Instance.TryGetRelicById("torch", out RelicJSON relicJson))
         {
             Debug.LogWarning("[LootNodeDataInitializer] Torch relic not found in RelicDatabase.");
@@ -63,7 +66,8 @@ public static class LootNodeDataInitializer
         // Store simple node data for saving/loading
         LootNodeData lootData = new LootNodeData
         {
-            grantedRelicId = relicJson.id
+            grantedRelicId = relicJson.id,
+            fromEvent = fromEvent
         };
 
         session.gameSessionData.sessionNodeMapData.currentNodeType = NodeType.Loot;
