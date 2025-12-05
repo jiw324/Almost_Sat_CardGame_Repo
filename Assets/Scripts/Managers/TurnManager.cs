@@ -84,6 +84,8 @@ public class TurnManager : MonoBehaviour
                 //NEW: enemy turn started
                 OnEnemyTurnStarted?.Invoke();
 
+                StatusSystem.OnTurnStart(Side.Enemy);
+
                 bm.enemyMana = bm.enemyMaxMana;
                 if (bm.uiManager != null) bm.uiManager.UpdateEnemyMana(bm.enemyMana);
 
@@ -94,6 +96,8 @@ public class TurnManager : MonoBehaviour
             {
                 //NEW: player turn started
                 OnPlayerTurnStarted?.Invoke();
+
+                StatusSystem.OnTurnStart(Side.Player);
 
                 bm.playerMana = bm.playerMaxMana;
                 if (bm.uiManager != null) bm.uiManager.UpdatePlayerMana(bm.playerMana);

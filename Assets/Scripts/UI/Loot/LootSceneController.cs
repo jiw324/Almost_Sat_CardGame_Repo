@@ -37,5 +37,12 @@ public class LootSceneController : MonoBehaviour
         {
             session.SetPlayerGold(session.GetPlayerGold() + rolledGold);
         }
+
+        var msm = FindFirstObjectByType<MapStateManager>();
+        if (msm != null)
+        {
+            msm.MarkCompleted(msm.GetCurrentNode());
+            msm.ReturnToMapScene();
+        }
     }
 }

@@ -83,6 +83,7 @@ public class BoardManager : MonoBehaviour
             return;
         }
 
+
         // 2) If a hand card is selected
         if (selectedCard != null)
         {
@@ -129,13 +130,14 @@ public class BoardManager : MonoBehaviour
                             }
                         }
                     }
+
                 }
                 // clicks elsewhere while minion card is selected: ignore
                 return;
             }
 
             // 2b) SPELL CARD: second click chooses the target
-            var targetEntity = ResolveClickToSpellTarget(hit);
+            var targetEntity = ResolveClickToSpellTarget(hit, inst);
             if (targetEntity != null)
             {
                 var bm = BattleManager.Instance;
@@ -208,8 +210,6 @@ public class BoardManager : MonoBehaviour
                 selectedMinion.AttackTarget(target);
                 selectedMinion = null; // done
             }
-
-            SoundEvents.Play("MinionAttack");
 
             return;
         }
@@ -296,7 +296,6 @@ public class BoardManager : MonoBehaviour
 
             bm.playerMana -= inst.Data.cost;
             if (bm.uiManager != null) bm.uiManager.UpdatePlayerMana(bm.playerMana);
-            SoundEvents.Play("MinionPlace");
         }
 
         _ = inst.PlayCardAsync(slot);
@@ -335,38 +334,109 @@ public class BoardManager : MonoBehaviour
         return null;
     }
 
-    // SPELLS: enemy/minion if clicked; if empty slot is clicked, treat as EnemyEntity
-    private EntityBase ResolveClickToSpellTarget(RaycastHit hit)
+    // SPELLS: enemy/minion if clicked; if empty slot is clicked, apply buff/debuff to heroes
+    private EntityBase ResolveClickToSpellTarget(RaycastHit hit, CardInstance spell)
     {
-        // Direct hit: enemy or minion
+        // 1) Direct hit: enemy hero
         var ee = hit.collider.GetComponentInParent<EnemyEntity>();
-        if (ee != null)
-        {
-            SoundEvents.Play("SpellPlace");
-            return ee;
-        }
+        if (ee != null) return ee;
 
+        // 2) Direct hit: any minion
         var me = hit.collider.GetComponentInParent<MinionEntity>();
-        if (me != null)
-        {
-            SoundEvents.Play("SpellPlace");
-            return me;
-        }
+        if (me != null) return me;
 
-        // Empty slot → enemy
+        // 3) Empty board slot → special handling for buff/debuff spells
         var slot = hit.collider.GetComponentInParent<BoardSlot>();
         if (slot != null && !slot.isOccupied)
         {
-            var enemies = FindObjectsByType<EnemyEntity>(FindObjectsSortMode.None);
-            if (enemies != null && enemies.Length > 0)
-                return enemies[0];
-            SoundEvents.Play("SpellPlace");
-            return null;
+            return ResolveEmptySlotSpellTarget(spell);
         }
 
-        // Anything else: no target
+        // 4) Anything else: no valid target
         return null;
     }
+
+    /// <summary>
+    /// When a spell is cast on an empty slot, decide who should receive it:
+    /// - Pure buff card (Strength only): owner hero
+    /// - Pure debuff card (Weakness / Poison only): opponent hero
+    /// - Mixed/other effects: fall back to default enemy hero (old behavior).
+    /// </summary>
+    private EntityBase ResolveEmptySlotSpellTarget(CardInstance spell)
+    {
+        var bm = BattleManager.Instance;
+        if (bm == null) return null;
+        if (spell == null || spell.Data == null || spell.Data.effects == null || spell.Data.effects.Count == 0)
+        {
+            // No info → old behavior: treat as attack to enemy hero
+            return GetDefaultEnemyHero();
+        }
+
+        bool hasStrength = false;
+        bool hasWeakness = false;
+        bool hasPoison = false;
+        bool hasOther = false;
+
+        foreach (var binding in spell.Data.effects)
+        {
+            if (binding?.effect == null) continue;
+
+            if (binding.effect is StrengthEffect)
+                hasStrength = true;
+            else if (binding.effect is WeaknessEffect)
+                hasWeakness = true;
+            else if (binding.effect is PoisonEffect)
+                hasPoison = true;
+            else
+                hasOther = true;
+        }
+
+        bool anyBuffLike = hasStrength;
+        bool anyDebuffLike = hasWeakness || hasPoison;
+
+        // If the card mixes buffs + debuffs or has other effects, keep old behavior
+        if (hasOther || (anyBuffLike && anyDebuffLike))
+        {
+            return GetDefaultEnemyHero();
+        }
+
+        var owner = spell.Owner;
+
+        // Player casting
+        if (owner is PlayerEntity)
+        {
+            // Buff-only → self hero
+            if (anyBuffLike && !anyDebuffLike)
+            {
+                return bm.player;
+            }
+
+            // Debuff-only → enemy hero
+            if (anyDebuffLike && !anyBuffLike)
+            {
+                return GetDefaultEnemyHero();
+            }
+        }
+        // Enemy casting
+        else if (owner is EnemyEntity enemyOwner)
+        {
+            // Buff-only → that specific enemy hero
+            if (anyBuffLike && !anyDebuffLike)
+            {
+                return enemyOwner;
+            }
+
+            // Debuff-only → player hero
+            if (anyDebuffLike && !anyBuffLike)
+            {
+                return bm.player;
+            }
+        }
+
+        // Fallback: behave like a normal attack spell to enemy hero
+        return GetDefaultEnemyHero();
+    }
+
 
     // For on-summon: enemy/minion if clicked, or enemy if empty slot is clicked
     private EntityBase ResolveClickToEntityOrEnemyIfEmpty(RaycastHit hit)

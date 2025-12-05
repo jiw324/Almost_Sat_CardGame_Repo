@@ -10,6 +10,9 @@ public enum CardId
     RunicBlast,
     SpinnySword,
     CozyBuffet,
-    Shmovement
+    Shmovement,
+    StrengthSpell,
+    WeaknessHex,
+    PoisonDart
 }
 

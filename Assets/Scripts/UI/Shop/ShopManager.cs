@@ -10,7 +10,6 @@ public class ShopManager : MonoBehaviour
     public GameObject shopCardPrefab;
     public Button continueButton;
     public GoldDisplay goldDisplay;
-    public SceneSwitch sceneManager;
 
     [Header("Shop Data")]
     public List<CardId> cardsForSale;
@@ -79,6 +78,11 @@ public class ShopManager : MonoBehaviour
 
     private void ExitNode()
     {
-        sceneManager.SceneChanger("Map");
+        var msm = FindFirstObjectByType<MapStateManager>();
+        if (msm != null)
+        {
+            msm.MarkCompleted(msm.GetCurrentNode());
+            msm.ReturnToMapScene();
+        }
     }
 }

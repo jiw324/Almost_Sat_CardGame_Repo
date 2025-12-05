@@ -6,7 +6,7 @@ public class SessionPlayerData
 {
     public int maxHealth = 30;
     public int health = 10;
-    public int mana = 1;
+    public int mana = 3;
     public int gold = 10;
     public DeckInstance deck = new DeckInstance();
     public RelicInventory relicInventory = new RelicInventory();
@@ -17,7 +17,7 @@ public class SessionPlayerData
     {
         maxHealth = 30;
         health = 30;
-        mana = 1;
+        mana = 3;
         gold = 10;
         isInActiveRun = false;
         if (deck == null)

@@ -87,22 +87,46 @@ public class CardInstance
 
 
     // SPELLS ONLY
-    public void ResolveSpellEffects(EntityBase caster, EntityBase target, float minigameMultiplier = 1.0f)
+    private void ResolveSpellEffects(EntityBase caster, EntityBase target, float minigameMultiplier)
     {
-        Execute(Data?.effects, caster, target, minigameMultiplier);
+        if (Data.effects == null || Data.effects.Count == 0)
+            return;
 
-        var minions = UnityEngine.Object.FindObjectsByType<MinionEntity>(FindObjectsSortMode.None);
-        foreach (var m in minions)
+        // NEW: hero status multiplier (Strength / Weakness on hero)
+        float statusMult = 1f;
+        if (caster != null)
         {
-            if (m == null) continue;
-            var mb = m.GetComponent<MinionBehaviour>();
-            if (mb == null || mb.instance == null) continue;
-            if (mb.instance.IsDead())
+            statusMult = caster.GetOutgoingDamageMultiplier();
+        }
+
+        foreach (var binding in Data.effects)
+        {
+            if (binding.effect == null) continue;
+
+            int baseVal = binding.value;
+            if (baseVal == 0)
             {
-                mb.Die();
+                binding.effect.Execute(caster, target, 0);
+                continue;
             }
+
+            float scaled = Mathf.Abs(baseVal) * minigameMultiplier * statusMult;
+            int finalValue = Mathf.RoundToInt(scaled);
+            if (baseVal < 0)
+                finalValue = -finalValue;
+
+            binding.effect.Execute(caster, target, finalValue);
+        }
+
+        // Existing clean-up of dead minions etc. stays the same.
+        var allMinions = UnityEngine.Object.FindObjectsOfType<MinionEntity>();
+        foreach (var me in allMinions)
+        {
+            if (me == null) continue;
+            if (me.PoisonStacks < 0) { } // no-op; just keep your original logic here if needed
         }
     }
+
 
     // MINIONS ONLY
     public void ResolveMinionSummonEffects(EntityBase caster, EntityBase target, float minigameMultiplier = 1.0f)

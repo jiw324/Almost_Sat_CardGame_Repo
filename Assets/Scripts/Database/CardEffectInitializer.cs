@@ -7,13 +7,18 @@ public class CardEffectInitializer : MonoBehaviour
     [SerializeField] private AOEDamageEffect aoeDamageEffect;
     [SerializeField] private GainShieldEffect gainShieldEffect;
     [SerializeField] private RunicBlastEffect runicBlastEffect;
+    [SerializeField] private StrengthEffect strengthEffect;
+    [SerializeField] private WeaknessEffect weaknessEffect;
+    [SerializeField] private PoisonEffect poisonEffect;
 
     private void Awake()
     {
-        // Register all effect assets with their string IDs
         CardEffectLibrary.RegisterEffect("damage_enemy", damageEnemyEffect);
         CardEffectLibrary.RegisterEffect("aoe_damage", aoeDamageEffect);
         CardEffectLibrary.RegisterEffect("gain_shield", gainShieldEffect);
         CardEffectLibrary.RegisterEffect("runic_blast", runicBlastEffect);
+        CardEffectLibrary.RegisterEffect("strength", strengthEffect);
+        CardEffectLibrary.RegisterEffect("weakness", weaknessEffect);
+        CardEffectLibrary.RegisterEffect("poison", poisonEffect);
     }
 }
