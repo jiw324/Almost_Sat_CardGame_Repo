@@ -16,7 +16,6 @@ public class AudioManager : MonoBehaviour
     [Range(0f, 1f)] public float uiVolume = 1f;
     [Range(0f, 1f)] public float mapVolume = 1f;
     [Range(0f, 1f)] public float combatVolume = 1f;
-    [Range(0f, 1f)] public float ambientVolume = 1f;
 
 
     private Dictionary<string, SoundLibrary.SoundEntry> sfxDict;

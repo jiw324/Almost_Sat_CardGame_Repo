@@ -40,7 +40,6 @@ public class MapEnvironmentSpawner
         _treeSpacingMax = treeSpacingMax;
     }
 
-    // Existing synchronous path (kept for compatibility / tools)
     public void SpawnEnvironment(NodeMapVisualContext ctx, Transform parent)
     {
         Bounds b = ctx.MapBounds;
@@ -55,7 +54,6 @@ public class MapEnvironmentSpawner
         SpawnForestRing(b, envRoot);
     }
 
-    // New async / chunked environment spawn
     public IEnumerator SpawnEnvironmentAsync(NodeMapVisualContext ctx, Transform parent, int batchSize = 64)
     {
         if (ctx == null)
@@ -189,7 +187,6 @@ public class MapEnvironmentSpawner
             GameObject randomTree = Random.value < 0.5f ? _tree1Prefab : _tree2Prefab;
             Object.Instantiate(randomTree, pos, Quaternion.identity, parent);
 
-            // batching
             counter++;
             if (counter >= batchSize)
             {
