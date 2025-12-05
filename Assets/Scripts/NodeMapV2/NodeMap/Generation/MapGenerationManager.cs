@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
+using System.Collections.Generic;
 
 public class MapGenerationManager : MonoBehaviour
 {
@@ -16,6 +18,9 @@ public class MapGenerationManager : MonoBehaviour
     private NodeMap _activeMap;
     private NodeMapVisualContext _visualContext;
     private int _currentSeed;
+    private Coroutine _spawnRoutine;
+
+    public List<NodeView> SpawnedNodeViews { get; private set; } = new();
 
     public NodeMap ActiveMap => _activeMap;
     public int CurrentSeed => _currentSeed;
@@ -84,9 +89,7 @@ public class MapGenerationManager : MonoBehaviour
 
         var tMap = TutorialSessionMap;
         if (tMap == null)
-        {
             GameSession.Instance.gameSessionData.tutorialNodeMapData = new SessionNodeMapData();
-        }
 
         tMap = TutorialSessionMap;
 
@@ -112,14 +115,18 @@ public class MapGenerationManager : MonoBehaviour
     {
         GameSession.Instance.IsTutorialMode = false;
 
-        // Grab seed and initialize Random class with seed
         _currentSeed = seed;
         Random.InitState(seed);
+
+        if (_spawnRoutine != null)
+        {
+            StopCoroutine(_spawnRoutine);
+            _spawnRoutine = null;
+        }
 
         if (_activeMap != null)
             Destroy(_activeMap.gameObject);
 
-        // Instantiate map object and move to map scene
         NodeMap map = Instantiate(nodeMapPrefab);
         Scene mapScene = SceneManager.GetSceneByName("Map");
         if (mapScene.IsValid())
@@ -127,47 +134,22 @@ public class MapGenerationManager : MonoBehaviour
 
         _activeMap = map;
 
-        // Generate structure of map
         map.Generate();
 
-        // Assign node types on map
         var assigner = new NodeTypeAssigner(map.Factory);
         assigner.Assign(map);
 
-        // Assign random enemies to combat nodes
         AssignEnemiesToCombatNodes(map);
 
-        // Validate node map against rules
         var validator = new NodeMapValidator();
         validator.Validate(map);
 
         MapStateManager.Instance.Initialize(map);
 
-        // Spawn prefabs for node map
-        var spawner = new NodeMapSpawner();
-        _visualContext = spawner.Spawn(map, map.transform);
+        SpawnedNodeViews.Clear();
+        _visualContext = null;
 
-        // Spawn environment around node map
-        var env = new MapEnvironmentSpawner();
-        env.SpawnEnvironment(_visualContext, map.transform);
-
-        Bounds finalBounds = _visualContext.MapBounds;
-
-        // Position map camera and set movement bounds
-        var cam = FindFirstObjectByType<MapCameraController>();
-        if (cam != null)
-            cam.SetBoundsUsingWorldBounds(finalBounds);
-
-        // Spawn fog over map
-        if (!GameSession.Instance.IsTutorialMode && fogPrefab != null)
-        {
-            GameObject fogObj = Instantiate(fogPrefab, _activeMap.transform);
-            fogObj.name = "Fog";
-
-            var fog = fogObj.GetComponent<FogController>();
-            if (fog != null)
-                fog.Initialize(_activeMap, finalBounds);
-        }
+        _spawnRoutine = StartCoroutine(SpawnVisualsCoroutine(map, isTutorial: false));
     }
 
     private void GenerateTutorialFromSeed(int seed)
@@ -176,6 +158,12 @@ public class MapGenerationManager : MonoBehaviour
 
         _currentSeed = seed;
         Random.InitState(seed);
+
+        if (_spawnRoutine != null)
+        {
+            StopCoroutine(_spawnRoutine);
+            _spawnRoutine = null;
+        }
 
         if (_activeMap != null)
             Destroy(_activeMap.gameObject);
@@ -193,25 +181,50 @@ public class MapGenerationManager : MonoBehaviour
 
         MapStateManager.Instance.Initialize(map);
 
+        SpawnedNodeViews.Clear();
+        _visualContext = null;
+
+        _spawnRoutine = StartCoroutine(SpawnVisualsCoroutine(map, isTutorial: true));
+    }
+
+    private IEnumerator SpawnVisualsCoroutine(NodeMap map, bool isTutorial)
+    {
+        if (map == null)
+            yield break;
+
         var spawner = new NodeMapSpawner();
-        _visualContext = spawner.Spawn(map, map.transform);
+        yield return spawner.SpawnAsync(map, map.transform, batchSize: 32);
+
+        _visualContext = spawner.Context;
+        if (_visualContext == null)
+            yield break;
+
+        SpawnedNodeViews = _visualContext.SpawnedNodes ?? new List<NodeView>();
 
         var env = new MapEnvironmentSpawner();
-        env.SpawnEnvironment(_visualContext, map.transform);
+        yield return env.SpawnEnvironmentAsync(_visualContext, map.transform, batchSize: 64);
 
         Bounds finalBounds = _visualContext.MapBounds;
 
         var cam = FindFirstObjectByType<MapCameraController>();
         if (cam != null)
             cam.SetBoundsUsingWorldBounds(finalBounds);
+
+        if (!isTutorial && fogPrefab != null)
+        {
+            GameObject fogObj = Instantiate(fogPrefab, _activeMap.transform);
+            fogObj.name = "Fog";
+
+            var fog = fogObj.GetComponent<FogController>();
+            if (fog != null)
+                fog.Initialize(_activeMap, finalBounds);
+        }
+
+        _spawnRoutine = null;
     }
 
-    /// <summary>
-    /// Assigns random enemies to all combat nodes in the map.
-    /// </summary>
     private void AssignEnemiesToCombatNodes(NodeMap map)
     {
-        // Dynamically load all enemies from Resources/Enemies/
         EnemyDefinition[] enemyDefinitions = Resources.LoadAll<EnemyDefinition>("Enemies");
 
         if (enemyDefinitions == null || enemyDefinitions.Length == 0)
@@ -220,23 +233,18 @@ public class MapGenerationManager : MonoBehaviour
             return;
         }
 
-        // Extract enemy names from the loaded definitions
         string[] availableEnemies = new string[enemyDefinitions.Length];
         for (int i = 0; i < enemyDefinitions.Length; i++)
-        {
-            availableEnemies[i] = enemyDefinitions[i].name; // Use the asset name (without .asset extension)
-        }
-
-        Debug.Log($"[MapGenerationManager] Loaded {availableEnemies.Length} enemies: {string.Join(", ", availableEnemies)}");
+            availableEnemies[i] = enemyDefinitions[i].name;
 
         int assignedCount = 0;
+
         foreach (var floorPair in map.Floors)
         {
             foreach (var node in floorPair.Value)
             {
                 if (node.Definition != null && node.Definition.nodeType == NodeType.Combat)
                 {
-                    // Randomly assign an enemy to this combat node
                     string randomEnemy = availableEnemies[Random.Range(0, availableEnemies.Length)];
                     CombatNodeEnemyAssigner.AssignEnemyToNode(node, randomEnemy);
                     assignedCount++;
@@ -244,10 +252,10 @@ public class MapGenerationManager : MonoBehaviour
             }
         }
 
-        // Also check boss node
-        if (map.BossNode != null && map.BossNode.Definition != null && map.BossNode.Definition.nodeType == NodeType.Combat)
+        if (map.BossNode != null &&
+            map.BossNode.Definition != null &&
+            map.BossNode.Definition.nodeType == NodeType.Combat)
         {
-            // Boss could use a different enemy or same pool - using same pool for now
             string randomEnemy = availableEnemies[Random.Range(0, availableEnemies.Length)];
             CombatNodeEnemyAssigner.AssignEnemyToNode(map.BossNode, randomEnemy);
             assignedCount++;
