@@ -223,8 +223,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 258e80b38a8b853438cd8cf8105c7990, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clickSoundId: UIButton
-  clickErrorSoundId: UIButtonError
 --- !u!4 &141850925
 Transform:
   m_ObjectHideFlags: 0
@@ -1016,7 +1014,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5784963247727028776, guid: 83f938d1f686a2c4e90617e9329f77e2, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 5784963247727028776, guid: 83f938d1f686a2c4e90617e9329f77e2, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -2264,7 +2262,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8588090210634442865, guid: 9f65ad61904a7d44ab0d2a4e5881cfcf, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -153
+      value: -170
       objectReference: {fileID: 0}
     - target: {fileID: 8588090210634442865, guid: 9f65ad61904a7d44ab0d2a4e5881cfcf, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -2579,9 +2577,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1385468995}
-        m_TargetAssemblyTypeName: MenuNavigationManager, Assembly-CSharp
-        m_MethodName: PlayGame
       - m_Target: {fileID: 1846863209}
         m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
         m_MethodName: OnStartNewRun
@@ -3533,5 +3528,4 @@ SceneRoots:
   - {fileID: 1291677454}
   - {fileID: 1385468996}
   - {fileID: 141850925}
-  - {fileID: 655217831}
   - {fileID: 1846863210}

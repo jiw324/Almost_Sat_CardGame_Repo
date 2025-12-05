@@ -50,6 +50,7 @@ public class MainMenuController : MonoBehaviour
         // If they had a previous deck, it will be loaded so they can modify it
         // If first time, deck will be empty and pool will have all cards
         Debug.Log("Starting new run - going to deck builder");
+        GameSession.Instance.IsTutorialMode = false;
         sceneManager.SceneChanger("DeckBuilder");
     }
 
