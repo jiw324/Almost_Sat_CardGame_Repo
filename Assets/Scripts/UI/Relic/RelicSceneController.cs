@@ -1,26 +1,16 @@
 using UnityEngine;
 
-public class LootSceneController : MonoBehaviour
+public class RelicSceneController : MonoBehaviour
 {
-    [Header("Gold Range")]
-    public int minGold = 5;
-    public int maxGold = 15;
-
     [Header("References")]
     public GameObject speechBubbleObject;
     private ModifiableTypewriterEffect typewriter;
-
-    private int rolledGold;
 
     private void Start()
     {
         typewriter = speechBubbleObject.GetComponent<ModifiableTypewriterEffect>();
 
-        // Roll gold at scene start
-        rolledGold = Random.Range(minGold, maxGold + 1);
-
-        // Build message
-        string msg = $"Chest Found!\n\n\n\n\n\n+{rolledGold} Gold";
+        string msg = BuildMessage();
 
         // Send to typewriter
         typewriter.SetMessage(msg);
@@ -33,17 +23,29 @@ public class LootSceneController : MonoBehaviour
     // Called by Continue button
     public void AcceptReward()
     {
-        GameSession session = SessionGrabber.getGameSession();
-        if (session != null)
-        {
-            session.SetPlayerGold(session.GetPlayerGold() + rolledGold);
-        }
-
         var msm = FindFirstObjectByType<MapStateManager>();
         if (msm != null)
         {
             msm.MarkCompleted(msm.GetCurrentNode());
             msm.ReturnToMapScene();
         }
+    }
+
+    private string BuildMessage()
+    {
+        GameSession session = SessionGrabber.getGameSession();
+        if (session == null || session.gameSessionData == null)
+            return "You got a relic!";
+
+        var mapData = session.gameSessionData.sessionNodeMapData;
+        if (mapData == null || mapData.currentNodeData == null)
+            return "You got a relic!";
+
+        if (mapData.currentNodeData is LootNodeData lootData && lootData.fromEvent)
+        {
+            return "You gain an relic";
+        }
+
+        return "You got a relic";
     }
 }

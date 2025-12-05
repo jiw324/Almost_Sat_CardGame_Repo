@@ -27,6 +27,9 @@ public class SceneSwitch : MonoBehaviour
             case "Shop":
                 gameRoute = GameRoute.Shop;
                 break;
+            case "Event":
+                gameRoute = GameRoute.Event;
+                break;
             case "Rest":
                 gameRoute = GameRoute.Rest;
                 break;
