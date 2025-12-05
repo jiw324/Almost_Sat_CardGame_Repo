@@ -11,6 +11,24 @@ public class FogController : MonoBehaviour
     private MapStateManager _state;
     private Bounds _bounds;
 
+    private int EffectiveRevealRadius
+    {
+        get
+        {
+            int bonus = 0;
+            var session = GameSession.Instance;
+            if (session != null)
+            {
+                foreach (var relic in session.GetPlayerRelics())
+                {
+                    if (relic != null && relic.effectType == "IncreaseVision")
+                        bonus += relic.effectValue;
+                }
+            }
+            return Mathf.Max(0, revealRadius + bonus);
+        }
+    }
+
     public void Initialize(NodeMap map, Bounds mapBounds)
     {
         _map = map;
@@ -34,7 +52,7 @@ public class FogController : MonoBehaviour
             ? _state.GetCurrentNode().GridPos.y
             : 0;
 
-        int fogStartFloor = currentFloor + revealRadius;
+        int fogStartFloor = currentFloor + EffectiveRevealRadius;
         int bossFloor = _map.BossNode != null ? _map.BossNode.GridPos.y : _map.MapHeight;
 
         if (fogStartFloor >= bossFloor)
@@ -60,7 +78,7 @@ public class FogController : MonoBehaviour
         Node current = _state.GetCurrentNode();
         int currentFloor = current != null ? current.GridPos.y : 0;
 
-        int fogStartFloor = currentFloor + revealRadius;
+        int fogStartFloor = currentFloor + EffectiveRevealRadius;
         Vector3 fogStartWorld = _map.Grid.GridToWorld(0, fogStartFloor);
         float fogStartZ = fogStartWorld.z + 0.5f;
 
@@ -85,7 +103,7 @@ public class FogController : MonoBehaviour
         Node current = _state.GetCurrentNode();
         int currentFloor = current != null ? current.GridPos.y : 0;
 
-        int fogStartFloor = currentFloor + revealRadius;
+        int fogStartFloor = currentFloor + EffectiveRevealRadius;
         int hideStartFloor = fogStartFloor + 1;
 
         foreach (var view in views)

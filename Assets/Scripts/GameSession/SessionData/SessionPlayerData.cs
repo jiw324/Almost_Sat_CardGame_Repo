@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using UnityEngine;
+
 [System.Serializable]
 public class SessionPlayerData
 {
@@ -20,10 +23,21 @@ public class SessionPlayerData
             deck = new DeckInstance();
         else
             deck.Clear();
-        
-        if (relicInventory == null)
-            relicInventory = new RelicInventory();
+
+        // Clear relics at the start of a new run and give a default one if available.
+        if (relics == null)
+            relics = new List<RelicData>();
         else
-            relicInventory.Clear();
+            relics.Clear();
+
+        // Try to grant a default starter relic created via RelicAssetCreator.
+        RelicData starter = Resources.Load<RelicData>("Relics/StarterRelic");
+        if (starter != null)
+        {
+            relics.Add(starter);
+        }
+
+        if (defaultDeck != null)
+            deck = new DeckInstance(defaultDeck.CardIds);
     }
 }

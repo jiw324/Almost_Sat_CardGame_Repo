@@ -31,7 +31,8 @@ public class SceneSwitch : MonoBehaviour
                 gameRoute = GameRoute.Rest;
                 break;
             case "Loot":
-                gameRoute = GameRoute.Loot;
+                // For now, treat Loot like Rest: stay in the same ForestRest scene
+                gameRoute = GameRoute.Rest;
                 break;
             case "DeckBuilder":
                 gameRoute = GameRoute.DeckBuilder;

@@ -40,7 +40,11 @@ public class RelicBag : MonoBehaviour
         var session = GameSession.Instance;
         if (session != null && session.gameSessionData != null)
         {
-            session.gameSessionData.sessionPlayerData.relicInventory.AddRelic(relic.relicName);
+            var playerData = session.gameSessionData.sessionPlayerData;
+            if (playerData.relics == null)
+                playerData.relics = new List<RelicData>();
+
+            playerData.relics.Add(relic);
         }
     }
 

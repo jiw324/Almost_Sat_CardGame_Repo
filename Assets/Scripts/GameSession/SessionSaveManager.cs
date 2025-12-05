@@ -84,6 +84,7 @@ public static class SessionSaveManager
                         loadedSessionData.sessionNodeMapData.currentNodeData =
                             JsonUtility.FromJson<EventNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
                         break;
+
                     case NodeType.Rest:
                         loadedSessionData.sessionNodeMapData.currentNodeData =
                             JsonUtility.FromJson<RestNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);

@@ -1,0 +1,15 @@
+{
+  "relics": [
+    {
+      "id": "torch",
+      "name": "Torch",
+      "description": "Increases your vision on the map, revealing more nodes ahead.",
+      "rarity": "Common",
+      "effectType": "IncreaseVision",
+      "effectValue": 1,
+      "iconResourcePath": "Relics/RelicIcon"
+    }
+  ]
+}
+
+
