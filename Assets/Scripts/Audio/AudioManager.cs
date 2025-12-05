@@ -100,10 +100,6 @@ public class AudioManager : MonoBehaviour
                 channels.combat.volume = combatVolume;
                 return channels.combat;
 
-            case SoundChannel.Ambient:
-                channels.ambient.volume = ambientVolume;
-                return channels.ambient;
-
             default:
                 return channels.ui;
         }

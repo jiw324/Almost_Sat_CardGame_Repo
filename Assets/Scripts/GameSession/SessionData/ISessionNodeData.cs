@@ -34,6 +34,8 @@ public class LootNodeData : ISessionNodeData
 {
     // ID of the relic granted when this loot node is resolved.
     public string grantedRelicId;
+    // True if this loot was triggered from an Event node instead of a Loot node
+    public bool fromEvent;
 }
 
 public class RelicNodeData : ISessionNodeData

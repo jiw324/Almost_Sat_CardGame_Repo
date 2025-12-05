@@ -16,7 +16,6 @@ public class NodeMapSpawner
         _pathThickness = pathThickness;
     }
 
-    // Existing synchronous path (kept for compatibility / tools)
     public NodeMapVisualContext Spawn(NodeMap map, Transform parent)
     {
         var nodeParent = new GameObject("Nodes").transform;
@@ -92,7 +91,6 @@ public class NodeMapSpawner
         return _context;
     }
 
-    // New: async / chunked spawn to avoid frame hitch
     public IEnumerator SpawnAsync(NodeMap map, Transform parent, int batchSize = 32)
     {
         var nodeParent = new GameObject("Nodes").transform;
