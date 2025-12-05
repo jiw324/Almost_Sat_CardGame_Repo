@@ -57,6 +57,24 @@ public class RelicDatabase : MonoBehaviour
         Debug.Log($"[RelicDatabase] Loaded {_relics.Count} relics from JSON.");
     }
 
+    public bool TryGetRelicById(string id, out RelicJSON relic)
+    {
+        relic = null;
+        if (string.IsNullOrWhiteSpace(id))
+            return false;
+
+        for (int i = 0; i < _relics.Count; i++)
+        {
+            if (string.Equals(_relics[i].id, id, System.StringComparison.OrdinalIgnoreCase))
+            {
+                relic = _relics[i];
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public bool TryGetRandomRelic(out RelicJSON relic)
     {
         relic = null;

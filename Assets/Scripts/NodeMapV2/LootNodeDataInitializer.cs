@@ -22,20 +22,43 @@ public static class LootNodeDataInitializer
             return;
         }
 
-        if (!RelicDatabase.Instance.TryGetRandomRelic(out RelicJSON relicJson))
+        // If this loot node was already resolved in this session, don't grant again
+        var mapData = session.gameSessionData.sessionNodeMapData;
+        if (mapData != null &&
+            mapData.currentNodeType == NodeType.Loot &&
+            mapData.currentNodeData is LootNodeData existingLoot &&
+            !string.IsNullOrEmpty(existingLoot.grantedRelicId))
         {
-            Debug.LogWarning("[LootNodeDataInitializer] No relics available in RelicDatabase.");
+            Debug.Log("[LootNodeDataInitializer] Loot for this node was already granted, skipping.");
             return;
         }
 
-        // Create runtime RelicData and add to player's relic list
-        RelicData relicData = RelicDatabase.Instance.CreateRuntimeRelicData(relicJson);
-        var playerRelics = session.gameSessionData.sessionPlayerData.relics;
-        if (playerRelics == null)
+        // Always grant the Torch relic on visiting a loot node
+        if (!RelicDatabase.Instance.TryGetRelicById("torch", out RelicJSON relicJson))
         {
-            session.gameSessionData.sessionPlayerData.relics = new System.Collections.Generic.List<RelicData>();
+            Debug.LogWarning("[LootNodeDataInitializer] Torch relic not found in RelicDatabase.");
+            return;
         }
-        session.gameSessionData.sessionPlayerData.relics.Add(relicData);
+
+        // Create runtime RelicData and add to player's relic list / bag
+        RelicData relicData = RelicDatabase.Instance.CreateRuntimeRelicData(relicJson);
+
+        // Prefer RelicBag component if present (so any UI based on RelicBag stays in sync)
+        var bag = Object.FindObjectOfType<RelicBag>();
+        if (bag != null)
+        {
+            bag.AddRelic(relicData);
+        }
+        else
+        {
+            var playerRelics = session.gameSessionData.sessionPlayerData.relics;
+            if (playerRelics == null)
+            {
+                session.gameSessionData.sessionPlayerData.relics =
+                    new System.Collections.Generic.List<RelicData>();
+            }
+            session.gameSessionData.sessionPlayerData.relics.Add(relicData);
+        }
 
         // Store simple node data for saving/loading
         LootNodeData lootData = new LootNodeData

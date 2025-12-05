@@ -1,11 +1,12 @@
 {
   "relics": [
     {
-      "id": "starter_relic",
-      "name": "Starter Relic",
-      "description": "A simple relic gained from loot to test the relic bag.",
+      "id": "torch",
+      "name": "Torch",
+      "description": "Increases your vision on the map, revealing more nodes ahead.",
       "rarity": "Common",
-      "effectType": "None",
+      "effectType": "IncreaseVision",
+      "effectValue": 1,
       "iconResourcePath": "Relics/RelicIcon"
     }
   ]
