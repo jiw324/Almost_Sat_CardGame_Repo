@@ -35,3 +35,8 @@ public class LootNodeData : ISessionNodeData
     // ID of the relic granted when this loot node is resolved.
     public string grantedRelicId;
 }
+
+public class RelicNodeData : ISessionNodeData
+{
+    public int testRelicVal = 0;
+}

@@ -44,8 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a8ab42f45fe99e45a592b5dd7b4f470, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapWidth: 3
-  mapHeight: 5
+  mapWidth: 6
+  mapHeight: 10
   gridXSpacing: 1.25
   gridYSpacing: 1.5
   branchChance: 0.725
