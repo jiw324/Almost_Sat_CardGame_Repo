@@ -44,7 +44,7 @@ public class MapStateManager : MonoBehaviour
         }
     }
 
-    private void ReturnToMapScene()
+    public void ReturnToMapScene()
     {
         var sceneManagerObj = GameObject.Find("SceneManager");
         if (sceneManagerObj == null)
