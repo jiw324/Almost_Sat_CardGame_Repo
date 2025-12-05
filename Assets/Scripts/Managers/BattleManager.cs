@@ -245,6 +245,8 @@ public class BattleManager : MonoBehaviour
     {
         if (endSequenceStarted) return;
         endSequenceStarted = true;
+        SessionGrabber.getGameSession().SetPlayerGold(
+            SessionGrabber.getGameSession().GetPlayerGold() + 10); // reward 10 gold for winning
         StartCoroutine(ShowEndBannerAndReturnToMap(message));
     }
 
