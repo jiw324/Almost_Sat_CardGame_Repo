@@ -146,11 +146,23 @@ public class MapStateManager : MonoBehaviour
     {
         if (node == null) return;
 
-        if (_completed.Add(node.Id))
+        bool newlyCompleted = _completed.Add(node.Id);
+        if (newlyCompleted)
             SessionMap.completedNodeIds.Add(node.Id);
 
         SaveSession();
+
+        if (_map != null && node == _map.BossNode)
+        {
+            Debug.Log("Boss defeated! Showing victory screen...");
+            VictoryScreenManager.ShowVictory();
+        }
+
+        Debug.Log("MarkCompleted called for " + node.Id
+          + " | IsBoss = " + (node == _map.BossNode));
+
     }
+
 
     public bool IsNodeInteractable(INode target)
     {

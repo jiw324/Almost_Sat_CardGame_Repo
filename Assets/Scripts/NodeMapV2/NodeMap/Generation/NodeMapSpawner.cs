@@ -36,6 +36,7 @@ public class NodeMapSpawner
 
                 NodeView view = revealed.GetComponent<NodeView>() ?? revealed.AddComponent<NodeView>();
                 view.Initialize(node);
+
                 spawnedNodes.Add(view);
 
                 if (node.Definition.hiddenPrefab != null)
