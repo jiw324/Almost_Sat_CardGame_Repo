@@ -6,5 +6,7 @@ public enum GameRoute
     Shop,
     Deck,
     Event,
-    Rest
+    Rest,
+    Loot,
+    DeckBuilder
 }

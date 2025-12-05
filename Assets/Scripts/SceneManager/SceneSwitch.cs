@@ -1,7 +1,15 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SceneSwitch : MonoBehaviour
 {
+    private void Start()
+    {
+        if(SceneManager.GetActiveScene().name == "MainMenu")
+        {
+            SoundEvents.PlayMusic("Menu");
+        }
+    }
     public void SceneChanger(string route)
     {
         GameRoute gameRoute = GameRoute.MainMenu;
@@ -22,6 +30,13 @@ public class SceneSwitch : MonoBehaviour
             case "Rest":
                 gameRoute = GameRoute.Rest;
                 break;
+            case "Loot":
+                // For now, treat Loot like Rest: stay in the same ForestRest scene
+                gameRoute = GameRoute.Rest;
+                break;
+            case "DeckBuilder":
+                gameRoute = GameRoute.DeckBuilder;
+                break;
             default:
                 gameRoute = GameRoute.MainMenu;
                 break;
@@ -29,10 +44,44 @@ public class SceneSwitch : MonoBehaviour
 
         if (SceneLoader.Instance == null)
         {
-            Debug.LogError("[SceneSwitch] SceneLoader.Instance is null! Make sure SceneLoader exists in the scene and has been initialized.");
+            Debug.LogError("SceneLoader.Instance is null");
             return;
         }
 
         SceneLoader.Instance.Go(gameRoute);
+        PlayMusicForScene(gameRoute);
+    }
+
+    private void PlayMusicForScene(GameRoute gameRoute)
+    {
+        switch (gameRoute)
+        {
+            case GameRoute.Map:
+                SoundEvents.PlayMusic("Map");
+                break;
+
+            case GameRoute.Combat:
+                SoundEvents.PlayMusic("Combat");
+                break;
+
+            case GameRoute.Shop:
+                //SoundEvents.PlayMusic("ShopTheme");
+                break;
+
+            case GameRoute.Loot:
+                SoundEvents.PlayMusic("Menu");
+                break;
+
+            case GameRoute.Event:
+                SoundEvents.PlayMusic("Menu");
+                break;
+
+            case GameRoute.MainMenu:
+                SoundEvents.PlayMusic("Menu");
+                break;
+
+            default:
+                break;
+        }
     }
 }

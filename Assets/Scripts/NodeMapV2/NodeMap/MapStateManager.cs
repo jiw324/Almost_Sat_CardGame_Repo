@@ -16,7 +16,7 @@ public class MapStateManager : MonoBehaviour
     private string _currentNodeId;
 
     private SessionNodeMapData SessionMap =>
-        GameSession.Instance?.gameSessionData?.sessionNodeMapData;
+        GameSession.Instance?.GetActiveNodeMapData();
 
     private void Awake()
     {
@@ -68,8 +68,12 @@ public class MapStateManager : MonoBehaviour
         _map = map;
         _lookup = _map.AllNodes.ToDictionary(n => n.Id);
 
+        if (_map.BossNode != null && !_lookup.ContainsKey(_map.BossNode.Id))
+            _lookup.Add(_map.BossNode.Id, _map.BossNode);
+
         RestoreFromSession();
     }
+
 
     private void RestoreFromSession()
     {
@@ -142,11 +146,23 @@ public class MapStateManager : MonoBehaviour
     {
         if (node == null) return;
 
-        if (_completed.Add(node.Id))
+        bool newlyCompleted = _completed.Add(node.Id);
+        if (newlyCompleted)
             SessionMap.completedNodeIds.Add(node.Id);
 
         SaveSession();
+
+        if (_map != null && node == _map.BossNode)
+        {
+            Debug.Log("Boss defeated! Showing victory screen...");
+            VictoryScreenManager.ShowVictory();
+        }
+
+        Debug.Log("MarkCompleted called for " + node.Id
+          + " | IsBoss = " + (node == _map.BossNode));
+
     }
+
 
     public bool IsNodeInteractable(INode target)
     {

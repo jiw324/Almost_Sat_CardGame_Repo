@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class NodeMapSpawner
 {
@@ -36,6 +36,7 @@ public class NodeMapSpawner
 
                 NodeView view = revealed.GetComponent<NodeView>() ?? revealed.AddComponent<NodeView>();
                 view.Initialize(node);
+
                 spawnedNodes.Add(view);
 
                 if (node.Definition.hiddenPrefab != null)
@@ -43,7 +44,6 @@ public class NodeMapSpawner
                     GameObject hidden = Object.Instantiate(node.Definition.hiddenPrefab, revealed.transform);
                     hidden.transform.localPosition = Vector3.zero;
                     hidden.transform.localRotation = Quaternion.identity;
-
                     view.SetHiddenVisualRoot(hidden);
                 }
             }
@@ -56,6 +56,27 @@ public class NodeMapSpawner
                 GameObject path = CreatePath(worldPos, nextPos, pathParent);
                 if (path != null)
                     spawnedPaths.Add(path);
+            }
+        }
+
+        if (map.BossNode != null && map.BossNode.Definition != null)
+        {
+            Vector3 bossPos = map.Grid.GridToWorld(map.BossNode.GridPos.x, map.BossNode.GridPos.y);
+            UpdateBounds(bossPos, ref min, ref max);
+
+            GameObject revealed = Object.Instantiate(map.BossNode.Definition.revealedPrefab, bossPos, Quaternion.identity, nodeParent);
+            revealed.transform.localScale *= 1.75f;
+
+            NodeView view = revealed.GetComponent<NodeView>() ?? revealed.AddComponent<NodeView>();
+            view.Initialize(map.BossNode);
+            spawnedNodes.Add(view);
+
+            if (map.BossNode.Definition.hiddenPrefab != null)
+            {
+                GameObject hidden = Object.Instantiate(map.BossNode.Definition.hiddenPrefab, revealed.transform);
+                hidden.transform.localPosition = Vector3.zero;
+                hidden.transform.localRotation = Quaternion.identity;
+                view.SetHiddenVisualRoot(hidden);
             }
         }
 

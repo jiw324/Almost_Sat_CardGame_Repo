@@ -43,10 +43,15 @@ public class ClickManager : MonoBehaviour
         NodeView nv = obj.GetComponentInParent<NodeView>();
         if (nv == null) return;
 
-        if (State.IsNodeInteractable(nv.NodeData))
-            nv.ShowAvailable(true);
-    }
+        if (State == null) return;
 
+        bool isAvailable = State
+            .GetAvailableNodes()
+            .Any(n => n.Id == nv.NodeData.Id);
+
+        if (isAvailable)
+            nv.ShowAvailable(hover: true);
+    }
 
     private void EndHover(GameObject obj)
     {
@@ -78,7 +83,7 @@ public class ClickManager : MonoBehaviour
 
         if (State.TrySelectOrMoveToNode(nv.NodeData))
         {
-            // Initialize combat data if this is a combat node
+            // Initialize node-specific data
             if (nv.NodeData.Definition.nodeType == NodeType.Combat)
             {
                 string enemyName = CombatNodeEnemyAssigner.GetEnemyDefinitionName(nv.NodeData);
@@ -95,6 +100,11 @@ public class ClickManager : MonoBehaviour
                 
                 // Always initialize combat node data, even with default enemy
                 CombatNodeDataInitializer.InitializeCombatNode(enemyName);
+            }
+            else if (nv.NodeData.Definition.nodeType == NodeType.Loot)
+            {
+                // When entering a loot node, immediately grant a relic from the JSON list
+                LootNodeDataInitializer.InitializeLootNode();
             }
 
             var sceneManagerObj = GameObject.Find("SceneManager");
