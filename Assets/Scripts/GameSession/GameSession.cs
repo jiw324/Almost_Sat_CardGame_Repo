@@ -112,6 +112,18 @@ public class GameSession : MonoBehaviour
         return gameSessionData.sessionPlayerData.deck;
     }
 
+    public System.Collections.Generic.IReadOnlyList<RelicData> GetPlayerRelics()
+    {
+        if (gameSessionData == null || gameSessionData.sessionPlayerData == null)
+            return System.Array.Empty<RelicData>();
+
+        // Expose as IReadOnlyList so callers can't modify the list directly.
+        System.Collections.Generic.IReadOnlyList<RelicData> relicList =
+            gameSessionData.sessionPlayerData.relics;
+
+        return relicList ?? System.Array.Empty<RelicData>();
+    }
+
     public void SetPlayerHealth(int health)
     {
         gameSessionData.sessionPlayerData.health = health;
