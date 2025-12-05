@@ -83,6 +83,8 @@ public class ClickManager : MonoBehaviour
 
         if (State.TrySelectOrMoveToNode(nv.NodeData))
         {
+            SoundEvents.Play("NodeEnter");
+
             // Initialize node-specific data
             if (nv.NodeData.Definition.nodeType == NodeType.Combat)
             {

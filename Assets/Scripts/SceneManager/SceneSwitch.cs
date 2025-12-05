@@ -72,6 +72,10 @@ public class SceneSwitch : MonoBehaviour
                 SoundEvents.PlayMusic("Menu");
                 break;
 
+            case GameRoute.Rest:
+                SoundEvents.PlayMusic("Rest");
+                break;
+
             case GameRoute.Event:
                 SoundEvents.PlayMusic("Menu");
                 break;

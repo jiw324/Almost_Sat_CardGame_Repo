@@ -83,7 +83,6 @@ public class BoardManager : MonoBehaviour
             return;
         }
 
-
         // 2) If a hand card is selected
         if (selectedCard != null)
         {
@@ -130,7 +129,6 @@ public class BoardManager : MonoBehaviour
                             }
                         }
                     }
-
                 }
                 // clicks elsewhere while minion card is selected: ignore
                 return;
@@ -210,6 +208,8 @@ public class BoardManager : MonoBehaviour
                 selectedMinion.AttackTarget(target);
                 selectedMinion = null; // done
             }
+
+            SoundEvents.Play("MinionAttack");
 
             return;
         }
@@ -296,6 +296,7 @@ public class BoardManager : MonoBehaviour
 
             bm.playerMana -= inst.Data.cost;
             if (bm.uiManager != null) bm.uiManager.UpdatePlayerMana(bm.playerMana);
+            SoundEvents.Play("MinionPlace");
         }
 
         _ = inst.PlayCardAsync(slot);
@@ -339,10 +340,18 @@ public class BoardManager : MonoBehaviour
     {
         // Direct hit: enemy or minion
         var ee = hit.collider.GetComponentInParent<EnemyEntity>();
-        if (ee != null) return ee;
+        if (ee != null)
+        {
+            SoundEvents.Play("SpellPlace");
+            return ee;
+        }
 
         var me = hit.collider.GetComponentInParent<MinionEntity>();
-        if (me != null) return me;
+        if (me != null)
+        {
+            SoundEvents.Play("SpellPlace");
+            return me;
+        }
 
         // Empty slot → enemy
         var slot = hit.collider.GetComponentInParent<BoardSlot>();
@@ -351,6 +360,7 @@ public class BoardManager : MonoBehaviour
             var enemies = FindObjectsByType<EnemyEntity>(FindObjectsSortMode.None);
             if (enemies != null && enemies.Length > 0)
                 return enemies[0];
+            SoundEvents.Play("SpellPlace");
             return null;
         }
 
