@@ -386,9 +386,9 @@ public class SimpleRelicBagUI : MonoBehaviour
         iconRect.anchoredPosition = new Vector2(10, 0);
         
         Image iconImage = icon.AddComponent<Image>();
-        if (relic.artwork != null)
+        if (relic.icon != null)
         {
-            iconImage.sprite = relic.artwork;
+            iconImage.sprite = relic.icon;
         }
         iconImage.color = Color.white;
         

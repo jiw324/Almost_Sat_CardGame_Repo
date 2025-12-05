@@ -8,6 +8,10 @@ public class GameSession : MonoBehaviour
     public GameSessionData gameSessionData;
     [SerializeField] private DeckDefinition startingPlayerDeck;
 
+    /// <summary>
+    /// Indicates whether the current run is in tutorial mode.
+    /// Used by map generation and UI to switch behavior.
+    /// </summary>
     public bool IsTutorialMode { get; set; }
 
     private void Awake()
@@ -22,49 +26,31 @@ public class GameSession : MonoBehaviour
         EnsurePlayerDeckInitialized();
     }
 
-    // Debug methods for pause menu (to be expanded later)
-    public void SaveGame()
+    //-------Temporary for testing Reset/Save/Load - Need to hook up to pause menu--------------------
+    private InputAction saveAction;
+    private InputAction loadAction;
+    private InputAction resetAction;
+
+    private void OnEnable()
     {
-        if (gameSessionData != null)
-        {
-            SessionSaveManager.SaveGameSession(gameSessionData);
-            Debug.Log("[GameSession] Game saved successfully.");
-        }
-        else
-        {
-            Debug.LogWarning("[GameSession] Cannot save: gameSessionData is null.");
-        }
+        saveAction = new InputAction(binding: "<Keyboard>/s");
+        saveAction.performed += _ => SessionSaveManager.SaveGameSession(gameSessionData);
+        saveAction.Enable();
+
+        loadAction = new InputAction(binding: "<Keyboard>/l");
+        loadAction.performed += _ => LoadGameSession("Save");
+        loadAction.Enable();
+
+        resetAction = new InputAction(binding: "<Keyboard>/r");
+        resetAction.performed += _ => ResetGameSessionData();
+        resetAction.Enable();
     }
 
-    public void LoadGame()
+    private void OnDisable()
     {
-        LoadGameSession("Save");
-        Debug.Log("[GameSession] Game loaded successfully.");
-    }
-
-    //-------Temporary for testing Reset/Save/Load - Ctrl+Key functionality--------------------
-    private void Update()
-    {
-        var kb = UnityEngine.InputSystem.Keyboard.current;
-        if (kb == null) return;
-
-        // Check for Ctrl+S (Save)
-        if (kb.ctrlKey.isPressed && kb.sKey.wasPressedThisFrame)
-        {
-            SaveGame();
-        }
-
-        // Check for Ctrl+L (Load)
-        if (kb.ctrlKey.isPressed && kb.lKey.wasPressedThisFrame)
-        {
-            LoadGame();
-        }
-
-        // Check for Ctrl+R (Reset)
-        if (kb.ctrlKey.isPressed && kb.rKey.wasPressedThisFrame)
-        {
-            ResetGameSessionData();
-        }
+        saveAction.Disable();
+        loadAction.Disable();
+        resetAction.Disable();
     }
     //----------------------------------------------------------------------------------------
 
@@ -79,12 +65,11 @@ public class GameSession : MonoBehaviour
     {
         GameSessionData loadedData = SessionSaveManager.LoadGameSession(filePath);
 
-        if (loadedData != null)
+        if(loadedData != null)
         {
             gameSessionData = loadedData;
             EnsurePlayerDeckInitialized();
-        }
-        else
+        } else
         {
             Debug.Log("Failed to Load Save Data: Null Session Data");
         }
@@ -92,17 +77,8 @@ public class GameSession : MonoBehaviour
 
     private void EnsurePlayerDeckInitialized()
     {
-        if (gameSessionData == null)
+        if (gameSessionData == null || gameSessionData.sessionPlayerData == null)
             return;
-
-        if (gameSessionData.sessionPlayerData == null)
-            gameSessionData.sessionPlayerData = new SessionPlayerData();
-
-        if (gameSessionData.sessionNodeMapData == null)
-            gameSessionData.sessionNodeMapData = new SessionNodeMapData();
-
-        if (gameSessionData.tutorialNodeMapData == null)
-            gameSessionData.tutorialNodeMapData = new SessionNodeMapData();
 
         var playerData = gameSessionData.sessionPlayerData;
         if (playerData.deck == null || playerData.deck.Cards == null)
@@ -115,23 +91,6 @@ public class GameSession : MonoBehaviour
         {
             playerData.deck = new DeckInstance(startingPlayerDeck.CardIds);
         }
-    }
-
-    public SessionNodeMapData GetActiveNodeMapData()
-    {
-        if (gameSessionData == null)
-            return null;
-
-        if (IsTutorialMode)
-        {
-            if (gameSessionData.tutorialNodeMapData == null)
-                gameSessionData.tutorialNodeMapData = new SessionNodeMapData();
-            return gameSessionData.tutorialNodeMapData;
-        }
-
-        if (gameSessionData.sessionNodeMapData == null)
-            gameSessionData.sessionNodeMapData = new SessionNodeMapData();
-        return gameSessionData.sessionNodeMapData;
     }
 
     public int GetPlayerHealth()
@@ -159,6 +118,32 @@ public class GameSession : MonoBehaviour
         return gameSessionData.sessionPlayerData.deck;
     }
 
+    /// <summary>
+    /// Returns the active node map data for the current mode (main run vs tutorial).
+    /// Used by map systems to read/write node progression.
+    /// </summary>
+    public SessionNodeMapData GetActiveNodeMapData()
+    {
+        if (gameSessionData == null)
+            return null;
+
+        return IsTutorialMode
+            ? gameSessionData.tutorialNodeMapData
+            : gameSessionData.sessionNodeMapData;
+    }
+
+    public System.Collections.Generic.IReadOnlyList<RelicData> GetPlayerRelics()
+    {
+        if (gameSessionData == null || gameSessionData.sessionPlayerData == null)
+            return System.Array.Empty<RelicData>();
+
+        // Expose as IReadOnlyList so callers can't modify the list directly.
+        System.Collections.Generic.IReadOnlyList<RelicData> relicList =
+            gameSessionData.sessionPlayerData.relics;
+
+        return relicList ?? System.Array.Empty<RelicData>();
+    }
+
     public void SetPlayerHealth(int health)
     {
         gameSessionData.sessionPlayerData.health = health;
@@ -167,10 +152,5 @@ public class GameSession : MonoBehaviour
     public void SetPlayerGold(int gold)
     {
         gameSessionData.sessionPlayerData.gold = gold;
-    }
-    
-    public RelicInventory GetPlayerRelicInventory()
-    {
-        return gameSessionData.sessionPlayerData.relicInventory;
     }
 }

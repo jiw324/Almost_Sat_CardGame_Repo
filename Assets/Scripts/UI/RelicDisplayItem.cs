@@ -34,9 +34,9 @@ public class RelicDisplayItem : MonoBehaviour
         // Set relic icon
         if (relicIcon != null)
         {
-            if (relicData.artwork != null)
+            if (relicData.icon != null)
             {
-                relicIcon.sprite = relicData.artwork;
+                relicIcon.sprite = relicData.icon;
                 relicIcon.enabled = true;
             }
             else
