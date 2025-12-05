@@ -921,7 +921,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardPoolArea: {fileID: 1349496563}
   cardUIPrefab: {fileID: 3072006593040025153, guid: b39f880c06d5dde4cbd4e5c1265341d2, type: 3}
-  availableCardsPool: {fileID: 11400000, guid: 5e8d255eb222643af9b19304f1c1dbd7, type: 2}
+  availableCardsPool: {fileID: 11400000, guid: 46d93cf63bcd9426a920eea1b2a03824, type: 2}
   owner: {fileID: 0}
   deckListArea: {fileID: 349937131}
   deckEntryPrefab: {fileID: 5182442616929405741, guid: 589dcc9ca9d6346949d97010f55c05ec, type: 3}

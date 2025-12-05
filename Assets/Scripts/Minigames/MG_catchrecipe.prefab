@@ -314,9 +314,8 @@ MonoBehaviour:
   wrongIngredientSprites:
   - {fileID: 21300000, guid: 464c8e919b3731244841a86f766d4ce4, type: 3}
   - {fileID: 21300000, guid: 7f517e75a1ca85a48830bbed47679559, type: 3}
-  - {fileID: 21300000, guid: 7e238595d1a56f948833c193efb88ea2, type: 3}
+  - {fileID: 6963863700550359913, guid: c5c40b2e98ae02b4aa1267a5be0d70fb, type: 3}
   - {fileID: 21300000, guid: 9f87d73c627150a41859426434ad8e31, type: 3}
-  - {fileID: 21300000, guid: c5c40b2e98ae02b4aa1267a5be0d70fb, type: 3}
   ingredientContainer: {fileID: 952827322160391120}
   scoreText: {fileID: 8759734487549989006}
   timerText: {fileID: 4657757241468018958}
