@@ -40,7 +40,7 @@ public class SceneSwitch : MonoBehaviour
 
         if (SceneLoader.Instance == null)
         {
-            Debug.LogError("[SceneSwitch] SceneLoader.Instance is null! Make sure SceneLoader exists in the scene and has been initialized.");
+            Debug.LogError("SceneLoader.Instance is null");
             return;
         }
 
@@ -77,7 +77,6 @@ public class SceneSwitch : MonoBehaviour
                 break;
 
             default:
-                // Optional fallback theme
                 break;
         }
     }
