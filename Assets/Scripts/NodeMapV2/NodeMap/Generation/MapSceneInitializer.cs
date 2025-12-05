@@ -14,5 +14,23 @@ public class MapSceneInitializer : MonoBehaviour
     {
         if (MapStateManager.Instance != null)
             MapStateManager.Instance.RefreshAllNodeGlows();
+
+        var fog = FindFirstObjectByType<FogController>();
+        if (fog != null)
+            fog.UpdateFogExternally();
+
+        var state = MapStateManager.Instance;
+        var map = MapGenerationManager.Instance.ActiveMap;
+
+        if (state != null && map != null)
+        {
+            Node current = state.GetCurrentNode();
+            if (current != null && current == map.BossNode && state.IsNodeCompleted(current))
+            {
+                Debug.Log("Boss completed & map initialized — showing victory screen...");
+                VictoryScreenManager.ShowVictory();
+            }
+        }
     }
+
 }

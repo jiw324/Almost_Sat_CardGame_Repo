@@ -8,6 +8,8 @@ public class GameSession : MonoBehaviour
     public GameSessionData gameSessionData;
     [SerializeField] private DeckDefinition startingPlayerDeck;
 
+    public bool IsTutorialMode { get; set; }
+
     private void Awake()
     {
         if (Instance != null)
@@ -77,11 +79,12 @@ public class GameSession : MonoBehaviour
     {
         GameSessionData loadedData = SessionSaveManager.LoadGameSession(filePath);
 
-        if(loadedData != null)
+        if (loadedData != null)
         {
             gameSessionData = loadedData;
             EnsurePlayerDeckInitialized();
-        } else
+        }
+        else
         {
             Debug.Log("Failed to Load Save Data: Null Session Data");
         }
@@ -89,8 +92,17 @@ public class GameSession : MonoBehaviour
 
     private void EnsurePlayerDeckInitialized()
     {
-        if (gameSessionData == null || gameSessionData.sessionPlayerData == null)
+        if (gameSessionData == null)
             return;
+
+        if (gameSessionData.sessionPlayerData == null)
+            gameSessionData.sessionPlayerData = new SessionPlayerData();
+
+        if (gameSessionData.sessionNodeMapData == null)
+            gameSessionData.sessionNodeMapData = new SessionNodeMapData();
+
+        if (gameSessionData.tutorialNodeMapData == null)
+            gameSessionData.tutorialNodeMapData = new SessionNodeMapData();
 
         var playerData = gameSessionData.sessionPlayerData;
         if (playerData.deck == null || playerData.deck.Cards == null)
@@ -103,6 +115,23 @@ public class GameSession : MonoBehaviour
         {
             playerData.deck = new DeckInstance(startingPlayerDeck.CardIds);
         }
+    }
+
+    public SessionNodeMapData GetActiveNodeMapData()
+    {
+        if (gameSessionData == null)
+            return null;
+
+        if (IsTutorialMode)
+        {
+            if (gameSessionData.tutorialNodeMapData == null)
+                gameSessionData.tutorialNodeMapData = new SessionNodeMapData();
+            return gameSessionData.tutorialNodeMapData;
+        }
+
+        if (gameSessionData.sessionNodeMapData == null)
+            gameSessionData.sessionNodeMapData = new SessionNodeMapData();
+        return gameSessionData.sessionNodeMapData;
     }
 
     public int GetPlayerHealth()

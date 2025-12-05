@@ -37,6 +37,7 @@ public class TransactionManager : MonoBehaviour
             }
 
             // Add as purchased
+            SoundEvents.Play("Coins");
             pendingPurchases.Add(new PurchaseEntry(cardId, cost));
             TempGold -= cost;
             Debug.Log($"Purchased {cardId} for {cost}. Gold: {originalGold} -> {TempGold}");
@@ -44,6 +45,7 @@ public class TransactionManager : MonoBehaviour
         else
         {
             // Remove purchase → refund gold
+            SoundEvents.Play("Coins");
             pendingPurchases.Remove(entry);
             TempGold += cost;
             Debug.Log($"Refunded {cardId} for {cost}. Gold: {TempGold}");

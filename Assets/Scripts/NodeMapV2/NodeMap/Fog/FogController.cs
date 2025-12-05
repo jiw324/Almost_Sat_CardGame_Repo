@@ -18,13 +18,11 @@ public class FogController : MonoBehaviour
         _state = MapStateManager.Instance;
 
         UpdateFogAndVisibility();
-        _state.OnNodeChanged += UpdateFogAndVisibility;
     }
 
-    private void OnDestroy()
+    public void UpdateFogExternally()
     {
-        if (_state != null)
-            _state.OnNodeChanged -= UpdateFogAndVisibility;
+        UpdateFogAndVisibility();
     }
 
     private void UpdateFogAndVisibility()
@@ -32,8 +30,29 @@ public class FogController : MonoBehaviour
         if (_map == null || _state == null)
             return;
 
+        int currentFloor = _state.GetCurrentNode() != null
+            ? _state.GetCurrentNode().GridPos.y
+            : 0;
+
+        int fogStartFloor = currentFloor + revealRadius;
+        int bossFloor = _map.BossNode != null ? _map.BossNode.GridPos.y : _map.MapHeight;
+
+        if (fogStartFloor >= bossFloor)
+        {
+            RevealAllNodes();
+            gameObject.SetActive(false);
+            return;
+        }
+
         UpdateFogPlane();
         UpdateNodeHiddenStates();
+    }
+
+    private void RevealAllNodes()
+    {
+        var views = Object.FindObjectsByType<NodeView>(FindObjectsSortMode.None);
+        foreach (var view in views)
+            view.SetHidden(false);
     }
 
     private void UpdateFogPlane()
@@ -41,8 +60,7 @@ public class FogController : MonoBehaviour
         Node current = _state.GetCurrentNode();
         int currentFloor = current != null ? current.GridPos.y : 0;
 
-        int fogStartFloor = Mathf.Clamp(currentFloor + revealRadius, 0, _map.MapHeight - 1);
-
+        int fogStartFloor = currentFloor + revealRadius;
         Vector3 fogStartWorld = _map.Grid.GridToWorld(0, fogStartFloor);
         float fogStartZ = fogStartWorld.z + 0.5f;
 
@@ -55,12 +73,7 @@ public class FogController : MonoBehaviour
         float centerZ = fogStartZ + fogLength * 0.5f;
 
         transform.position = new Vector3(centerX, fogHeight, centerZ);
-
-        transform.localScale = new Vector3(
-            fogWidth / 10f,
-            1f,
-            fogLength / 10f
-        );
+        transform.localScale = new Vector3(fogWidth / 10f, 1f, fogLength / 10f);
     }
 
     private void UpdateNodeHiddenStates()
@@ -72,14 +85,23 @@ public class FogController : MonoBehaviour
         Node current = _state.GetCurrentNode();
         int currentFloor = current != null ? current.GridPos.y : 0;
 
-        int fogStartFloor = Mathf.Clamp(currentFloor + revealRadius, 0, _map.MapHeight - 1);
-
+        int fogStartFloor = currentFloor + revealRadius;
         int hideStartFloor = fogStartFloor + 1;
 
         foreach (var view in views)
         {
-            int nodeFloor = view.NodeData.GridPos.y;
+            Node node = view.NodeData;
+
+            bool isBoss = _map.BossNode != null && node == _map.BossNode;
+            if (isBoss)
+            {
+                view.SetHidden(false);
+                continue;
+            }
+
+            int nodeFloor = node.GridPos.y;
             bool hidden = nodeFloor >= hideStartFloor;
+
             view.SetHidden(hidden);
         }
     }
