@@ -33,6 +33,8 @@ public class CardData : ScriptableObject
     
     [Header("Minigame")]
     public GameObject minigamePrefab;  // Optional: Prefab for the minigame to play when this card is played
+    public bool hasMinigame;
+
     public string PrintCard()
     {
         return $"id: [{id}], name: [{cardName}], cost: [{cost}], type: [{type}], ranged: [{isRanged}], effects: [{effects?.Count ?? 0}]\ndescritpion: [{description}]";

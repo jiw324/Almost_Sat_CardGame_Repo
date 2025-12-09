@@ -61,6 +61,11 @@ public static class CardFactory
             Fill(data.onDeath, cardData.onDeathBindings, data.id);
         }
 
+        if (!string.IsNullOrEmpty(data.minigameId)) 
+        {
+            cardData.hasMinigame = true;
+        }       
+
         // Load minigame prefab if minigameId is specified (for both spells and minions)
         if (!string.IsNullOrEmpty(data.minigameId) && MinigameRegistry.Instance != null)
         {

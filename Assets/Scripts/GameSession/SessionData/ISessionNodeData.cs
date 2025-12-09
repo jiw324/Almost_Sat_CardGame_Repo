@@ -26,11 +26,15 @@ public class ShopNodeData : ISessionNodeData
 [System.Serializable]
 public class EventNodeData : ISessionNodeData
 {
-    public int testEventVal = 0;
+    //public int testEventVal = 0;
+    // ID of the relic granted when this loot node is resolved.
+    public string grantedRelicId;
+    // True if this loot was triggered from an Event node instead of a Loot node
+    public bool fromEvent;
 }
 
 [System.Serializable]
-public class LootNodeData : ISessionNodeData
+public class RelicNodeData : ISessionNodeData
 {
     // ID of the relic granted when this loot node is resolved.
     public string grantedRelicId;
@@ -38,7 +42,7 @@ public class LootNodeData : ISessionNodeData
     public bool fromEvent;
 }
 
-public class RelicNodeData : ISessionNodeData
+public class LootNodeData : ISessionNodeData
 {
     public int testRelicVal = 0;
 }

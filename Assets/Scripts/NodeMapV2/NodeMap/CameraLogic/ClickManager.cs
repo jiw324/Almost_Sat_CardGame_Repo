@@ -103,15 +103,10 @@ public class ClickManager : MonoBehaviour
                 // Always initialize combat node data, even with default enemy
                 CombatNodeDataInitializer.InitializeCombatNode(enemyName);
             }
-            else if (nv.NodeData.Definition.nodeType == NodeType.Loot)
-            {
-                // When entering a loot node, immediately grant a relic from the JSON list
-                LootNodeDataInitializer.InitializeLootNode(false);
-            }
             else if (nv.NodeData.Definition.nodeType == NodeType.Event)
             {
                 // Event node also grants a relic, but we mark it as coming from an event
-                LootNodeDataInitializer.InitializeLootNode(true);
+                RelicNodeDataInitializer.InitializeRelicNode(true);
             }
 
             var sceneManagerObj = GameObject.Find("SceneManager");
@@ -122,12 +117,6 @@ public class ClickManager : MonoBehaviour
 
             string route = nv.NodeData.Definition.nodeSceneName;
 
-            // Event nodes should behave like relic nodes: go to the Loot (relic) scene
-            if (nv.NodeData.Definition.nodeType == NodeType.Loot ||
-                nv.NodeData.Definition.nodeType == NodeType.Event)
-            {
-                route = "Loot";
-            }
 
             if (string.IsNullOrEmpty(route)) return;
 
