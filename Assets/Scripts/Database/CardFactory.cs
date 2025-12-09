@@ -57,6 +57,7 @@ public static class CardFactory
             cardData.isMinion = true;
             cardData.minionAttack = data.minionAttack;
             cardData.minionHealth = data.minionHealth;
+            cardData.ignoreSummoningSickness = data.ignoreSummoningSickness;
             Fill(data.onSummon, cardData.onSummonBindings, data.id);
             Fill(data.onDeath, cardData.onDeathBindings, data.id);
         }

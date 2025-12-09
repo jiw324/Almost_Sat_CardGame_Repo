@@ -28,6 +28,7 @@ public class CardData : ScriptableObject
     public bool isMinion = false;
     public int minionAttack = 2;
     public int minionHealth = 5;
+    public bool ignoreSummoningSickness = false; // If true, minion can attack immediately on the turn it's summoned
     public List<EffectBinding> onSummonBindings = new List<EffectBinding>();
     public List<EffectBinding> onDeathBindings = new List<EffectBinding>();
     

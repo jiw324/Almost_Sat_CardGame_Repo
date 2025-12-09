@@ -16,6 +16,7 @@ public class CardJSON
     public bool isMinion;       
     public int minionAttack;    
     public int minionHealth;    
+    public bool ignoreSummoningSickness; // If true, minion can attack immediately on the turn it's summoned
     public CardJSONEffectEntry[] onSummon;  
     public CardJSONEffectEntry[] onDeath;   
     

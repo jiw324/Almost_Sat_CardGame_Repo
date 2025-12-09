@@ -79,19 +79,14 @@
         {
             "id": "archer",
             "cardName": "Archer",
-            "description": "Deals damage every turn. Can target a unit on summon.",
+            "description": "Deals damage every turn. Can attack immediately on summon.",
             "cost": 1,
             "type": "minion",
             "isRanged": true,
             "isMinion": true,
             "minionAttack": 4,
             "minionHealth": 2,
-            "onSummon": [
-                {
-                    "effectId": "damage_enemy",
-                    "effectValue": 4
-                }
-            ]
+            "ignoreSummoningSickness": true
         },
         {
             "id": "rune",

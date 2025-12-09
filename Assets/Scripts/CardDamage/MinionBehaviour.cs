@@ -56,7 +56,8 @@ public class MinionBehaviour : MonoBehaviour
         var c3d = GetComponent<Card3DController>();
         if (c3d) c3d.Initialize(i);
 
-        hasSummoningSickness = true;
+        // Check if this minion ignores summoning sickness
+        hasSummoningSickness = !(i.Data?.ignoreSummoningSickness ?? false);
         hasActedThisTurn = false;
 
         // Store original scale - use target scale from Card3DController if available
