@@ -17,7 +17,7 @@
         {
             "id": "Apocalypse",
             "cardName": "Apocalypse",
-            "description": "Deal 4 damage to all enemies.",
+            "description": "Damage everything on the board, including yourself.",
             "cost": 3,
             "type": "spell",
             "isRanged": true,
@@ -31,18 +31,28 @@
         {
             "id": "slash",
             "cardName": "Slash [M]",
-            "description": "[REACTION] Deal 4 damage to an enemy.",
+            "description": "Deal damage to an enemy.",
+            "cost": 1,
+            "type": "spell",
+            "isRanged": true,
+            "effectId": "damage_enemy",
+            "effectValue": 4
+        },
+        {
+            "id": "pocketbomb",
+            "cardName": "Pocket Bomb [M]",
+            "description": "[REACTION] Throw a bomb at an enemy. Throw earlier for more damage.",
             "cost": 1,
             "type": "spell",
             "isRanged": true,
             "minigameId": "reaction",
             "effectId": "damage_enemy",
-            "effectValue": 10
+            "effectValue": 5
         },
         {
             "id": "healinghands",
             "cardName": "Healing Hands",
-            "description": "Heal 5 health",
+            "description": "Grants health back to its caster.",
             "cost": 2,
             "type": "spell",
             "isRanged": true,
@@ -52,7 +62,7 @@
         {
             "id": "warrior",
             "cardName": "Warrior",
-            "description": "Deals 2 damage each turn",
+            "description": "Heals its owner 4 health on summon. Deals damage every turn.",
             "cost": 1,
             "type": "minion",
             "isRanged": false,
@@ -62,31 +72,31 @@
             "onSummon": [
                 {
                     "effectId": "gain_shield",
-                    "effectValue": 5
+                    "effectValue": 4
                 }
             ]
         },
         {
             "id": "archer",
             "cardName": "Archer",
-            "description": "Deals 2 damage each turn",
+            "description": "Deals damage every turn. Can target a unit on summon.",
             "cost": 1,
             "type": "minion",
             "isRanged": true,
             "isMinion": true,
-            "minionAttack": 10,
+            "minionAttack": 4,
             "minionHealth": 2,
             "onSummon": [
                 {
                     "effectId": "damage_enemy",
-                    "effectValue": 3
+                    "effectValue": 4
                 }
             ]
         },
         {
             "id": "rune",
             "cardName": "Rune",
-            "description": "A magical rune that powers up runic spells.",
+            "description": "A magical rune that powers up runic blast.",
             "cost": 1,
             "type": "minion",
             "isRanged": false,
@@ -97,10 +107,11 @@
         {
             "id": "runicblast",
             "cardName": "Runic Blast [M]",
-            "description": "[TYPING] Deal damage based on the number of runes you control.",
+            "description": "[TYPING] Deal damage for each rune you control.",
             "cost": 2,
             "type": "spell",
             "isRanged": true,
+            "minigameId": "typing",
             "effectId": "runic_blast",
             "effectValue": 3
         },
@@ -118,7 +129,7 @@
         {
             "id": "cozybuffet",
             "cardName": "Cozy Buffet [M]",
-            "description": "[CATCH] Prepare a feast to heal yourself.",
+            "description": "[CATCH] Prepare a feast to heal yourself. Avoid garbage!",
             "cost": 1,
             "type": "spell",
             "minigameId": "catchrecipe",
@@ -129,7 +140,7 @@
         {
             "id": "shmovement",
             "cardName": "Shmovement [M]",
-            "description": "[PLATFORMER] Jump over gaps to close distance on an enemy.",
+            "description": "[PLATFORMER] Jump over gaps to close distance and damage a unit.",
             "cost": 1,
             "type": "spell",
             "minigameId": "platformer",
@@ -156,7 +167,7 @@
         {
             "id": "WeaknessHex",
             "cardName": "Hex",
-            "description": "Give a unit Weakness  for 2 turns (-25% damage).",
+            "description": "Give a unit Weakness for 2 turns (-25% damage).",
             "cost": 1,
             "type": "spell",
             "isRanged": false,

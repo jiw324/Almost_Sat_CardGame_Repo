@@ -206,7 +206,7 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
     {
         // Smooth scaling when hovered
         Vector3 targetScale = isHovered ? originalScale * hoverScale : originalScale;
-        visualRoot.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * animationSpeed);
+        visualRoot.localScale = Vector3.Lerp(visualRoot.localScale, targetScale, Time.deltaTime * animationSpeed);
 
         Vector3 currentPos = visualRoot.localPosition;
         float targetY = isHovered
@@ -242,14 +242,22 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
         isSelected = selected;
         if (border != null)
         {
-            // Don't override gold color when selected
-            if (Instance != null && Instance.Data != null && Instance.Data.hasMinigame)
+            // When selected, override gold color with selected border color
+            // When deselected, return to gold color if it has a minigame, otherwise normal border
+            if (isSelected)
             {
-                border.color = goldColor;
+                border.color = selectedBorder;
             }
             else
             {
-                border.color = isSelected ? selectedBorder : normalBorder;
+                if (Instance != null && Instance.Data != null && Instance.Data.hasMinigame)
+                {
+                    border.color = goldColor;
+                }
+                else
+                {
+                    border.color = normalBorder;
+                }
             }
         }
     }

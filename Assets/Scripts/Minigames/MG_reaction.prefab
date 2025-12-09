@@ -132,7 +132,8 @@ MonoBehaviour:
   otherColors:
   - {r: 1, g: 0.8938142, b: 0, a: 1}
   - {r: 0, g: 0.95917225, b: 1, a: 1}
-  bestReactionTime: 0.5
+  - {r: 1, g: 0.1273585, b: 0.1273585, a: 1}
+  bestReactionTime: 0.25
   worstReactionTime: 1
   timeBeforeMaxChance: 4
 --- !u!1 &4824704827969514069

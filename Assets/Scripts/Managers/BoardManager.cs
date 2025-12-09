@@ -259,6 +259,13 @@ public class BoardManager : MonoBehaviour
 
     public void SelectCard(CardUIController card)
     {
+        // If clicking the same card that's already selected, deselect it
+        if (selectedCard == card)
+        {
+            DeselectCard();
+            return;
+        }
+
         if (selectedCard != null)
             selectedCard.SetSelectedVisual(false);
 

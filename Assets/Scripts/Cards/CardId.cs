@@ -13,6 +13,7 @@ public enum CardId
     Shmovement,
     StrengthSpell,
     WeaknessHex,
-    PoisonDart
+    PoisonDart,
+    PocketBomb,
 }
 
