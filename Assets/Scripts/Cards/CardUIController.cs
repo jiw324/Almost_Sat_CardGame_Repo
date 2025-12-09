@@ -43,7 +43,7 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
     private Image nameBgInner;
     private Image nameLight;
 
-    public void Initialize(CardInstance instance)
+    public void Initialize(CardInstance instance, bool enableHoverLayering = true)
     {
         originalScale = visualRoot.localScale;
         originalPosition = visualRoot.localPosition;
@@ -57,10 +57,11 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
             {
                 hoverCanvas = gameObject.AddComponent<Canvas>();
             }
-            hoverCanvas.overrideSorting = true;
-            hoverCanvas.sortingOrder = 1; // Default sorting order (higher than 0)
             
-            // Add GraphicRaycaster so the card can still receive input events
+            hoverCanvas.overrideSorting = false;
+            hoverCanvas.sortingOrder = 1; // Default sorting order
+            
+            // Always add GraphicRaycaster so the card can receive input events
             if (gameObject.GetComponent<UnityEngine.UI.GraphicRaycaster>() == null)
             {
                 gameObject.AddComponent<UnityEngine.UI.GraphicRaycaster>();
@@ -253,18 +254,22 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
 
     private void AddHoverCanvas()
     {
-        // Set high sorting order to render on top
+        // Enable overrideSorting and set high sorting order to render on top
+        // This temporarily bypasses viewport clipping for the hovered card
         if (hoverCanvas != null)
         {
+            hoverCanvas.overrideSorting = true;
             hoverCanvas.sortingOrder = 100;
         }
     }
 
     private void RemoveHoverCanvas()
     {
-        // Reset sorting order when not hovering
+        // Disable overrideSorting to respect viewport clipping again
+        // Reset sorting order back to default
         if (hoverCanvas != null)
         {
+            hoverCanvas.overrideSorting = false;
             hoverCanvas.sortingOrder = 1;
         }
     }
