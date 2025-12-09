@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class MinionBehaviour : MonoBehaviour
@@ -10,6 +11,19 @@ public class MinionBehaviour : MonoBehaviour
     private bool hasSummoningSickness = true;
     // True once the minion has performed an attack this turn.
     private bool hasActedThisTurn = false;
+
+    // --- Animation state ---
+    [Header("Animation Settings")]
+    [SerializeField] private float selectionScaleMultiplier = 1.2f;
+    [SerializeField] private float selectionAnimationSpeed = 5f;
+    [SerializeField] private float attackAnimationDuration = 0.5f;
+    [SerializeField] private float shakeDuration = 0.3f;
+    [SerializeField] private float shakeIntensity = 0.1f;
+
+    private Vector3 originalScale;
+    private Vector3 originalPosition;
+    private bool isSelected = false;
+    private Coroutine currentAnimation;
 
     /// <summary>
     /// Can this minion currently perform an attack?
@@ -44,6 +58,25 @@ public class MinionBehaviour : MonoBehaviour
 
         hasSummoningSickness = true;
         hasActedThisTurn = false;
+
+        // Store original scale - use target scale from Card3DController if available
+        // This ensures we get the correct final scale even if the animation hasn't finished
+        var cardController = GetComponent<Card3DController>();
+        if (cardController != null && cardController.TargetScale.magnitude > 0.01f)
+        {
+            originalScale = cardController.TargetScale;
+        }
+        else
+        {
+            originalScale = transform.localScale;
+        }
+        
+        originalPosition = transform.localPosition;
+    }
+
+    private Vector3 GetOriginalWorldPosition()
+    {
+        return transform.position;
     }
 
     private void OnEnable()
@@ -163,19 +196,74 @@ public class MinionBehaviour : MonoBehaviour
             finalDamage = Mathf.RoundToInt(atk * mult);
         }
 
-        if (finalDamage <= 0)
-        {
-            Debug.Log($"[MinionBehaviour] {instance.Data.cardName}'s modified attack is <= 0, no damage dealt.");
-        }
-        else
-        {
-            target.TakeDamage(finalDamage);
-        }
+        // Start attack animation
+        StartCoroutine(AttackAnimationCoroutine(target, finalDamage));
 
         hasActedThisTurn = true;
+    }
 
+    private IEnumerator AttackAnimationCoroutine(EntityBase target, int damage)
+    {
+        // Get target position
+        Vector3 targetPosition = GetEntityPosition(target);
+        Vector3 startPosition = GetOriginalWorldPosition();
+        Vector3 returnPosition = startPosition;
+
+        // Move to target
+        float elapsed = 0f;
+        float halfDuration = attackAnimationDuration * 0.5f;
+
+        while (elapsed < halfDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / halfDuration;
+            // Use world position for movement
+            transform.position = Vector3.Lerp(startPosition, targetPosition, t);
+            yield return null;
+        }
+
+        // Apply damage at target
+        target.TakeDamage(damage);
         string targetName = !string.IsNullOrEmpty(target.entityName) ? target.entityName : target.name;
-        Debug.Log($"[MinionBehaviour] {instance.Data.cardName} attacked {targetName} for {finalDamage}");
+        Debug.Log($"[MinionBehaviour] {instance.Data.cardName} attacked {targetName} for {damage}");
+
+        // Return to original position
+        elapsed = 0f;
+        while (elapsed < halfDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / halfDuration;
+            transform.position = Vector3.Lerp(targetPosition, returnPosition, t);
+            yield return null;
+        }
+
+        // Ensure we're back at original position
+        transform.position = returnPosition;
+    }
+
+    private Vector3 GetEntityPosition(EntityBase entity)
+    {
+        if (entity == null) return transform.position;
+
+        // Try to get position from transform
+        if (entity.transform != null)
+        {
+            return entity.transform.position;
+        }
+
+        // Fallback: try to find a MinionEntity and get its position
+        var minionEntity = entity as MinionEntity;
+        if (minionEntity != null)
+        {
+            var mb = minionEntity.GetComponent<MinionBehaviour>();
+            if (mb != null && mb.slot != null)
+            {
+                return mb.slot.transform.position;
+            }
+        }
+
+        // Last resort: use current position
+        return transform.position;
     }
 
 
@@ -184,8 +272,31 @@ public class MinionBehaviour : MonoBehaviour
         if (instance == null) return;
 
         instance.TakeDamage(amount);
+        
+        // Play shake animation
+        StartCoroutine(ShakeAnimationCoroutine());
+        
         if (instance.IsDead())
             Die();
+    }
+
+    private IEnumerator ShakeAnimationCoroutine()
+    {
+        Vector3 startPosition = transform.localPosition;
+        float elapsed = 0f;
+
+        while (elapsed < shakeDuration)
+        {
+            elapsed += Time.deltaTime;
+            float offsetX = Random.Range(-shakeIntensity, shakeIntensity);
+            float offsetY = Random.Range(-shakeIntensity, shakeIntensity);
+            float offsetZ = Random.Range(-shakeIntensity, shakeIntensity);
+            
+            transform.localPosition = startPosition + new Vector3(offsetX, offsetY, offsetZ);
+            yield return null;
+        }
+
+        transform.localPosition = startPosition;
     }
 
     public void Die()
@@ -200,5 +311,36 @@ public class MinionBehaviour : MonoBehaviour
             slot.ClearSlotAndDestroy();
         else
             Destroy(gameObject);
+    }
+
+    /// <summary>
+    /// Called when minion is selected - scales it up
+    /// </summary>
+    public void SetSelected(bool selected)
+    {
+        if (isSelected == selected) return;
+        isSelected = selected;
+
+        if (currentAnimation != null)
+        {
+            StopCoroutine(currentAnimation);
+        }
+
+        currentAnimation = StartCoroutine(SelectionAnimationCoroutine(selected));
+    }
+
+    private IEnumerator SelectionAnimationCoroutine(bool selected)
+    {
+        Vector3 targetScale = selected ? originalScale * selectionScaleMultiplier : originalScale;
+        Vector3 currentScale = transform.localScale;
+
+        while (Vector3.Distance(transform.localScale, targetScale) > 0.01f)
+        {
+            transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * selectionAnimationSpeed);
+            yield return null;
+        }
+
+        transform.localScale = targetScale;
+        currentAnimation = null;
     }
 }

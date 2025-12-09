@@ -162,6 +162,10 @@ public class BoardManager : MonoBehaviour
                 }
 
                 Debug.Log($"[BoardManager] Casting spell {inst.Data.cardName} by Player targeting {GetTargetDescription(targetEntity)}");
+                
+                // Show spell flash animation
+                StartCoroutine(SpellFlashAnimation(inst, targetEntity));
+
                 _ = inst.PlayCardAsync(null, targetEntity);
 
                 if (bm != null && bm.uiManager != null)
@@ -207,6 +211,7 @@ public class BoardManager : MonoBehaviour
             // Only attack if we ended up with a valid target
             if (target != null)
             {
+                selectedMinion.SetSelected(false);
                 selectedMinion.AttackTarget(target);
                 selectedMinion = null; // done
             }
@@ -223,7 +228,23 @@ public class BoardManager : MonoBehaviour
                 // Only allow selecting player-owned minions
                 if (clickedMinion.instance.Owner is PlayerEntity)
                 {
+                    // If clicking the same minion that's already selected, deselect it
+                    if (selectedMinion == clickedMinion)
+                    {
+                        Debug.Log("[BoardManager] Clicked on the same minion that's already selected. Deselecting it.");
+                        selectedMinion.SetSelected(false);
+                        selectedMinion = null;
+                        return;
+                    }
+                    
+                    // Deselect previous minion
+                    if (selectedMinion != null)
+                    {
+                        selectedMinion.SetSelected(false);
+                    }
+                    
                     selectedMinion = clickedMinion; // first click selects; no immediate attack
+                    selectedMinion.SetSelected(true);
                 }
                 return;
             }
@@ -246,7 +267,12 @@ public class BoardManager : MonoBehaviour
         if (selectedCard != null)
             selectedCard.SetSelectedVisual(true);
 
-        selectedMinion = null;
+        // Deselect minion when selecting a card
+        if (selectedMinion != null)
+        {
+            selectedMinion.SetSelected(false);
+            selectedMinion = null;
+        }
     }
 
     public void DeselectCard()
@@ -492,6 +518,82 @@ public class BoardManager : MonoBehaviour
             return bm.enemyEntity;
 
         return null;
+    }
+
+    /// <summary>
+    /// Shows a spell card briefly on the board when cast
+    /// </summary>
+    private System.Collections.IEnumerator SpellFlashAnimation(CardInstance spell, EntityBase target)
+    {
+        if (cardPrefab3D == null || spell == null) yield break;
+
+        // Calculate position - center of board or near target
+        Vector3 flashPosition;
+        if (target != null && target.transform != null)
+        {
+            flashPosition = target.transform.position + Vector3.up * 2f;
+        }
+        else
+        {
+            // Center of board (you may need to adjust this based on your scene)
+            flashPosition = Vector3.zero;
+            if (mainCamera != null)
+            {
+                flashPosition = mainCamera.transform.position + mainCamera.transform.forward * 5f;
+            }
+        }
+
+        // Instantiate the card
+        GameObject flashCard = Instantiate(cardPrefab3D, flashPosition, Quaternion.identity);
+        flashCard.name = $"SpellFlash_{spell.Data.cardName}";
+
+        // Initialize the card controller
+        var controller = flashCard.GetComponent<Card3DController>();
+        if (controller != null)
+        {
+            controller.Initialize(spell);
+        }
+
+        // Scale up quickly
+        float duration = 0.5f;
+        float elapsed = 0f;
+        Vector3 startScale = Vector3.zero;
+        Vector3 targetScale = flashCard.transform.localScale;
+
+        while (elapsed < duration * 0.3f)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / (duration * 0.3f);
+            flashCard.transform.localScale = Vector3.Lerp(startScale, targetScale, t);
+            yield return null;
+        }
+
+        // Hold for a moment
+        yield return new WaitForSeconds(duration * 0.4f);
+
+        // Fade out and scale down
+        elapsed = 0f;
+        Vector3 finalScale = targetScale;
+        CanvasGroup canvasGroup = flashCard.GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+        {
+            canvasGroup = flashCard.AddComponent<CanvasGroup>();
+        }
+
+        while (elapsed < duration * 0.3f)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / (duration * 0.3f);
+            flashCard.transform.localScale = Vector3.Lerp(finalScale, Vector3.zero, t);
+            if (canvasGroup != null)
+            {
+                canvasGroup.alpha = 1f - t;
+            }
+            yield return null;
+        }
+
+        // Clean up
+        Destroy(flashCard);
     }
 
 }

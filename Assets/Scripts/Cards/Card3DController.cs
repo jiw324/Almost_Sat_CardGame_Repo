@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -11,7 +12,12 @@ public class Card3DController : MonoBehaviour
     [SerializeField] private TMP_Text damageText;
     [SerializeField] private TMP_Text descText;
 
+    [Header("Card Play Animation")]
+    [SerializeField] private float animationDuration = 0.3f;
+    [SerializeField] private Vector3 targetScale;
+
     public CardInstance Instance { get; private set; }
+    public Vector3 TargetScale => targetScale;
 
     // Called by BoardSlot.PlaceCard()
     public void Initialize(CardInstance instance)
@@ -19,6 +25,9 @@ public class Card3DController : MonoBehaviour
         Instance = instance;
         name = instance.Data.name;
         UpdateVisuals();
+        
+        // Start animation
+        StartCoroutine(PlayCardAnimation());
     }
 
     private void UpdateVisuals()
@@ -50,5 +59,46 @@ public class Card3DController : MonoBehaviour
             artworkImage.sprite = Instance.Data.artwork;
             artworkImage.enabled = Instance.Data.artwork != null;
         }
+    }
+
+    /// <summary>
+    /// Simple scale-up animation when card is placed
+    /// </summary>
+    private IEnumerator PlayCardAnimation()
+    {
+        // Use targetScale if set, otherwise use the prefab's current scale
+        Vector3 finalScale;
+        if (targetScale.magnitude > 0.01f)
+        {
+            finalScale = targetScale;
+        }
+        else
+        {
+            // Capture the prefab's scale as the target
+            finalScale = transform.localScale;
+            targetScale = finalScale; // Store it for future reference
+        }
+        
+        // Start from small scale (10% of target)
+        Vector3 startScale = finalScale * 0.1f;
+        transform.localScale = startScale;
+        
+        float elapsed = 0f;
+        
+        while (elapsed < animationDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / animationDuration;
+            
+            // Simple ease-out curve
+            t = 1f - (1f - t) * (1f - t);
+            
+            transform.localScale = Vector3.Lerp(startScale, finalScale, t);
+            
+            yield return null;
+        }
+
+        // Ensure final scale
+        transform.localScale = finalScale;
     }
 }

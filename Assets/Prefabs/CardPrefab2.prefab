@@ -835,7 +835,7 @@ MonoBehaviour:
   visualRoot: {fileID: 1111607720804802971}
   selectedBorder: {r: 1, g: 0.013729678, b: 0, a: 1}
   normalBorder: {r: 1, g: 1, b: 1, a: 1}
-  hoverScale: 1.1
+  hoverScale: 1.5
   hoverHeight: 50
 --- !u!1 &3412092526146510705
 GameObject:
