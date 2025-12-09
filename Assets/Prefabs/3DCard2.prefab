@@ -129,7 +129,7 @@ MonoBehaviour:
   damageText: {fileID: 4698557980493550911}
   descText: {fileID: 0}
   animationDuration: 0.3
-  targetScale: {x: 0.5, y: 0.03, z: 0.75}
+  targetScale: {x: 0.8112, y: 0.03, z: 0.704}
 --- !u!114 &-5610489812881739548
 MonoBehaviour:
   m_ObjectHideFlags: 0
