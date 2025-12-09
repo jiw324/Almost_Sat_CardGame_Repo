@@ -388,8 +388,17 @@ public class BattleManager : MonoBehaviour
         foreach (var s in slots)
         {
             bool isEnemySlot = false;
-            if (s.gameObject.name.Contains("B") || (s.transform.parent != null && s.transform.parent.name.Contains("B")))
+            
+            // Check slot name (e.g., "enemyMeleeA", "enemyRangedB")
+            if (s.gameObject.name.StartsWith("enemy", System.StringComparison.OrdinalIgnoreCase))
+            {
                 isEnemySlot = true;
+            }
+            // Check parent name (e.g., "Enemy Melee Slots", "Enemy Ranged Slots")
+            else if (s.transform.parent != null && s.transform.parent.name.Contains("Enemy", System.StringComparison.OrdinalIgnoreCase))
+            {
+                isEnemySlot = true;
+            }
 
             if (s.isRanged)
             {

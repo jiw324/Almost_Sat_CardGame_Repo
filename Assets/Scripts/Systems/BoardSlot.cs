@@ -22,14 +22,29 @@ public class BoardSlot : MonoBehaviour
         // }
 
         // Prevent enemy-owned cards from being placed on player-side slots.
-        // The immediate parent of this slot must be named exactly "MeleeB" or "RangedB" for enemy placement.
+        // New naming: parent should be "Enemy Melee Slots" or "Enemy Ranged Slots", or slot name starts with "enemy"
         if (card.Owner is EnemyEntity)
         {
-            var parent = transform.parent;
-            string parentName = parent != null ? parent.name : string.Empty;
-            if (parentName != "MeleeB" && parentName != "RangedB")
+            bool isEnemySlot = false;
+            
+            // Check slot name (e.g., "enemyMeleeA", "enemyRangedB")
+            if (name.StartsWith("enemy", System.StringComparison.OrdinalIgnoreCase))
             {
-                Debug.LogWarning($"[BoardSlot] Enemy tried to place a card on a non-enemy slot (parent='{parentName}'). Placement denied.");
+                isEnemySlot = true;
+            }
+            // Check parent name (e.g., "Enemy Melee Slots", "Enemy Ranged Slots")
+            else if (transform.parent != null)
+            {
+                string parentName = transform.parent.name;
+                if (parentName.Contains("Enemy", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    isEnemySlot = true;
+                }
+            }
+            
+            if (!isEnemySlot)
+            {
+                Debug.LogWarning($"[BoardSlot] Enemy tried to place a card on a non-enemy slot (slot='{name}', parent='{transform.parent?.name ?? "null"}'). Placement denied.");
                 return false;
             }
         }

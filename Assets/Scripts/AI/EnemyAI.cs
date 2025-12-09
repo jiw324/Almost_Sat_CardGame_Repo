@@ -428,21 +428,34 @@ public static class EnemyAI
 
     /// <summary>
     /// Checks if a board slot belongs to the enemy side.
+    /// New naming: slots are named "enemyMeleeA", "enemyRangedB", etc., or parent is "Enemy Melee Slots" / "Enemy Ranged Slots"
     /// </summary>
     private static bool IsEnemySlot(BoardSlot slot)
     {
         if (slot == null) return false;
-        Transform t = slot.transform;
+        
+        // Check slot name itself (e.g., "enemyMeleeA", "enemyRangedB")
+        string slotName = slot.name;
+        if (!string.IsNullOrEmpty(slotName) && slotName.StartsWith("enemy", System.StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+        
+        // Check parent hierarchy for "Enemy Melee Slots" or "Enemy Ranged Slots"
+        Transform t = slot.transform.parent;
         while (t != null)
         {
             if (!string.IsNullOrEmpty(t.name))
             {
                 var nm = t.name;
-                if (nm == "MeleeB" || nm == "RangedB") return true;
-                if ((nm.StartsWith("Melee") || nm.StartsWith("Ranged")) && nm.EndsWith("B")) return true;
+                if (nm.Contains("Enemy", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
             }
             t = t.parent;
         }
+        
         return false;
     }
 

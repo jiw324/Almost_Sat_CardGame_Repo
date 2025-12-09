@@ -272,9 +272,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f2a1e5862e754b68b2e8df6283043cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  owner: {fileID: 1239390924}
   handArea: {fileID: 0}
   cardUIPrefab: {fileID: 0}
-  owner: {fileID: 1239390924}
   mulliganOverlay: {fileID: 0}
   maxHandSize: 10
   openingHandSize: 4
@@ -336,7 +336,7 @@ GameObject:
   m_Component:
   - component: {fileID: 42921931}
   m_Layer: 0
-  m_Name: MeleeA
+  m_Name: Player Melee Slots
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1298,7 +1298,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8834340483790688660, guid: a3441c7b03ce04942a7516940edde4ae, type: 3}
       propertyPath: m_Name
-      value: MeleeSlot A
+      value: playerMeleeA
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2131,7 +2131,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8834340483790688660, guid: a3441c7b03ce04942a7516940edde4ae, type: 3}
       propertyPath: m_Name
-      value: MeleeSlot B
+      value: playerMeleeB
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2153,7 +2153,7 @@ GameObject:
   m_Component:
   - component: {fileID: 504721079}
   m_Layer: 0
-  m_Name: RangedB
+  m_Name: Enemy Ranged Slots
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2555,7 +2555,7 @@ GameObject:
   m_Component:
   - component: {fileID: 674876350}
   m_Layer: 0
-  m_Name: RangedA
+  m_Name: Player Ranged Slots
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2629,7 +2629,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1451367451616344033, guid: da8ffbd415d8745779714415464767b6, type: 3}
       propertyPath: m_Name
-      value: RangedSlot B
+      value: enemyRangedB
       objectReference: {fileID: 0}
     - target: {fileID: 1960141228664900439, guid: da8ffbd415d8745779714415464767b6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3275,7 +3275,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1451367451616344033, guid: da8ffbd415d8745779714415464767b6, type: 3}
       propertyPath: m_Name
-      value: RangedSlot B
+      value: playerRangedB
       objectReference: {fileID: 0}
     - target: {fileID: 1960141228664900439, guid: da8ffbd415d8745779714415464767b6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3377,7 +3377,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8834340483790688660, guid: a3441c7b03ce04942a7516940edde4ae, type: 3}
       propertyPath: m_Name
-      value: MeleeSlot B
+      value: enemyMeleeB
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3399,7 +3399,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1451367451616344033, guid: da8ffbd415d8745779714415464767b6, type: 3}
       propertyPath: m_Name
-      value: RangedSlot A
+      value: playerRangedA
       objectReference: {fileID: 0}
     - target: {fileID: 1960141228664900439, guid: da8ffbd415d8745779714415464767b6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3999,7 +3999,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8834340483790688660, guid: a3441c7b03ce04942a7516940edde4ae, type: 3}
       propertyPath: m_Name
-      value: MeleeSlot A
+      value: enemyMeleeA
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4309,9 +4309,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f2a1e5862e754b68b2e8df6283043cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  owner: {fileID: 229261168}
   handArea: {fileID: 2120884248}
   cardUIPrefab: {fileID: 3072006593040025153, guid: b39f880c06d5dde4cbd4e5c1265341d2, type: 3}
-  owner: {fileID: 229261168}
   mulliganOverlay: {fileID: 937715133}
   maxHandSize: 10
   openingHandSize: 3
@@ -4853,7 +4853,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1451367451616344033, guid: da8ffbd415d8745779714415464767b6, type: 3}
       propertyPath: m_Name
-      value: RangedSlot D
+      value: enemyRangedD
       objectReference: {fileID: 0}
     - target: {fileID: 1960141228664900439, guid: da8ffbd415d8745779714415464767b6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5023,7 +5023,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1341443553}
   m_Layer: 0
-  m_Name: MeleeB
+  m_Name: Enemy Melee Slots
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5057,7 +5057,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1451367451616344033, guid: da8ffbd415d8745779714415464767b6, type: 3}
       propertyPath: m_Name
-      value: RangedSlot C
+      value: enemyRangedC
       objectReference: {fileID: 0}
     - target: {fileID: 1960141228664900439, guid: da8ffbd415d8745779714415464767b6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5482,7 +5482,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1451367451616344033, guid: da8ffbd415d8745779714415464767b6, type: 3}
       propertyPath: m_Name
-      value: RangedSlot D
+      value: playerRangedD
       objectReference: {fileID: 0}
     - target: {fileID: 1960141228664900439, guid: da8ffbd415d8745779714415464767b6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5740,7 +5740,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1451367451616344033, guid: da8ffbd415d8745779714415464767b6, type: 3}
       propertyPath: m_Name
-      value: RangedSlot A
+      value: enemyRangedA
       objectReference: {fileID: 0}
     - target: {fileID: 1960141228664900439, guid: da8ffbd415d8745779714415464767b6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -6049,7 +6049,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8834340483790688660, guid: a3441c7b03ce04942a7516940edde4ae, type: 3}
       propertyPath: m_Name
-      value: MeleeSlot C
+      value: enemyMeleeC
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6173,7 +6173,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8834340483790688660, guid: a3441c7b03ce04942a7516940edde4ae, type: 3}
       propertyPath: m_Name
-      value: MeleeSlot C
+      value: playerMeleeC
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6615,7 +6615,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1451367451616344033, guid: da8ffbd415d8745779714415464767b6, type: 3}
       propertyPath: m_Name
-      value: RangedSlot C
+      value: playerRangedC
       objectReference: {fileID: 0}
     - target: {fileID: 1960141228664900439, guid: da8ffbd415d8745779714415464767b6, type: 3}
       propertyPath: m_LocalPosition.x
