@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -13,7 +14,9 @@ public static class EnemyAI
     private enum EnemyPlaystyle { Offensive, Defensive }
 
     /// <summary>
-    /// Executes the enemy's turn, playing cards until out of mana or max attempts reached.
+    /// Executes the enemy's turn in phases:
+    /// Phase 1: Play cards (minions and spells) until out of mana or no playable cards
+    /// Phase 2: Attack with all enemy minions that can act
     /// </summary>
     /// <param name="coroutineRunner">MonoBehaviour to run coroutines on (typically TurnManager)</param>
     /// <returns>IEnumerator for coroutine execution</returns>
@@ -45,153 +48,72 @@ public static class EnemyAI
             yield break;
         }
 
+        // ===== PHASE 1: PLAY CARDS =====
+        Debug.Log("[EnemyAI] Phase 1: Playing cards...");
         int attempts = 0;
 
         while (bm.enemyMana > 0 && attempts < MaxAttempts)
         {
             attempts++;
 
-            // Get cards from enemy's hand instead of random cards
+            // Get cards from enemy's hand
             var cardsInHand = enemyHand.GetCardsInHand();
             if (cardsInHand == null || cardsInHand.Count == 0)
             {
-                Debug.Log("[EnemyAI] No cards in hand. Ending play.");
+                Debug.Log("[EnemyAI] No cards in hand. Moving to attack phase.");
                 break;
             }
 
             // Find a playable card (cost <= available mana), preferring playstyle-appropriate cards
-            CardInstance inst = null;
-            CardInstance preferredCard = null;
-            
-            foreach (var card in cardsInHand)
-            {
-                if (card == null || card.Data == null || card.Data.cost > bm.enemyMana)
-                    continue;
-                
-                // For defensive playstyle, prefer minions and healing spells
-                if (playstyle == EnemyPlaystyle.Defensive)
-                {
-                    if (card.IsMinion)
-                    {
-                        preferredCard = card;
-                        break; // Minions are highest priority for defensive
-                    }
-                    else
-                    {
-                        string idStr = card.Data.id.ToString().ToLowerInvariant();
-                        string nameStr = (card.Data.cardName ?? string.Empty).ToLowerInvariant();
-                        if (idStr.Contains("healing") || nameStr.Contains("heal") || nameStr.Contains("shield"))
-                        {
-                            if (preferredCard == null)
-                                preferredCard = card; // Healing spells are second priority
-                        }
-                    }
-                }
-                
-                // For any playstyle, if no preferred card found yet, use first affordable card
-                if (inst == null)
-                    inst = card;
-            }
-            
-            // Use preferred card if found, otherwise use first affordable card
-            if (preferredCard != null)
-                inst = preferredCard;
-
+            CardInstance inst = SelectCardToPlay(cardsInHand, bm.enemyMana, playstyle);
             if (inst == null)
             {
-                Debug.Log($"[EnemyAI] No playable cards in hand (need {bm.enemyMana} mana or less). Ending play.");
+                Debug.Log($"[EnemyAI] No playable cards in hand (need {bm.enemyMana} mana or less). Moving to attack phase.");
                 break;
             }
 
             Debug.Log($"[EnemyAI] Selected card from hand: {inst.Data.cardName} (cost {inst.Data.cost})");
 
-            // Defensive playstyle: prefer heals and minions; avoid direct damage spells
+            // Play the selected card based on type
             bool cardPlayed = false;
-            if (playstyle == EnemyPlaystyle.Defensive)
+            if (inst.IsMinion)
             {
-                if (inst.IsMinion)
+                cardPlayed = TryPlayMinion(inst, enemyOwner, bm);
+            }
+            else
+            {
+                // For defensive playstyle, check if spell is appropriate
+                if (playstyle == EnemyPlaystyle.Defensive)
                 {
-                    cardPlayed = TryPlayMinion(inst, enemyOwner, bm);
-                }
-                else
-                {
-                    // prefer healing spells
-                    string idStr = inst.Data.id.ToString().ToLowerInvariant();
-                    string nameStr = (inst.Data.cardName ?? string.Empty).ToLowerInvariant();
-
-                    bool isHealing = idStr.Contains("healing") || nameStr.Contains("heal") || nameStr.Contains("shield");
-
-                    if (isHealing)
+                    // Check if it's a self-buff (healing/shield/strength)
+                    bool isSelfBuff = IsSelfBuffSpell(inst);
+                    if (!isSelfBuff)
                     {
-                        // Play heal/self-buff targeting enemy (self)
-                        TryPlaySpell(inst, enemyOwner, bm);
-                        cardPlayed = true;
-                    }
-                    else
-                    {
-                        // Skip aggressive/damage spells while defensive
-                        Debug.Log($"[EnemyAI] Defensive playstyle: skipping aggressive spell {inst.Data.cardName}. Looking for alternative.");
-                        // Try to find another playable card in hand that's suitable
-                        CardInstance alternativeCard = null;
-                        foreach (var altCard in cardsInHand)
-                        {
-                            if (altCard == inst) continue; // Skip the one we just rejected
-                            if (altCard != null && altCard.Data != null && altCard.Data.cost <= bm.enemyMana)
-                            {
-                                if (altCard.IsMinion)
-                                {
-                                    alternativeCard = altCard;
-                                    break;
-                                }
-                                string altIdStr = altCard.Data.id.ToString().ToLowerInvariant();
-                                string altNameStr = (altCard.Data.cardName ?? string.Empty).ToLowerInvariant();
-                                if (altIdStr.Contains("healing") || altNameStr.Contains("heal") || altNameStr.Contains("shield"))
-                                {
-                                    alternativeCard = altCard;
-                                    break;
-                                }
-                            }
-                        }
+                        // Defensive playstyle: skip damage spells, look for alternative
+                        Debug.Log($"[EnemyAI] Defensive playstyle: skipping damage spell {inst.Data.cardName}. Looking for alternative.");
                         
+                        // Try to find a defensive alternative
+                        CardInstance alternativeCard = FindDefensiveAlternative(cardsInHand, inst, bm.enemyMana);
                         if (alternativeCard != null)
                         {
                             inst = alternativeCard;
                             Debug.Log($"[EnemyAI] Found alternative defensive card: {inst.Data.cardName}");
-                            if (inst.IsMinion)
-                            {
-                                cardPlayed = TryPlayMinion(inst, enemyOwner, bm);
-                            }
-                            else
-                            {
-                                TryPlaySpell(inst, enemyOwner, bm);
-                                cardPlayed = true;
-                            }
                         }
                         else
                         {
-                            Debug.Log("[EnemyAI] No suitable defensive cards found. Ending play.");
+                            Debug.Log("[EnemyAI] No suitable defensive cards found. Moving to attack phase.");
                             break;
                         }
                     }
                 }
-            }
-            else // Offensive (existing behavior)
-            {
-                if (inst.IsMinion)
-                {
-                    cardPlayed = TryPlayMinion(inst, enemyOwner, bm);
-                }
-                else
-                {
-                    TryPlaySpell(inst, enemyOwner, bm);
-                    cardPlayed = true;
-                }
+                
+                cardPlayed = TryPlaySpell(inst, enemyOwner, bm);
             }
 
             // If card wasn't played (e.g., placement failed), break to avoid infinite loop
             if (!cardPlayed)
             {
-                Debug.LogWarning("[EnemyAI] Card selection failed to play. Ending turn.");
+                Debug.LogWarning("[EnemyAI] Card selection failed to play. Moving to attack phase.");
                 break;
             }
 
@@ -200,12 +122,55 @@ public static class EnemyAI
             if (bm.playerHealth <= 0 || bm.enemyHealth <= 0) break;
         }
 
+        // ===== PHASE 2: ATTACK WITH MINIONS =====
+        Debug.Log("[EnemyAI] Phase 2: Attacking with minions...");
+        yield return coroutineRunner.StartCoroutine(AttackWithAllMinions(bm, enemyOwner));
+
         // Reset enemy mana at end of turn
         if (bm != null)
         {
             bm.enemyMana = 0;
             if (bm.uiManager != null) bm.uiManager.UpdateEnemyMana(bm.enemyMana);
         }
+    }
+
+    /// <summary>
+    /// Selects a card to play from hand based on playstyle and available mana.
+    /// </summary>
+    private static CardInstance SelectCardToPlay(List<CardInstance> cardsInHand, int availableMana, EnemyPlaystyle playstyle)
+    {
+        CardInstance preferredCard = null;
+        CardInstance fallbackCard = null;
+        
+        foreach (var card in cardsInHand)
+        {
+            if (card == null || card.Data == null || card.Data.cost > availableMana)
+                continue;
+            
+            // For defensive playstyle, prefer minions and healing spells
+            if (playstyle == EnemyPlaystyle.Defensive)
+            {
+                if (card.IsMinion)
+                {
+                    preferredCard = card;
+                    break; // Minions are highest priority for defensive
+                }
+                else
+                {
+                    if (IsSelfBuffSpell(card))
+                    {
+                        if (preferredCard == null)
+                            preferredCard = card; // Healing spells are second priority
+                    }
+                }
+            }
+            
+            // For any playstyle, keep first affordable card as fallback
+            if (fallbackCard == null)
+                fallbackCard = card;
+        }
+        
+        return preferredCard ?? fallbackCard;
     }
 
     private static EnemyPlaystyle DeterminePlaystyleForEnemy(string enemyName)
@@ -252,15 +217,40 @@ public static class EnemyAI
         
         if (placed)
         {
-            inst.ResolveMinionSummonEffects(enemyOwner, bm.player);
+            // Handle minion summon effects similar to BoardManager
+            // Auto-apply self-buffs (GainShield) immediately, targeted effects need a target
+            if (inst.Data?.onSummonBindings != null && inst.Data.onSummonBindings.Count > 0)
+            {
+                // Auto-apply GainShield effects to enemy owner immediately
+                foreach (var binding in inst.Data.onSummonBindings)
+                {
+                    if (binding?.effect is GainShieldEffect)
+                    {
+                        binding.effect.Execute(enemyOwner, null, binding.value);
+                    }
+                }
+
+                // For targeted effects (damage, etc.), default to player hero
+                // (In the future, we could add smarter targeting logic here)
+                foreach (var binding in inst.Data.onSummonBindings)
+                {
+                    if (binding?.effect is GainShieldEffect) continue; // Already handled
+                    if (binding?.effect != null)
+                    {
+                        // Default target for damage effects is player hero
+                        binding.effect.Execute(enemyOwner, bm.player, binding.value);
+                    }
+                }
+            }
 
             bm.enemyMana -= inst.Data.cost;
             if (bm.uiManager != null) bm.uiManager.UpdateEnemyMana(bm.enemyMana);
 
-            // Remove card from hand
+            // Remove card from hand and add to discard
             if (bm.enemyHandManager != null)
             {
                 bm.enemyHandManager.RemoveByInstance(inst);
+                bm.enemyHandManager.DiscardCard(inst);
             }
 
             Debug.Log($"[EnemyAI] Played minion {inst.Data.cardName} for cost {inst.Data.cost}. Remaining mana: {bm.enemyMana}");
@@ -275,36 +265,108 @@ public static class EnemyAI
 
     /// <summary>
     /// Attempts to play a spell card, targeting player minions if appropriate.
+    /// Returns true if the spell was successfully played, false otherwise.
     /// </summary>
-    private static void TryPlaySpell(CardInstance inst, EntityBase enemyOwner, BattleManager bm)
+    private static bool TryPlaySpell(CardInstance inst, EntityBase enemyOwner, BattleManager bm)
     {
+        if (inst == null || inst.Data == null)
+        {
+            Debug.LogWarning("[EnemyAI] Invalid card instance for spell.");
+            return false;
+        }
+
+        // Check if this is a self-buff spell (healing/shield/strength)
+        bool isSelfBuff = IsSelfBuffSpell(inst);
+        
         bool requiresPlayerMinionTarget = RequiresMinionTarget(inst);
         MinionEntity chosenTarget = null;
 
         if (requiresPlayerMinionTarget)
         {
-            chosenTarget = FindPlayerMinionTarget();
+            // For spells, we don't care about row type, just find any player minion
+            chosenTarget = FindPlayerMinionTargetForSpell();
             if (chosenTarget == null)
             {
                 Debug.Log($"[EnemyAI] Skipping {inst.Data.cardName}: no valid player minion targets.");
-                return;
+                return false;
             }
         }
 
-        EntityBase target = chosenTarget ?? (EntityBase)bm.player;
-        Debug.Log($"[EnemyAI] Playing spell {inst.Data.cardName} (cost {inst.Data.cost}) targeting {(chosenTarget != null ? chosenTarget.entityName : "player side")} ");
+        // Determine target: self-buffs target enemy owner, damage spells target player/minions
+        EntityBase target;
+        if (isSelfBuff)
+        {
+            target = enemyOwner; // Self-buff: target the enemy (self)
+        }
+        else if (chosenTarget != null)
+        {
+            target = chosenTarget; // Specific minion target
+        }
+        else
+        {
+            target = bm.player; // Default: target player hero
+        }
+
+        Debug.Log($"[EnemyAI] Playing spell {inst.Data.cardName} (cost {inst.Data.cost}) targeting {target?.entityName ?? "unknown"}");
         inst.PlayCard(null, target);
 
         bm.enemyMana -= inst.Data.cost;
         if (bm.uiManager != null) bm.uiManager.UpdateEnemyMana(bm.enemyMana);
 
-        // Remove card from hand
+        // Remove card from hand and add to discard
         if (bm.enemyHandManager != null)
         {
             bm.enemyHandManager.RemoveByInstance(inst);
+            bm.enemyHandManager.DiscardCard(inst);
         }
 
         Debug.Log($"[EnemyAI] Cast spell {inst.Data.cardName} for cost {inst.Data.cost}. Remaining mana: {bm.enemyMana}");
+        return true;
+    }
+
+    /// <summary>
+    /// Checks if a spell is a self-buff (healing, shield, strength).
+    /// </summary>
+    private static bool IsSelfBuffSpell(CardInstance inst)
+    {
+        if (inst?.Data?.effects == null) return false;
+
+        foreach (var binding in inst.Data.effects)
+        {
+            if (binding?.effect == null) continue;
+            
+            // Check for self-buff effect types
+            if (binding.effect is GainShieldEffect || binding.effect is StrengthEffect)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Finds a defensive alternative card (minion or self-buff spell) from hand.
+    /// </summary>
+    private static CardInstance FindDefensiveAlternative(List<CardInstance> cardsInHand, CardInstance currentCard, int availableMana)
+    {
+        foreach (var card in cardsInHand)
+        {
+            if (card == currentCard) continue; // Skip the one we're rejecting
+            if (card == null || card.Data == null || card.Data.cost > availableMana) continue;
+            
+            // Prefer minions
+            if (card.IsMinion)
+            {
+                return card;
+            }
+            
+            // Or self-buff spells
+            if (IsSelfBuffSpell(card))
+            {
+                return card;
+            }
+        }
+        return null;
     }
 
     /// <summary>
@@ -324,20 +386,28 @@ public static class EnemyAI
     }
 
     /// <summary>
-    /// Finds the first available player-owned minion to target.
+    /// Finds a player minion to target for spells (any player minion, row type doesn't matter).
     /// </summary>
-    private static MinionEntity FindPlayerMinionTarget()
+    private static MinionEntity FindPlayerMinionTargetForSpell()
     {
         var allMinions = UnityEngine.Object.FindObjectsByType<MinionEntity>(FindObjectsSortMode.None);
+        List<MinionEntity> playerMinions = new List<MinionEntity>();
+        
         foreach (var me in allMinions)
         {
             var mb = me.GetComponent<MinionBehaviour>();
             if (mb == null || mb.instance == null) continue;
             if (mb.instance.Owner is PlayerEntity)
             {
-                return me; // pick first
+                playerMinions.Add(me);
             }
         }
+        
+        if (playerMinions.Count > 0)
+        {
+            return playerMinions[UnityEngine.Random.Range(0, playerMinions.Count)];
+        }
+        
         return null;
     }
 
@@ -375,5 +445,142 @@ public static class EnemyAI
         }
         return false;
     }
+
+    /// <summary>
+    /// Phase 2: Attack with all enemy minions that can act.
+    /// </summary>
+    private static IEnumerator AttackWithAllMinions(BattleManager bm, EntityBase enemyOwner)
+    {
+        // Find all enemy minions on the board that can act
+        List<MinionBehaviour> attackableMinions = FindEnemyMinionsThatCanAct();
+        
+        if (attackableMinions.Count == 0)
+        {
+            Debug.Log("[EnemyAI] No enemy minions available to attack.");
+            yield break;
+        }
+
+        Debug.Log($"[EnemyAI] Found {attackableMinions.Count} enemy minion(s) that can attack.");
+
+        // Attack with each minion
+        foreach (var minion in attackableMinions)
+        {
+            if (minion == null || minion.instance == null) continue;
+            
+            // Check if battle ended
+            if (bm.playerHealth <= 0 || bm.enemyHealth <= 0) break;
+            
+            // Find a target for this minion
+            EntityBase target = FindAttackTarget(minion, bm);
+            if (target == null)
+            {
+                Debug.Log($"[EnemyAI] No valid target found for {minion.instance.Data.cardName}. Skipping.");
+                continue;
+            }
+
+            Debug.Log($"[EnemyAI] {minion.instance.Data.cardName} attacking {target.entityName}");
+            minion.AttackTarget(target);
+            
+            // Wait for attack animation to complete
+            yield return new WaitForSecondsRealtime(ActionDelay * 2f); // Longer delay for attack animations
+        }
+
+        Debug.Log("[EnemyAI] Finished attacking with all minions.");
+    }
+
+    /// <summary>
+    /// Finds all enemy minions on the board that can act (no summoning sickness, haven't acted this turn).
+    /// </summary>
+    private static List<MinionBehaviour> FindEnemyMinionsThatCanAct()
+    {
+        List<MinionBehaviour> result = new List<MinionBehaviour>();
+        
+        var allMinions = UnityEngine.Object.FindObjectsByType<MinionBehaviour>(FindObjectsSortMode.None);
+        foreach (var mb in allMinions)
+        {
+            if (mb == null || mb.instance == null) continue;
+            
+            // Only enemy-owned minions
+            if (!(mb.instance.Owner is EnemyEntity)) continue;
+            
+            // Must be able to act (no summoning sickness, hasn't acted this turn)
+            if (!mb.CanAct) continue;
+            
+            // Must have attack > 0
+            if (mb.instance.Attack <= 0) continue;
+            
+            result.Add(mb);
+        }
+        
+        return result;
+    }
+
+    /// <summary>
+    /// Finds the best target for an enemy minion to attack.
+    /// Priority: Player minions > Player hero
+    /// </summary>
+    private static EntityBase FindAttackTarget(MinionBehaviour attacker, BattleManager bm)
+    {
+        if (attacker == null || attacker.instance == null || bm == null)
+            return null;
+
+        // Priority 1: Find a player minion to attack
+        // Prefer attacking minions in the same row (melee vs melee, ranged vs ranged)
+        MinionEntity targetMinion = FindPlayerMinionTarget(attacker.instance.Data.isRanged);
+        if (targetMinion != null)
+        {
+            return targetMinion;
+        }
+
+        // Priority 2: Attack player hero if no minions available
+        if (bm.player != null && bm.playerHealth > 0)
+        {
+            return bm.player;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Finds a player minion to target, optionally preferring same row type (ranged vs ranged, melee vs melee).
+    /// </summary>
+    private static MinionEntity FindPlayerMinionTarget(bool attackerIsRanged)
+    {
+        var allMinions = UnityEngine.Object.FindObjectsByType<MinionEntity>(FindObjectsSortMode.None);
+        List<MinionEntity> sameRowMinions = new List<MinionEntity>();
+        List<MinionEntity> otherMinions = new List<MinionEntity>();
+        
+        foreach (var me in allMinions)
+        {
+            var mb = me.GetComponent<MinionBehaviour>();
+            if (mb == null || mb.instance == null) continue;
+            if (!(mb.instance.Owner is PlayerEntity)) continue;
+            
+            // Check if minion is in same row type (ranged vs ranged, melee vs melee)
+            if (mb.instance.Data.isRanged == attackerIsRanged)
+            {
+                sameRowMinions.Add(me);
+            }
+            else
+            {
+                otherMinions.Add(me);
+            }
+        }
+        
+        // Prefer same row type if available
+        if (sameRowMinions.Count > 0)
+        {
+            return sameRowMinions[UnityEngine.Random.Range(0, sameRowMinions.Count)];
+        }
+        
+        // Otherwise return any player minion
+        if (otherMinions.Count > 0)
+        {
+            return otherMinions[UnityEngine.Random.Range(0, otherMinions.Count)];
+        }
+        
+        return null;
+    }
 }
+
 
