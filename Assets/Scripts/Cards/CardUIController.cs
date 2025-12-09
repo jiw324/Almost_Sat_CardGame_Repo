@@ -38,6 +38,9 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
     private Image damageBackground;
     private Image healthBackground;
     private Image typeBackground;
+    private Image nameBg;
+    private Image nameBgInner;
+    private Image nameLight;
 
     public void Initialize(CardInstance instance)
     {
@@ -101,6 +104,23 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
             if (typeBackgroundTransform != null)
                 typeBackground = typeBackgroundTransform.GetComponent<Image>();
         }
+
+        // Cache Name elements
+        Transform name = visualRoot.Find("Name");
+        if (name != null)
+        {
+            Transform bgTransform = name.Find("Bg");
+            if (bgTransform != null)
+                nameBg = bgTransform.GetComponent<Image>();
+
+            Transform bgInnerTransform = name.Find("BgInner");
+            if (bgInnerTransform != null)
+                nameBgInner = bgInnerTransform.GetComponent<Image>();
+
+            Transform lightTransform = name.Find("Light");
+            if (lightTransform != null)
+                nameLight = lightTransform.GetComponent<Image>();
+        }
     }
 
     private void UpdateUI()
@@ -142,10 +162,10 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
             visualRoot.Find("Type").Find("Melee").gameObject.SetActive(true);
         }
 
-        // Apply gold color if minigamePrefab is not null
-        if (Instance.Data.minigamePrefab != null)
+        if (Instance.Data.hasMinigame)
         {
             ApplyGoldColor();
+            Debug.Log($"[CardUIController] Applied gold color to card '{Instance.Data.cardName}' with minigame.");
         }
     }
 
@@ -171,6 +191,15 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
 
         if (typeBackground != null)
             typeBackground.color = goldColor;
+
+        if (nameBg != null)
+            nameBg.color = goldColor;
+
+        if (nameBgInner != null)
+            nameBgInner.color = goldColor;
+
+        if (nameLight != null)
+            nameLight.color = goldColor;
     }
 
     private void Update()
@@ -214,7 +243,7 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
         if (border != null)
         {
             // Don't override gold color when selected
-            if (Instance != null && Instance.Data != null && Instance.Data.minigamePrefab != null)
+            if (Instance != null && Instance.Data != null && Instance.Data.hasMinigame)
             {
                 border.color = goldColor;
             }

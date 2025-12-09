@@ -13,6 +13,18 @@ public class MulliganCardOption : MonoBehaviour
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private RectTransform visualRoot;
     [SerializeField] private Toggle selectToggle;
+    [SerializeField] private Color goldColor = new Color(1f, 0.84f, 0f); // Gold color
+
+    private Image border;
+    private Image portraitBorder;
+    private Image manaBackground;
+    private Image descriptionBackground;
+    private Image damageBackground;
+    private Image healthBackground;
+    private Image typeBackground;
+    private Image nameBg;
+    private Image nameBgInner;
+    private Image nameLight;
 
     public CardInstance Card { get; private set; }
     public bool IsSelected => selectToggle != null && selectToggle.isOn;
@@ -22,6 +34,8 @@ public class MulliganCardOption : MonoBehaviour
     public void Initialize(CardInstance instance)
     {
         Card = instance;
+
+        CacheBackgroundReferences();
 
         if (Card?.Data == null)
         {
@@ -63,6 +77,9 @@ public class MulliganCardOption : MonoBehaviour
             visualRoot.Find("Type").Find("Melee").gameObject.SetActive(true);
         }
 
+        if (Card.Data.hasMinigame)
+            ApplyGoldColor();
+
         if (selectToggle != null)
         {
             selectToggle.onValueChanged.RemoveListener(OnToggleChanged);
@@ -70,6 +87,113 @@ public class MulliganCardOption : MonoBehaviour
             selectToggle.onValueChanged.AddListener(OnToggleChanged);
         }
     }
+
+    private void CacheBackgroundReferences()
+    {
+        // Find and cache all the background images
+        Transform borderTransform = visualRoot.Find("Card Border");
+            if (borderTransform != null)
+                border = borderTransform.GetComponent<Image>();
+
+        Transform portrait = visualRoot.Find("Portrait");
+        if (portrait != null)
+        {
+            Transform portraitBorderTransform = portrait.Find("Portrait Border");
+            if (portraitBorderTransform != null)
+                portraitBorder = portraitBorderTransform.GetComponent<Image>();
+        }
+
+        Transform mana = visualRoot.Find("Mana");
+        if (mana != null)
+        {
+            Transform manaBackgroundTransform = mana.Find("Mana Background");
+            if (manaBackgroundTransform != null)
+                manaBackground = manaBackgroundTransform.GetComponent<Image>();
+        }
+
+        Transform description = visualRoot.Find("Description");
+        if (description != null)
+        {
+            Transform descBackgroundTransform = description.Find("Description Background");
+            if (descBackgroundTransform != null)
+                descriptionBackground = descBackgroundTransform.GetComponent<Image>();
+        }
+
+        Transform damage = visualRoot.Find("Damage");
+        if (damage != null)
+        {
+            Transform damageBackgroundTransform = damage.Find("Damage Background");
+            if (damageBackgroundTransform != null)
+                damageBackground = damageBackgroundTransform.GetComponent<Image>();
+        }
+
+        Transform health = visualRoot.Find("Health");
+        if (health != null)
+        {
+            Transform healthBackgroundTransform = health.Find("Health Background");
+            if (healthBackgroundTransform != null)
+                healthBackground = healthBackgroundTransform.GetComponent<Image>();
+        }
+
+        Transform type = visualRoot.Find("Type");
+        if (type != null)
+        {
+            Transform typeBackgroundTransform = type.Find("Type Background");
+            if (typeBackgroundTransform != null)
+                typeBackground = typeBackgroundTransform.GetComponent<Image>();
+        }
+
+        // Cache Name elements
+        Transform name = visualRoot.Find("Name");
+        if (name != null)
+        {
+            Transform bgTransform = name.Find("Bg");
+            if (bgTransform != null)
+                nameBg = bgTransform.GetComponent<Image>();
+
+            Transform bgInnerTransform = name.Find("BgInner");
+            if (bgInnerTransform != null)
+                nameBgInner = bgInnerTransform.GetComponent<Image>();
+
+            Transform lightTransform = name.Find("Light");
+            if (lightTransform != null)
+                nameLight = lightTransform.GetComponent<Image>();
+        }
+    }
+
+    private void ApplyGoldColor()
+    {
+        if (border != null)
+            border.color = goldColor;
+
+        if (portraitBorder != null)
+            portraitBorder.color = goldColor;
+
+        if (manaBackground != null)
+            manaBackground.color = goldColor;
+
+        if (descriptionBackground != null)
+            descriptionBackground.color = goldColor;
+
+        if (damageBackground != null)
+            damageBackground.color = goldColor;
+
+        if (healthBackground != null)
+            healthBackground.color = goldColor;
+
+        if (typeBackground != null)
+            typeBackground.color = goldColor;
+
+        if (nameBg != null)
+            nameBg.color = goldColor;
+
+        if (nameBgInner != null)
+            nameBgInner.color = goldColor;
+
+        if (nameLight != null)
+            nameLight.color = goldColor;
+    }
+
 
     public void SetSelectedWithoutNotify(bool selected)
     {
