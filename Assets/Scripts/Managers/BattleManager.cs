@@ -62,12 +62,11 @@ public class BattleManager : MonoBehaviour
             LoadEnemyData(session);
         }
 
-        // Initialize health and mana
+        // Initialize player health and mana
         playerMana = playerMaxMana;
-        enemyHealth = 20; // set default enemy health to 20
-        enemyMana = enemyMaxMana;
-
-        enemyMaxHealth = enemyHealth;
+        
+        // Enemy health and mana will be set by LoadEnemyData()
+        // Don't set defaults here as they will be overridden
     }
 
     private void LoadEnemyData(GameSession session)
@@ -115,9 +114,14 @@ public class BattleManager : MonoBehaviour
                     Debug.Log($"[BattleManager] Initialized enemy from CombatNodeData: {combatData.enemyHealth} HP, {combatData.enemyMana} mana.");
                 }
 
+                // Update BattleManager's enemy stats from the entity
                 enemyHealth = enemyEntity.currentHealth;
+                enemyMaxHealth = enemyEntity.maxHealth;
                 enemyMana = enemyEntity.mana;
+                enemyMaxMana = enemyEntity.maxMana;
                 enemyDeckInstance = enemyEntity.GetDeck();
+                
+                Debug.Log($"[BattleManager] Enemy stats set: Health {enemyHealth}/{enemyMaxHealth}, Mana {enemyMana}/{enemyMaxMana}");
 
                 // If CombatNodeData has a deck, use it (for save/load persistence)
                 if (combatData.enemyDeck != null && combatData.enemyDeck.Cards.Count > 0)
@@ -136,7 +140,9 @@ public class BattleManager : MonoBehaviour
         {
             Debug.LogWarning("[BattleManager] Current node is not a CombatNode. Using default enemy stats.");
             enemyHealth = 10;
+            enemyMaxHealth = 10;
             enemyMana = 1;
+            enemyMaxMana = 1;
             enemyDeckInstance = new DeckInstance();
         }
     }

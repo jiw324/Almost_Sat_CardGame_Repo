@@ -37,48 +37,81 @@ public static class EnemyAI
         EnemyPlaystyle playstyle = DeterminePlaystyleForEnemy(enemyOwner.entityName);
         Debug.Log($"[EnemyAI] Enemy '{enemyOwner.entityName}' selected playstyle: {playstyle}");
 
+        // Get enemy hand manager to use cards from deck
+        HandManager enemyHand = bm.enemyHandManager;
+        if (enemyHand == null)
+        {
+            Debug.LogWarning("[EnemyAI] No enemy hand manager found. Cannot play cards.");
+            yield break;
+        }
+
         int attempts = 0;
 
         while (bm.enemyMana > 0 && attempts < MaxAttempts)
         {
             attempts++;
 
-            var json = CardDatabase.Instance.GetRandomCard();
-            if (json == null)
+            // Get cards from enemy's hand instead of random cards
+            var cardsInHand = enemyHand.GetCardsInHand();
+            if (cardsInHand == null || cardsInHand.Count == 0)
             {
-                Debug.LogWarning("[EnemyAI] No card available from CardDatabase.");
+                Debug.Log("[EnemyAI] No cards in hand. Ending play.");
                 break;
             }
 
-            Debug.Log($"[EnemyAI] Drew card id: {json.id}, name: {json.cardName}, cost: {json.cost}");
-
-            // Convert string ID to CardId enum
-            if (!CardIdExtensions.TryParse(json.id, out CardId cardId))
+            // Find a playable card (cost <= available mana), preferring playstyle-appropriate cards
+            CardInstance inst = null;
+            CardInstance preferredCard = null;
+            
+            foreach (var card in cardsInHand)
             {
-                Debug.LogWarning($"[EnemyAI] Could not parse card ID '{json.id}' to CardId enum.");
+                if (card == null || card.Data == null || card.Data.cost > bm.enemyMana)
+                    continue;
+                
+                // For defensive playstyle, prefer minions and healing spells
+                if (playstyle == EnemyPlaystyle.Defensive)
+                {
+                    if (card.IsMinion)
+                    {
+                        preferredCard = card;
+                        break; // Minions are highest priority for defensive
+                    }
+                    else
+                    {
+                        string idStr = card.Data.id.ToString().ToLowerInvariant();
+                        string nameStr = (card.Data.cardName ?? string.Empty).ToLowerInvariant();
+                        if (idStr.Contains("healing") || nameStr.Contains("heal") || nameStr.Contains("shield"))
+                        {
+                            if (preferredCard == null)
+                                preferredCard = card; // Healing spells are second priority
+                        }
+                    }
+                }
+                
+                // For any playstyle, if no preferred card found yet, use first affordable card
+                if (inst == null)
+                    inst = card;
+            }
+            
+            // Use preferred card if found, otherwise use first affordable card
+            if (preferredCard != null)
+                inst = preferredCard;
+
+            if (inst == null)
+            {
+                Debug.Log($"[EnemyAI] No playable cards in hand (need {bm.enemyMana} mana or less). Ending play.");
                 break;
             }
 
-            var inst = CardFactory.CreateCard(cardId, enemyOwner);
-            if (inst == null || inst.Data == null)
-            {
-                Debug.LogWarning("[EnemyAI] Failed to create card instance.");
-                break;
-            }
-
-            if (inst.Data.cost > bm.enemyMana)
-            {
-                Debug.Log($"[EnemyAI] Drew {inst.Data.cardName} (cost {inst.Data.cost}) but only has {bm.enemyMana} mana. Ending play.");
-                break;
-            }
+            Debug.Log($"[EnemyAI] Selected card from hand: {inst.Data.cardName} (cost {inst.Data.cost})");
 
             // Defensive playstyle: prefer heals and minions; avoid direct damage spells
+            bool cardPlayed = false;
             if (playstyle == EnemyPlaystyle.Defensive)
             {
                 if (inst.IsMinion)
                 {
-                    if (!TryPlayMinion(inst, enemyOwner, bm))
-                        break;
+                    cardPlayed = TryPlayMinion(inst, enemyOwner, bm);
                 }
                 else
                 {
@@ -92,13 +125,53 @@ public static class EnemyAI
                     {
                         // Play heal/self-buff targeting enemy (self)
                         TryPlaySpell(inst, enemyOwner, bm);
+                        cardPlayed = true;
                     }
                     else
                     {
                         // Skip aggressive/damage spells while defensive
-                        Debug.Log($"[EnemyAI] Defensive playstyle: skipping aggressive spell {inst.Data.cardName}.");
-                        // allow next attempt to draw a different card
-                        continue;
+                        Debug.Log($"[EnemyAI] Defensive playstyle: skipping aggressive spell {inst.Data.cardName}. Looking for alternative.");
+                        // Try to find another playable card in hand that's suitable
+                        CardInstance alternativeCard = null;
+                        foreach (var altCard in cardsInHand)
+                        {
+                            if (altCard == inst) continue; // Skip the one we just rejected
+                            if (altCard != null && altCard.Data != null && altCard.Data.cost <= bm.enemyMana)
+                            {
+                                if (altCard.IsMinion)
+                                {
+                                    alternativeCard = altCard;
+                                    break;
+                                }
+                                string altIdStr = altCard.Data.id.ToString().ToLowerInvariant();
+                                string altNameStr = (altCard.Data.cardName ?? string.Empty).ToLowerInvariant();
+                                if (altIdStr.Contains("healing") || altNameStr.Contains("heal") || altNameStr.Contains("shield"))
+                                {
+                                    alternativeCard = altCard;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (alternativeCard != null)
+                        {
+                            inst = alternativeCard;
+                            Debug.Log($"[EnemyAI] Found alternative defensive card: {inst.Data.cardName}");
+                            if (inst.IsMinion)
+                            {
+                                cardPlayed = TryPlayMinion(inst, enemyOwner, bm);
+                            }
+                            else
+                            {
+                                TryPlaySpell(inst, enemyOwner, bm);
+                                cardPlayed = true;
+                            }
+                        }
+                        else
+                        {
+                            Debug.Log("[EnemyAI] No suitable defensive cards found. Ending play.");
+                            break;
+                        }
                     }
                 }
             }
@@ -106,13 +179,20 @@ public static class EnemyAI
             {
                 if (inst.IsMinion)
                 {
-                    if (!TryPlayMinion(inst, enemyOwner, bm))
-                        break;
+                    cardPlayed = TryPlayMinion(inst, enemyOwner, bm);
                 }
                 else
                 {
                     TryPlaySpell(inst, enemyOwner, bm);
+                    cardPlayed = true;
                 }
+            }
+
+            // If card wasn't played (e.g., placement failed), break to avoid infinite loop
+            if (!cardPlayed)
+            {
+                Debug.LogWarning("[EnemyAI] Card selection failed to play. Ending turn.");
+                break;
             }
 
             yield return new WaitForSecondsRealtime(ActionDelay);
@@ -177,6 +257,12 @@ public static class EnemyAI
             bm.enemyMana -= inst.Data.cost;
             if (bm.uiManager != null) bm.uiManager.UpdateEnemyMana(bm.enemyMana);
 
+            // Remove card from hand
+            if (bm.enemyHandManager != null)
+            {
+                bm.enemyHandManager.RemoveByInstance(inst);
+            }
+
             Debug.Log($"[EnemyAI] Played minion {inst.Data.cardName} for cost {inst.Data.cost}. Remaining mana: {bm.enemyMana}");
             return true;
         }
@@ -211,6 +297,12 @@ public static class EnemyAI
 
         bm.enemyMana -= inst.Data.cost;
         if (bm.uiManager != null) bm.uiManager.UpdateEnemyMana(bm.enemyMana);
+
+        // Remove card from hand
+        if (bm.enemyHandManager != null)
+        {
+            bm.enemyHandManager.RemoveByInstance(inst);
+        }
 
         Debug.Log($"[EnemyAI] Cast spell {inst.Data.cardName} for cost {inst.Data.cost}. Remaining mana: {bm.enemyMana}");
     }

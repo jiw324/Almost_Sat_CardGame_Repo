@@ -5,10 +5,12 @@ using UnityEngine.UI;
 public class HandManager : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private Transform handArea;     // parent for card UI prefabs
-    [SerializeField] private GameObject cardUIPrefab;
     [SerializeField] private EntityBase owner;       // who this hand belongs to (player or enemy)
-    [SerializeField] private MulliganOverlay mulliganOverlay;
+    
+    [Header("UI (Player Only)")]
+    [SerializeField] private Transform handArea;     // parent for card UI prefabs (only needed for player)
+    [SerializeField] private GameObject cardUIPrefab; // UI prefab for displaying cards (only needed for player)
+    [SerializeField] private MulliganOverlay mulliganOverlay; // Only needed for player mulligan
 
     [Header("Settings")]
     [SerializeField] private int maxHandSize = 10;
@@ -23,14 +25,25 @@ public class HandManager : MonoBehaviour
 
     private void Start()
     {
-        if (handArea == null)
-            Debug.LogError("[HandManager] Missing handArea reference!");
-        if (cardUIPrefab == null)
-            Debug.LogError("[HandManager] Missing cardUIPrefab reference!");
         if (owner == null)
             Debug.LogWarning("[HandManager] Owner not set — hand manager needs an entity owner.");
-        if (mulliganOverlay == null)
-            Debug.Log("[HandManager] No mulligan overlay assigned. Opening hand will draw automatically.");
+        
+        // UI elements are only required for players
+        bool isPlayer = owner is PlayerEntity;
+        if (isPlayer)
+        {
+            if (handArea == null)
+                Debug.LogError("[HandManager] Missing handArea reference! Required for player.");
+            if (cardUIPrefab == null)
+                Debug.LogError("[HandManager] Missing cardUIPrefab reference! Required for player.");
+            if (mulliganOverlay == null)
+                Debug.Log("[HandManager] No mulligan overlay assigned. Opening hand will draw automatically.");
+        }
+        else
+        {
+            // Enemy doesn't need UI elements
+            Debug.Log("[HandManager] Enemy hand manager initialized (no UI required).");
+        }
     }
 
     // ---- Public methods ----
@@ -185,7 +198,9 @@ public class HandManager : MonoBehaviour
                 break;
         }
 
-        if (handArea is RectTransform handRect)
+        // Only rebuild layout for players
+        bool isPlayer = owner is PlayerEntity;
+        if (isPlayer && handArea is RectTransform handRect)
         {
             LayoutRebuilder.ForceRebuildLayoutImmediate(handRect);
         }
@@ -197,14 +212,19 @@ public class HandManager : MonoBehaviour
         cardsInHand.Add(card);
         Debug.Log($"[HandManager] Added {card.Data.name} to hand.\n{card.Data.PrintCard()}");
 
-        GameObject go = Instantiate(cardUIPrefab, handArea);
-        go.name = card.Data.id.ToString();
-        var controller = go.GetComponent<CardUIController>();
-        controller.Initialize(card);
+        // Only create UI for players
+        bool isPlayer = owner is PlayerEntity;
+        if (isPlayer && handArea != null && cardUIPrefab != null)
+        {
+            GameObject go = Instantiate(cardUIPrefab, handArea);
+            go.name = card.Data.id.ToString();
+            var controller = go.GetComponent<CardUIController>();
+            controller.Initialize(card);
 
-        // layout groups handle positioning
-        go.transform.localScale = Vector3.one;
-        go.transform.localRotation = Quaternion.identity;
+            // layout groups handle positioning
+            go.transform.localScale = Vector3.one;
+            go.transform.localRotation = Quaternion.identity;
+        }
     }
 
     public void RemoveCardFromHand(CardInstance card)
@@ -222,14 +242,26 @@ public class HandManager : MonoBehaviour
         CardInstance card = cardsInHand[cardsInHand.Count - 1];
         cardsInHand.RemoveAt(cardsInHand.Count - 1);
         AddToDiscard(card.Data.id);
-        Destroy(handArea.GetChild(0).gameObject);
+        
+        // Only destroy UI for players
+        bool isPlayer = owner is PlayerEntity;
+        if (isPlayer && handArea != null && handArea.childCount > 0)
+        {
+            Destroy(handArea.GetChild(0).gameObject);
+        }
     }
 
     public void ClearHand()
     {
         cardsInHand.Clear();
-        foreach (Transform child in handArea)
-            Destroy(child.gameObject);
+        
+        // Only destroy UI elements for players
+        bool isPlayer = owner is PlayerEntity;
+        if (isPlayer && handArea != null)
+        {
+            foreach (Transform child in handArea)
+                Destroy(child.gameObject);
+        }
     }
 
     private CardInstance TakeCardFromDeck()
@@ -396,10 +428,40 @@ public class HandManager : MonoBehaviour
     public void RemoveByInstance(CardInstance instance)
     {
         if (instance == null) return;
-        int idx = cardsInHand.IndexOf(instance);
-        if (idx >= 0)
+        
+        // Find and destroy the UI element first (before removing from list) - only for players
+        bool isPlayer = owner is PlayerEntity;
+        if (isPlayer && handArea != null)
         {
-            cardsInHand.RemoveAt(idx);
+            for (int i = 0; i < handArea.childCount; i++)
+            {
+                Transform child = handArea.GetChild(i);
+                var controller = child.GetComponent<CardUIController>();
+                if (controller != null && controller.Instance == instance)
+                {
+                    Destroy(child.gameObject);
+                    break;
+                }
+            }
         }
+        
+        // Remove from list
+        cardsInHand.Remove(instance);
+    }
+
+    /// <summary>
+    /// Gets a copy of all cards currently in hand.
+    /// </summary>
+    public List<CardInstance> GetCardsInHand()
+    {
+        return new List<CardInstance>(cardsInHand);
+    }
+
+    /// <summary>
+    /// Gets the number of cards currently in hand.
+    /// </summary>
+    public int GetHandSize()
+    {
+        return cardsInHand.Count;
     }
 }

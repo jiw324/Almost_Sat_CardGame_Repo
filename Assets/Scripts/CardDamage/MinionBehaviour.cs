@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MinionBehaviour : MonoBehaviour
@@ -246,13 +247,7 @@ public class MinionBehaviour : MonoBehaviour
     {
         if (entity == null) return transform.position;
 
-        // Try to get position from transform
-        if (entity.transform != null)
-        {
-            return entity.transform.position;
-        }
-
-        // Fallback: try to find a MinionEntity and get its position
+        // For MinionEntity: use the minion's actual position
         var minionEntity = entity as MinionEntity;
         if (minionEntity != null)
         {
@@ -261,10 +256,31 @@ public class MinionBehaviour : MonoBehaviour
             {
                 return mb.slot.transform.position;
             }
+            // Fallback: use minion's transform if slot not available
+            if (minionEntity.transform != null)
+            {
+                return minionEntity.transform.position;
+            }
         }
 
-        // Last resort: use current position
-        return transform.position;
+        // For EnemyEntity/PlayerEntity: use the inspector-set Transform target
+        if (entity.attackTargetTransform != null)
+        {
+            return entity.attackTargetTransform.position;
+        }
+
+        // Last resort: use a position offset from current position
+        Vector3 offsetPos = transform.position;
+        if (entity is EnemyEntity)
+        {
+            offsetPos += Vector3.forward * 3.0f;
+        }
+        else if (entity is PlayerEntity)
+        {
+            offsetPos += Vector3.back * 3.0f;
+        }
+        offsetPos.y += 1.0f;
+        return offsetPos;
     }
 
 

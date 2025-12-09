@@ -7,6 +7,10 @@ public abstract class EntityBase : MonoBehaviour
     public int maxHealth = 30;
     public int currentHealth = 30;
 
+    [Header("Attack Animation")]
+    [Tooltip("GameObject/Transform where minions should fly to when attacking this entity. Leave empty to use fallback calculation.")]
+    public Transform attackTargetTransform;
+
 
     // Strength / Weakness: durations in *owner turns*.
     // Magnitude is fixed: Strength = +25%, Weakness = -25%.

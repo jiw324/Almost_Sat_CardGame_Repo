@@ -16,4 +16,4 @@ MonoBehaviour:
   maxHealth: 12
   startingMana: 5
   portrait: {fileID: 21300000, guid: 501b5e360164e9f4781a95a6f0e28dee, type: 3}
-  deckDefinition: {fileID: 11400000, guid: 5e8d255eb222643af9b19304f1c1dbd7, type: 2}
+  deckDefinition: {fileID: 11400000, guid: 53b4ce0a2d0d24cc5a6ea61669802825, type: 2}
