@@ -30,6 +30,7 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
     private Vector3 originalScale;
     private Vector3 originalPosition;
     private float animationSpeed = 8f;
+    private Canvas hoverCanvas; // Canvas component for z-ordering on hover
 
     // References to background images
     private Image portraitBorder;
@@ -47,6 +48,24 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
         originalScale = visualRoot.localScale;
         originalPosition = visualRoot.localPosition;
         Instance = instance;
+
+        // Get or add Canvas component for z-ordering on hover
+        if (hoverCanvas == null)
+        {
+            hoverCanvas = gameObject.GetComponent<Canvas>();
+            if (hoverCanvas == null)
+            {
+                hoverCanvas = gameObject.AddComponent<Canvas>();
+            }
+            hoverCanvas.overrideSorting = true;
+            hoverCanvas.sortingOrder = 1; // Default sorting order (higher than 0)
+            
+            // Add GraphicRaycaster so the card can still receive input events
+            if (gameObject.GetComponent<UnityEngine.UI.GraphicRaycaster>() == null)
+            {
+                gameObject.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+            }
+        }
 
         // Cache references to background images
         CacheBackgroundReferences();
@@ -220,14 +239,34 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
     public void OnPointerEnter(PointerEventData eventData)
     {
         isHovered = true;
+        AddHoverCanvas();
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         isHovered = false;
+        RemoveHoverCanvas();
         // Only deselect if this card is currently selected
         //if (BoardManager.Instance != null && BoardManager.Instance.IsSelectedCard(this))
         //  BoardManager.Instance.DeselectCard();
+    }
+
+    private void AddHoverCanvas()
+    {
+        // Set high sorting order to render on top
+        if (hoverCanvas != null)
+        {
+            hoverCanvas.sortingOrder = 100;
+        }
+    }
+
+    private void RemoveHoverCanvas()
+    {
+        // Reset sorting order when not hovering
+        if (hoverCanvas != null)
+        {
+            hoverCanvas.sortingOrder = 1;
+        }
     }
 
     public void OnPointerClick(PointerEventData eventData)
