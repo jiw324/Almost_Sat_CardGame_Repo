@@ -21,30 +21,40 @@ public class BoardSlot : MonoBehaviour
         //     return false;
         // }
 
-        // Prevent enemy-owned cards from being placed on player-side slots.
-        // New naming: parent should be "Enemy Melee Slots" or "Enemy Ranged Slots", or slot name starts with "enemy"
-        if (card.Owner is EnemyEntity)
+        // Check if this is an enemy slot
+        bool isEnemySlot = false;
+        
+        // Check slot name (e.g., "enemyMeleeA", "enemyRangedB")
+        if (name.StartsWith("enemy", System.StringComparison.OrdinalIgnoreCase))
         {
-            bool isEnemySlot = false;
-            
-            // Check slot name (e.g., "enemyMeleeA", "enemyRangedB")
-            if (name.StartsWith("enemy", System.StringComparison.OrdinalIgnoreCase))
+            isEnemySlot = true;
+        }
+        // Check parent name (e.g., "Enemy Melee Slots", "Enemy Ranged Slots")
+        else if (transform.parent != null)
+        {
+            string parentName = transform.parent.name;
+            if (parentName.Contains("Enemy", System.StringComparison.OrdinalIgnoreCase))
             {
                 isEnemySlot = true;
             }
-            // Check parent name (e.g., "Enemy Melee Slots", "Enemy Ranged Slots")
-            else if (transform.parent != null)
-            {
-                string parentName = transform.parent.name;
-                if (parentName.Contains("Enemy", System.StringComparison.OrdinalIgnoreCase))
-                {
-                    isEnemySlot = true;
-                }
-            }
-            
+        }
+        
+        // Prevent enemy-owned cards from being placed on player-side slots
+        if (card.Owner is EnemyEntity)
+        {
             if (!isEnemySlot)
             {
                 Debug.LogWarning($"[BoardSlot] Enemy tried to place a card on a non-enemy slot (slot='{name}', parent='{transform.parent?.name ?? "null"}'). Placement denied.");
+                return false;
+            }
+        }
+        
+        // Prevent player-owned cards from being placed on enemy-side slots
+        if (card.Owner is PlayerEntity)
+        {
+            if (isEnemySlot)
+            {
+                Debug.LogWarning($"[BoardSlot] Player tried to place a card on an enemy slot (slot='{name}', parent='{transform.parent?.name ?? "null"}'). Placement denied.");
                 return false;
             }
         }

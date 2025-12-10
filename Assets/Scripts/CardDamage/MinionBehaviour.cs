@@ -324,6 +324,34 @@ public class MinionBehaviour : MonoBehaviour
             Debug.Log($"{instance.Data.cardName} died.");
         }
 
+        // Start death animation coroutine
+        StartCoroutine(DeathAnimationCoroutine());
+    }
+
+    private IEnumerator DeathAnimationCoroutine()
+    {
+        // Scale down animation
+        float duration = 0.3f;
+        float elapsed = 0f;
+        Vector3 startScale = transform.localScale;
+        Vector3 targetScale = Vector3.zero;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            
+            // Ease-in curve for smooth animation
+            t = t * t;
+            
+            transform.localScale = Vector3.Lerp(startScale, targetScale, t);
+            yield return null;
+        }
+
+        // Ensure scale is zero
+        transform.localScale = targetScale;
+
+        // Now destroy the minion
         if (slot != null)
             slot.ClearSlotAndDestroy();
         else

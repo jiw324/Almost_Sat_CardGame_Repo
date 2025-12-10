@@ -10,6 +10,7 @@ public static class EnemyAI
 {
     private const int MaxAttempts = 8;
     private const float ActionDelay = 0.5f;
+    private const float SpellAnimationDuration = 0.8f; // Match the spell animation duration
 
     private enum EnemyPlaystyle { Offensive, Defensive }
 
@@ -76,12 +77,15 @@ public static class EnemyAI
 
             // Play the selected card based on type
             bool cardPlayed = false;
+            bool isSpell = false;
+            
             if (inst.IsMinion)
             {
                 cardPlayed = TryPlayMinion(inst, enemyOwner, bm);
             }
             else
             {
+                isSpell = true;
                 // For defensive playstyle, check if spell is appropriate
                 if (playstyle == EnemyPlaystyle.Defensive)
                 {
@@ -117,7 +121,9 @@ public static class EnemyAI
                 break;
             }
 
-            yield return new WaitForSecondsRealtime(ActionDelay);
+            // Wait longer for spells to show the animation, shorter for minions
+            float delay = isSpell ? SpellAnimationDuration + 0.2f : ActionDelay;
+            yield return new WaitForSecondsRealtime(delay);
 
             if (bm.playerHealth <= 0 || bm.enemyHealth <= 0) break;
         }
@@ -308,6 +314,13 @@ public static class EnemyAI
         }
 
         Debug.Log($"[EnemyAI] Playing spell {inst.Data.cardName} (cost {inst.Data.cost}) targeting {target?.entityName ?? "unknown"}");
+        
+        // Show spell flash animation
+        if (BoardManager.Instance != null)
+        {
+            BoardManager.Instance.ShowSpellFlashAnimation(inst, target);
+        }
+        
         inst.PlayCard(null, target);
 
         bm.enemyMana -= inst.Data.cost;

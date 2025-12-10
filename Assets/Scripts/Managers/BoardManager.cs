@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 
 public class BoardManager : MonoBehaviour
 {
@@ -137,7 +138,15 @@ public class BoardManager : MonoBehaviour
             }
 
             // 2b) SPELL CARD: second click chooses the target
+            // Check both physics raycast and UI raycast for targeting
             var targetEntity = ResolveClickToSpellTarget(hit, inst);
+            
+            // If no target from physics raycast, try UI raycast (for portraits)
+            if (targetEntity == null)
+            {
+                targetEntity = ResolveClickToEntityFromUI();
+            }
+            
             if (targetEntity != null)
             {
                 var bm = BattleManager.Instance;
@@ -195,6 +204,12 @@ public class BoardManager : MonoBehaviour
             {
                 // If we clicked on ourselves, treat as "no valid target"
                 target = null;
+            }
+
+            // If no target from physics raycast, try UI raycast (for portraits)
+            if (target == null)
+            {
+                target = ResolveClickToEntityFromUI();
             }
 
             // If no direct entity, but we clicked something like an empty slot,
@@ -309,6 +324,16 @@ public class BoardManager : MonoBehaviour
         {
             Debug.LogWarning("[BoardManager] Selected card instance is null.");
             return false;
+        }
+
+        // Prevent player cards from being placed on enemy slots
+        if (inst.Owner is PlayerEntity)
+        {
+            if (IsEnemySlot(slot))
+            {
+                Debug.Log("[BoardManager] Cannot place player card on enemy slot.");
+                return false;
+            }
         }
 
         var bm = BattleManager.Instance;
@@ -528,26 +553,61 @@ public class BoardManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Shows a spell card briefly on the board when cast.
+    /// Can be called from EnemyAI or player actions.
+    /// </summary>
+    public void ShowSpellFlashAnimation(CardInstance spell, EntityBase target)
+    {
+        if (spell != null && target != null)
+        {
+            StartCoroutine(SpellFlashAnimation(spell, target));
+        }
+    }
+
+    /// <summary>
     /// Shows a spell card briefly on the board when cast
     /// </summary>
     private System.Collections.IEnumerator SpellFlashAnimation(CardInstance spell, EntityBase target)
     {
         if (cardPrefab3D == null || spell == null) yield break;
 
-        // Calculate position - center of board or near target
+        // Calculate position - use attackTargetTransform for entities, or target position for minions
         Vector3 flashPosition;
-        if (target != null && target.transform != null)
+        if (target != null)
         {
-            flashPosition = target.transform.position + Vector3.up * 2f;
+            flashPosition = GetEntityPositionForSpell(target);
+            
+            // Offset upward for better visibility (smaller offset to keep it in camera view)
+            // For minions, use a smaller offset since they're already on the board
+            if (target is MinionEntity)
+            {
+                flashPosition += Vector3.up * 1.5f;
+            }
+            else
+            {
+                // For enemy/player entities, use a smaller offset to keep it visible
+                flashPosition += Vector3.up * 0.5f;
+                
+                // Shift enemy target left (toward center of screen) for better visibility
+                if (target is EnemyEntity)
+                {
+                    flashPosition += Vector3.left; // Adjust this value to move more/less left
+                }
+                else if (target is PlayerEntity)
+                {
+                    flashPosition += Vector3.right; // Adjust this value to move more/less right
+                }
+            }
         }
         else
         {
             // Center of board (you may need to adjust this based on your scene)
-            flashPosition = Vector3.zero;
+            flashPosition = new Vector3(0, 0, 4);
             if (mainCamera != null)
             {
                 flashPosition = mainCamera.transform.position + mainCamera.transform.forward * 5f;
             }
+            flashPosition += Vector3.up * 1.5f;
         }
 
         // Instantiate the card
@@ -562,7 +622,7 @@ public class BoardManager : MonoBehaviour
         }
 
         // Scale up quickly
-        float duration = 0.5f;
+        float duration = 0.8f;
         float elapsed = 0f;
         Vector3 startScale = Vector3.zero;
         Vector3 targetScale = flashCard.transform.localScale;
@@ -601,6 +661,130 @@ public class BoardManager : MonoBehaviour
 
         // Clean up
         Destroy(flashCard);
+    }
+
+    /// <summary>
+    /// Resolves entity target from UI raycast (for clicking on portraits).
+    /// Used for both spell targeting and minion attack targeting.
+    /// </summary>
+    private EntityBase ResolveClickToEntityFromUI()
+    {
+        // Check if we're clicking on UI
+        if (EventSystem.current == null) return null;
+        
+        PointerEventData pointerData = new PointerEventData(EventSystem.current);
+        pointerData.position = Mouse.current.position.ReadValue();
+        
+        var results = new System.Collections.Generic.List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointerData, results);
+        
+        if (results.Count == 0) return null;
+        
+        // Check each UI element that was hit
+        foreach (var result in results)
+        {
+            GameObject hitObject = result.gameObject;
+            
+            // Check if this UI element is part of the enemy or player portrait
+            // Look for AvatarUI component in parent hierarchy
+            AvatarUI avatarUI = hitObject.GetComponentInParent<AvatarUI>();
+            if (avatarUI == null) continue;
+            
+            // Find which entity this portrait belongs to
+            var bm = BattleManager.Instance;
+            if (bm == null) continue;
+            
+            // Check if it's the enemy UI
+            if (bm.uiManager != null && bm.uiManager.enemyUI == avatarUI)
+            {
+                // Return enemy entity
+                return GetDefaultEnemyHero();
+            }
+            
+            // Check if it's the player UI
+            if (bm.uiManager != null && bm.uiManager.playerUI == avatarUI)
+            {
+                // Return player entity
+                return bm.player;
+            }
+        }
+        
+        return null;
+    }
+
+    /// <summary>
+    /// Checks if a board slot belongs to the enemy side.
+    /// </summary>
+    private bool IsEnemySlot(BoardSlot slot)
+    {
+        if (slot == null) return false;
+        
+        // Check slot name (e.g., "enemyMeleeA", "enemyRangedB")
+        if (slot.name.StartsWith("enemy", System.StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+        
+        // Check parent name (e.g., "Enemy Melee Slots", "Enemy Ranged Slots")
+        if (slot.transform.parent != null)
+        {
+            string parentName = slot.transform.parent.name;
+            if (parentName.Contains("Enemy", System.StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    /// <summary>
+    /// Gets the world position for a spell animation target.
+    /// Uses attackTargetTransform for PlayerEntity/EnemyEntity, or transform.position for MinionEntity.
+    /// </summary>
+    private Vector3 GetEntityPositionForSpell(EntityBase entity)
+    {
+        if (entity == null) return Vector3.zero;
+
+        // For MinionEntity: use the minion's actual position
+        var minionEntity = entity as MinionEntity;
+        if (minionEntity != null)
+        {
+            var mb = minionEntity.GetComponent<MinionBehaviour>();
+            if (mb != null && mb.slot != null)
+            {
+                return mb.slot.transform.position;
+            }
+            // Fallback: use minion's transform if slot not available
+            if (minionEntity.transform != null)
+            {
+                return minionEntity.transform.position;
+            }
+        }
+
+        // For EnemyEntity/PlayerEntity: use the inspector-set attackTargetTransform if available
+        if (entity.attackTargetTransform != null)
+        {
+            return entity.attackTargetTransform.position;
+        }
+
+        // Fallback: use a position offset from current position
+        Vector3 offsetPos = Vector3.zero;
+        if (entity.transform != null)
+        {
+            offsetPos = entity.transform.position;
+        }
+        
+        if (entity is EnemyEntity)
+        {
+            offsetPos += Vector3.forward * 3.0f; // Move forward
+        }
+        else if (entity is PlayerEntity)
+        {
+            offsetPos += Vector3.back * 3.0f; // Move backward
+        }
+        offsetPos.y += 0.0f;
+        return offsetPos;
     }
 
 }
