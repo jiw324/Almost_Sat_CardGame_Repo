@@ -30,7 +30,7 @@
         },
         {
             "id": "slash",
-            "cardName": "Slash [M]",
+            "cardName": "Slash",
             "description": "Deal damage to an enemy.",
             "cost": 1,
             "type": "spell",
