@@ -177,32 +177,43 @@ public class MinionBehaviour : MonoBehaviour
 
         if (!CanAct)
         {
-            Debug.Log("[MinionBehaviour] Tried to attack but this minion cannot act yet (summoning sickness or already attacked).");
+            Debug.Log("[MinionBehaviour] Tried to attack but this minion cannot act yet.");
             return;
         }
 
-        int atk = instance.Attack;
-        if (atk <= 0)
+        int atkBase = instance.Attack;
+        if (atkBase <= 0)
         {
             Debug.Log($"[MinionBehaviour] {instance.Data.cardName} has 0 attack and cannot deal damage.");
-            hasActedThisTurn = true; // still consumes its action
+            hasActedThisTurn = true;
             return;
         }
 
-        // --- NEW: apply status multiplier from MinionEntity, if present ---
-        int finalDamage = atk;
+        float statusMult = 1f;
+        float rowMult = 1f;
+
         var minionEntity = GetComponent<MinionEntity>();
         if (minionEntity != null)
         {
-            float mult = minionEntity.GetOutgoingDamageMultiplier();
-            finalDamage = Mathf.RoundToInt(atk * mult);
+            // existing Strength/Weakness on this minion
+            statusMult = minionEntity.GetOutgoingDamageMultiplier();
+
+            // NEW: row aura Strength/Weakness
+            bool isPlayerRow = minionEntity.IsOwnedByPlayer;
+            bool isRangedRow = slot != null && slot.isRanged;
+
+            rowMult = RowEffectSystem.GetRowDamageMultiplier(isPlayerRow, isRangedRow);
         }
 
-        // Start attack animation
+        int finalDamage = Mathf.RoundToInt(atkBase * statusMult * rowMult);
+        if (finalDamage < 0) finalDamage = 0;
+
+        // start your animation coroutine, but use finalDamage:
         StartCoroutine(AttackAnimationCoroutine(target, finalDamage));
 
         hasActedThisTurn = true;
     }
+
 
     private IEnumerator AttackAnimationCoroutine(EntityBase target, int damage)
     {

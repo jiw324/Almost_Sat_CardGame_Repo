@@ -67,8 +67,8 @@
             "type": "minion",
             "isRanged": false,
             "isMinion": true,
-            "minionAttack": 2,
-            "minionHealth": 11,
+            "minionAttack": 10,
+            "minionHealth": 4,
             "onSummon": [
                 {
                     "effectId": "gain_shield",
@@ -188,6 +188,37 @@
                     "effectValue": 8
                 }
             ]
+        },
+        {
+            "id": "MeleeWarCry",
+            "cardName": "Melee War Cry",
+            "description": "Give your melee row Strength for 2 turns.",
+            "cost": 2,
+            "type": "spell",
+            "isRanged": false,
+            "isMinion": false,
+            "effects": [
+                {
+                    "effectId": "row_player_melee_strength",
+                    "effectValue": 2
+                }
+            ]
+        },
+        {
+            "id": "SuppressRanged",
+            "cardName": "Suppress Ranged",
+            "description": "Give enemy ranged row Weakness for 3 turns.",
+            "cost": 2,
+            "type": "spell",
+            "isRanged": false,
+            "isMinion": false,
+            "effects": [
+                {
+                    "effectId": "row_enemy_ranged_weakness",
+                    "effectValue": 2
+                }
+            ]
         }
+
     ]
 }

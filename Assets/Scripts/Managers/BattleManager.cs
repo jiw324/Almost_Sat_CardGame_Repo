@@ -40,6 +40,7 @@ public class BattleManager : MonoBehaviour
 
     private void Awake()
     {
+        RowEffectSystem.ClearAll();
 
         if (Instance != null && Instance != this)
         {

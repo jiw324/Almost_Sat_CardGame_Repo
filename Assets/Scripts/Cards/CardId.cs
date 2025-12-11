@@ -15,5 +15,7 @@ public enum CardId
     WeaknessHex,
     PoisonDart,
     PocketBomb,
+    MeleeWarCry,
+    SuppressRanged
 }
 

@@ -6688,6 +6688,10 @@ MonoBehaviour:
   strengthEffect: {fileID: 11400000, guid: a9ec8420cd1fc8c49a9a31a6713ae8b5, type: 2}
   weaknessEffect: {fileID: 11400000, guid: 164de42a25d12804d8efa9bbb96dbf8b, type: 2}
   poisonEffect: {fileID: 11400000, guid: 79ac9b8487ea91542a2749fc2dd001b3, type: 2}
+  rowPlayerMeleeStrength: {fileID: 11400000, guid: 06890f0f4c8d4cc4e8094703e0fbed5f, type: 2}
+  rowPlayerRangedStrength: {fileID: 11400000, guid: 61c2f34d369b43c48b85bdd0aa9c7a19, type: 2}
+  rowEnemyMeleeWeakness: {fileID: 11400000, guid: 8c456f5657efc0f4aa99bdf6f741b5bd, type: 2}
+  rowEnemyRangedWeakness: {fileID: 11400000, guid: 6398518c1c159c74ba6fb5b567f4e49f, type: 2}
 --- !u!4 &2026214912 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7533795812152726194, guid: 7bf8953ae397ffd409a19928405575cb, type: 3}

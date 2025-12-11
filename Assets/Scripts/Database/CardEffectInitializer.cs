@@ -10,6 +10,10 @@ public class CardEffectInitializer : MonoBehaviour
     [SerializeField] private StrengthEffect strengthEffect;
     [SerializeField] private WeaknessEffect weaknessEffect;
     [SerializeField] private PoisonEffect poisonEffect;
+    [SerializeField] private RowStatusAuraEffect rowPlayerMeleeStrength;
+    [SerializeField] private RowStatusAuraEffect rowPlayerRangedStrength;
+    [SerializeField] private RowStatusAuraEffect rowEnemyMeleeWeakness;
+    [SerializeField] private RowStatusAuraEffect rowEnemyRangedWeakness;
 
     private void Awake()
     {
@@ -20,5 +24,9 @@ public class CardEffectInitializer : MonoBehaviour
         CardEffectLibrary.RegisterEffect("strength", strengthEffect);
         CardEffectLibrary.RegisterEffect("weakness", weaknessEffect);
         CardEffectLibrary.RegisterEffect("poison", poisonEffect);
+        CardEffectLibrary.RegisterEffect("row_player_melee_strength", rowPlayerMeleeStrength);
+        CardEffectLibrary.RegisterEffect("row_player_ranged_strength", rowPlayerRangedStrength);
+        CardEffectLibrary.RegisterEffect("row_enemy_melee_weakness", rowEnemyMeleeWeakness);
+        CardEffectLibrary.RegisterEffect("row_enemy_ranged_weakness", rowEnemyRangedWeakness);
     }
 }

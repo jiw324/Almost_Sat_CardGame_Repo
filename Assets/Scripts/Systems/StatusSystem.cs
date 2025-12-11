@@ -50,6 +50,8 @@ public static class StatusSystem
                 me.OnStatusTurnStart();
             }
         }
+
+        RowEffectSystem.OnTurnStart(side);
     }
 
     /// <summary>
