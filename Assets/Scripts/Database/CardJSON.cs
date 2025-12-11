@@ -7,6 +7,8 @@ public class CardJSON
     public int cost;
     public string type;
     public bool isRanged;
+    public bool isRowEffect = false;
+
 
     public string effectId;      
     public int effectValue;      

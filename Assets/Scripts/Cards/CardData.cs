@@ -11,7 +11,8 @@ public class CardData : ScriptableObject
     [TextArea] public string description;
     public string type;
     public Sprite artwork;
-    public bool isRanged; 
+    public bool isRanged;
+    public bool isRowEffect = false;
     public CardEffect effect;
     public int damage;
 

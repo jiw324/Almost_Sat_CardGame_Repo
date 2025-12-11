@@ -67,8 +67,8 @@
             "type": "minion",
             "isRanged": false,
             "isMinion": true,
-            "minionAttack": 10,
-            "minionHealth": 4,
+            "minionAttack": 3,
+            "minionHealth": 6,
             "onSummon": [
                 {
                     "effectId": "gain_shield",
@@ -80,7 +80,7 @@
             "id": "archer",
             "cardName": "Archer",
             "description": "Deals damage every turn. Can attack immediately on summon.",
-            "cost": 1,
+            "cost": 2,
             "type": "minion",
             "isRanged": true,
             "isMinion": true,
@@ -197,6 +197,7 @@
             "type": "spell",
             "isRanged": false,
             "isMinion": false,
+            "isRowEffect": true,
             "effects": [
                 {
                     "effectId": "row_player_melee_strength",
@@ -207,11 +208,12 @@
         {
             "id": "SuppressRanged",
             "cardName": "Suppress Ranged",
-            "description": "Give enemy ranged row Weakness for 3 turns.",
+            "description": "Give enemy ranged row Weakness for 2 turns.",
             "cost": 2,
             "type": "spell",
             "isRanged": false,
             "isMinion": false,
+            "isRowEffect": true,
             "effects": [
                 {
                     "effectId": "row_enemy_ranged_weakness",

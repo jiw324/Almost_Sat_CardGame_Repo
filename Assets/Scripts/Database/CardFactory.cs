@@ -20,6 +20,7 @@ public static class CardFactory
         cardData.cost = data.cost;
         cardData.type = data.type;
         cardData.isRanged = data.isRanged;
+        cardData.isRowEffect = data.isRowEffect;
 
         // Load sprite from Resources/Cards/ folder
         string spritePath = $"Cards/{id}";
