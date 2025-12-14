@@ -21,8 +21,25 @@ public class GameSession : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        GameSessionData loadedData = SessionSaveManager.LoadGameSession("Save");
+        if (loadedData != null)
+        {
+            gameSessionData = loadedData;
+            Debug.Log("Loaded saved game session on startup");
+        }
+        else
+        {
+            if (gameSessionData == null)
+                gameSessionData = new GameSessionData();
+
+            gameSessionData.ResetSessionData(startingPlayerDeck);
+            Debug.Log("No save found — initialized new game session");
+        }
+
         EnsurePlayerDeckInitialized();
     }
 
