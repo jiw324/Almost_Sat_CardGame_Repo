@@ -16,11 +16,10 @@ public class AudioManager : MonoBehaviour
     [Range(0f, 1f)] public float uiVolume = 1f;
     [Range(0f, 1f)] public float mapVolume = 1f;
     [Range(0f, 1f)] public float combatVolume = 1f;
-
+    [Range(0f, 1f)] public float musicVolume = 1f;
 
     private Dictionary<string, SoundLibrary.SoundEntry> sfxDict;
     private Dictionary<string, SoundLibrary.MusicEntry> musicDict;
-
     private Coroutine musicFadeRoutine;
 
     private void Awake()
@@ -34,7 +33,7 @@ public class AudioManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        channels.Initialize(this.gameObject);
+        channels.Initialize(gameObject);
         BuildDictionaries();
     }
 
@@ -55,74 +54,77 @@ public class AudioManager : MonoBehaviour
         sfxDict = new Dictionary<string, SoundLibrary.SoundEntry>();
         musicDict = new Dictionary<string, SoundLibrary.MusicEntry>();
 
-        foreach (var entry in library.sounds)
-        {
-            if (!sfxDict.ContainsKey(entry.id))
-                sfxDict.Add(entry.id, entry);
-        }
+        foreach (var s in library.sounds)
+            if (!sfxDict.ContainsKey(s.id))
+                sfxDict.Add(s.id, s);
 
-        foreach (var entry in library.music)
+        foreach (var m in library.music)
+            if (!musicDict.ContainsKey(m.id))
+                musicDict.Add(m.id, m);
+    }
+
+    public void SetUIVolume(float v) { uiVolume = v; ApplyVolumes(); }
+    public void SetMapVolume(float v) { mapVolume = v; ApplyVolumes(); }
+    public void SetCombatVolume(float v) { combatVolume = v; ApplyVolumes(); }
+    public void SetMusicVolume(float v) { musicVolume = v; ApplyVolumes(); }
+
+    public void ApplySettings(SessionAudioData data)
+    {
+        if (data == null) return;
+
+        uiVolume = data.uiVolume;
+        mapVolume = data.mapVolume;
+        combatVolume = data.combatVolume;
+        musicVolume = data.musicVolume;
+
+        ApplyVolumes();
+    }
+
+    private void ApplyVolumes()
+    {
+        channels.ui.volume = uiVolume;
+        channels.map.volume = mapVolume;
+        channels.combat.volume = combatVolume;
+        channels.music.volume = musicVolume;
+    }
+
+    public SessionAudioData CaptureSettings()
+    {
+        return new SessionAudioData
         {
-            if (!musicDict.ContainsKey(entry.id))
-                musicDict.Add(entry.id, entry);
-        }
+            uiVolume = uiVolume,
+            mapVolume = mapVolume,
+            combatVolume = combatVolume,
+            musicVolume = musicVolume
+        };
     }
 
     public void PlaySoundById(string id)
     {
-        if (!sfxDict.TryGetValue(id, out var entry))
-        {
-            Debug.LogWarning("AudioManager: Sound '" + id + "' not found.");
-            return;
-        }
-
-        AudioSource src = GetChannelSource(entry.channel);
-
-        if (src != null)
-            src.PlayOneShot(entry.clip);
+        if (!sfxDict.TryGetValue(id, out var entry)) return;
+        GetChannelSource(entry.channel)?.PlayOneShot(entry.clip);
     }
-
 
     private AudioSource GetChannelSource(SoundChannel ch)
     {
-        switch (ch)
+        return ch switch
         {
-            case SoundChannel.UI:
-                channels.ui.volume = uiVolume;
-                return channels.ui;
-
-            case SoundChannel.Map:
-                channels.map.volume = mapVolume;
-                return channels.map;
-
-            case SoundChannel.Combat:
-                channels.combat.volume = combatVolume;
-                return channels.combat;
-
-            default:
-                return channels.ui;
-        }
+            SoundChannel.UI => channels.ui,
+            SoundChannel.Map => channels.map,
+            SoundChannel.Combat => channels.combat,
+            _ => channels.ui
+        };
     }
 
     public void PlayMusicById(string id)
     {
-        if (!musicDict.TryGetValue(id, out var entry))
-        {
-            Debug.LogWarning($"AudioManager: Music '{id}' not found.");
-            return;
-        }
-
+        if (!musicDict.TryGetValue(id, out var entry)) return;
         PlayMusic(entry.clip);
     }
 
     public void PlayMusic(AudioClip clip, float fade = 1f)
     {
         if (clip == null) return;
-
-        var music = channels.music;
-
-        if (music.clip == clip && music.isPlaying)
-            return;
 
         if (musicFadeRoutine != null)
             StopCoroutine(musicFadeRoutine);
@@ -132,7 +134,7 @@ public class AudioManager : MonoBehaviour
 
     private IEnumerator FadeToNewMusic(AudioClip newClip, float fade)
     {
-        AudioSource music = channels.music;
+        var music = channels.music;
         float startVol = music.volume;
 
         for (float t = 0; t < fade; t += Time.deltaTime)
@@ -146,10 +148,10 @@ public class AudioManager : MonoBehaviour
 
         for (float t = 0; t < fade; t += Time.deltaTime)
         {
-            music.volume = Mathf.Lerp(0, startVol, t / fade);
+            music.volume = Mathf.Lerp(0, musicVolume, t / fade);
             yield return null;
         }
 
-        music.volume = startVol;
+        music.volume = musicVolume;
     }
 }

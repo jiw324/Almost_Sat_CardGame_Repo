@@ -80,6 +80,7 @@ public class MapGenerationManager : MonoBehaviour
             SessionMap.completedNodeIds.Clear();
         }
 
+        GameSession.Instance.CaptureAudioSettings();
         SessionSaveManager.SaveGameSession(GameSession.Instance.gameSessionData);
     }
 
@@ -103,6 +104,7 @@ public class MapGenerationManager : MonoBehaviour
             tMap.visitedNodeIds.Clear();
             tMap.completedNodeIds.Clear();
 
+            GameSession.Instance.CaptureAudioSettings();
             SessionSaveManager.SaveGameSession(GameSession.Instance.gameSessionData);
         }
         else
