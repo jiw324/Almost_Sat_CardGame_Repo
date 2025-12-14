@@ -10,14 +10,10 @@ public static class SessionSaveManager
     {
         try
         {
-            string currentDateTime = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
-            //string saveFilePath = $"{saveDirectoryPath}/Save_{currentDateTime}.json";
             string saveFilePath = $"{saveDirectoryPath}/Save.json";
 
             if (!Directory.Exists(saveDirectoryPath))
-            {
                 Directory.CreateDirectory(saveDirectoryPath);
-            }
 
             if (sessionData.sessionNodeMapData != null &&
                 sessionData.sessionNodeMapData.currentNodeData != null)
@@ -34,11 +30,6 @@ public static class SessionSaveManager
             }
 
             string gameSessionJson = JsonUtility.ToJson(sessionData, true);
-
-            if (File.Exists(saveFilePath))
-            {
-                Debug.Log("Overwriting save file");
-            }
             File.WriteAllText(saveFilePath, gameSessionJson);
         }
         catch (Exception e)
@@ -46,13 +37,13 @@ public static class SessionSaveManager
             Debug.LogError("Failed to Save Game Session: " + e.Message);
             return false;
         }
+
         Debug.Log("Successfully Saved Game Session!");
         return true;
     }
 
     public static GameSessionData LoadGameSession(string saveName)
     {
-        GameSessionData loadedSessionData;
         try
         {
             string savePath = $"{saveDirectoryPath}/{saveName}.json";
@@ -61,61 +52,53 @@ public static class SessionSaveManager
                 Debug.Log("Save Failed to Load: File Does Not Exist");
                 return null;
             }
+
             string gameSessionJson = File.ReadAllText(savePath);
-            loadedSessionData = JsonUtility.FromJson<GameSessionData>(gameSessionJson);
+            GameSessionData loadedSessionData =
+                JsonUtility.FromJson<GameSessionData>(gameSessionJson);
 
-            // Main run node data
-            if (loadedSessionData.sessionNodeMapData != null &&
-                !string.IsNullOrEmpty(loadedSessionData.sessionNodeMapData.currentNodeJson))
-            {
-                switch (loadedSessionData.sessionNodeMapData.currentNodeType)
-                {
-                    case NodeType.Combat:
-                        loadedSessionData.sessionNodeMapData.currentNodeData =
-                            JsonUtility.FromJson<CombatNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
-                        break;
+            // Main run node data reconstruction
+            RebuildNodeData(loadedSessionData.sessionNodeMapData);
 
-                    case NodeType.Shop:
-                        loadedSessionData.sessionNodeMapData.currentNodeData =
-                            JsonUtility.FromJson<ShopNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
-                        break;
+            // Tutorial node data reconstruction
+            RebuildNodeData(loadedSessionData.tutorialNodeMapData);
 
-                case NodeType.Event:
-                    loadedSessionData.sessionNodeMapData.currentNodeData =
-                        JsonUtility.FromJson<EventNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
-                    break;
-
-                case NodeType.Rest:
-                    loadedSessionData.sessionNodeMapData.currentNodeData =
-                        JsonUtility.FromJson<RestNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
-                    break;
-
-                    case NodeType.Loot:
-                    loadedSessionData.sessionNodeMapData.currentNodeData =
-                            JsonUtility.FromJson<RelicNodeData>(loadedSessionData.sessionNodeMapData.currentNodeJson);
-                    break;
-                }
-            }          
+            Debug.Log("Successfully Loaded Game Session!");
+            return loadedSessionData;
         }
         catch (Exception e)
         {
             Debug.LogError("Failed to Load Save Data: " + e.Message);
             return null;
         }
-        Debug.Log("Successfully Loaded Game Session!");
-        return loadedSessionData;
     }
 
-    public static bool DeleteSavedGameSession(string filePath)
+    private static void RebuildNodeData(SessionNodeMapData nodeMapData)
     {
-        if (File.Exists(filePath))
-        {
-            File.Delete(filePath);
-            return true;
-        }
-        Debug.LogError("Could not delete save. File not found");
-        return false;
-    }
+        if (nodeMapData == null || string.IsNullOrEmpty(nodeMapData.currentNodeJson))
+            return;
 
-    // function to update save name
+        switch (nodeMapData.currentNodeType)
+        {
+            case NodeType.Combat:
+                nodeMapData.currentNodeData =
+                    JsonUtility.FromJson<CombatNodeData>(nodeMapData.currentNodeJson);
+                break;
+
+            case NodeType.Rest:
+                nodeMapData.currentNodeData =
+                    JsonUtility.FromJson<RestNodeData>(nodeMapData.currentNodeJson);
+                break;
+
+            case NodeType.Shop:
+                nodeMapData.currentNodeData =
+                    JsonUtility.FromJson<ShopNodeData>(nodeMapData.currentNodeJson);
+                break;
+
+            case NodeType.Loot:
+                nodeMapData.currentNodeData =
+                    JsonUtility.FromJson<LootNodeData>(nodeMapData.currentNodeJson);
+                break;
+        }
+    }
 }
