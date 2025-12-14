@@ -14,7 +14,7 @@ public class SessionNodeMapData
     public string currentNodeJson;
 
     [System.NonSerialized]
-    public SessionNodeData currentNodeData;
+    public ISessionNodeData currentNodeData;
 
     public void ResetSessionData()
     {
