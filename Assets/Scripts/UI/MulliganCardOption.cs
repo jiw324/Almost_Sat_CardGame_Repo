@@ -10,6 +10,7 @@ public class MulliganCardOption : MonoBehaviour
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text costText;
     [SerializeField] private TMP_Text damageText;
+    [SerializeField] private TMP_Text healthText;
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private RectTransform visualRoot;
     [SerializeField] private Toggle selectToggle;
@@ -51,8 +52,12 @@ public class MulliganCardOption : MonoBehaviour
 
         if (damageText != null)
         {
-            damageText.text = Card.Data.damage > 0 ? Card.Data.damage.ToString() : "";
-            damageText.gameObject.SetActive(Card.Data.damage > 0);
+            damageText.text = Card.Data.minionAttack.ToString();
+        }
+
+        if (healthText != null)
+        {
+            healthText.text = Card.Data.minionHealth.ToString();
         }
 
         if (descriptionText != null)
@@ -66,7 +71,16 @@ public class MulliganCardOption : MonoBehaviour
         }
         if (Card.Data.type == "spell")
         {
-            visualRoot.Find("Type").Find("Spell").gameObject.SetActive(true);
+            visualRoot.Find("Damage").gameObject.SetActive(false);
+            visualRoot.Find("Health").gameObject.SetActive(false);
+            if (Card.Data.isRowEffect)
+            {
+                visualRoot.Find("Type").Find("Row").gameObject.SetActive(true);
+            }
+            else
+            {
+                visualRoot.Find("Type").Find("Spell").gameObject.SetActive(true);
+            }
         }
         else if (Card.Data.isRanged)
         {

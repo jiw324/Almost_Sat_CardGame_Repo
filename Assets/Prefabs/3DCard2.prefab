@@ -127,6 +127,7 @@ MonoBehaviour:
   nameText: {fileID: 2771437070000672457}
   costText: {fileID: 0}
   damageText: {fileID: 4698557980493550911}
+  healthText: {fileID: 5059468843939422300}
   descText: {fileID: 0}
   animationDuration: 0.3
   targetScale: {x: 0.8112, y: 0.03, z: 0.704}
@@ -568,3 +569,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4804000525452117144, guid: b39f880c06d5dde4cbd4e5c1265341d2, type: 3}
   m_PrefabInstance: {fileID: 237924352890109095}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5059468843939422300 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5006770144018930939, guid: b39f880c06d5dde4cbd4e5c1265341d2, type: 3}
+  m_PrefabInstance: {fileID: 237924352890109095}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

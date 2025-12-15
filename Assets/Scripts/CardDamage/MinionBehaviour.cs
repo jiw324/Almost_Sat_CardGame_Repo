@@ -9,9 +9,9 @@ public class MinionBehaviour : MonoBehaviour
 
     // --- New activation state ---
     // True the turn the minion is summoned; cleared at the start of its owner's next turn.
-    private bool hasSummoningSickness = true;
+    public bool hasSummoningSickness = true;
     // True once the minion has performed an attack this turn.
-    private bool hasActedThisTurn = false;
+    public bool hasActedThisTurn = false;
 
     // --- Animation state ---
     [Header("Animation Settings")]
@@ -300,7 +300,14 @@ public class MinionBehaviour : MonoBehaviour
         if (instance == null) return;
 
         instance.TakeDamage(amount);
-        
+
+        // Update health/damage display
+        var card3D = GetComponent<Card3DController>();
+        if (card3D != null)
+        {
+            card3D.UpdateStats();
+        }
+
         // Play shake animation
         StartCoroutine(ShakeAnimationCoroutine());
         

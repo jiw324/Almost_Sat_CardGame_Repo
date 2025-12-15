@@ -831,6 +831,7 @@ MonoBehaviour:
   nameText: {fileID: 2682836567760876142}
   costText: {fileID: 8625675801558965832}
   damageText: {fileID: 4790114107959863704}
+  healthText: {fileID: 5006770144018930939}
   descText: {fileID: 3081412276018853307}
   visualRoot: {fileID: 1111607720804802971}
   selectedBorder: {r: 1, g: 0.013729678, b: 0, a: 1}
