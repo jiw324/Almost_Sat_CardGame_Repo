@@ -43,7 +43,20 @@ public class NodeView : MonoBehaviour
 
         if (hiddenVisualRoot != null)
             hiddenVisualRoot.SetActive(hidden);
+
+        if (!hidden)
+        {
+            UpdateGlow();
+
+            var state = MapStateManager.Instance;
+            if (state != null &&
+                state.GetAvailableNodes().Any(n => n.Id == NodeData.Id))
+            {
+                ShowAvailable();
+            }
+        }
     }
+
 
     public void UpdateGlow()
     {
