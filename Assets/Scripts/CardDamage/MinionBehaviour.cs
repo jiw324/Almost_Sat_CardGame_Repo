@@ -341,6 +341,7 @@ public class MinionBehaviour : MonoBehaviour
         if (card3D != null)
         {
             card3D.UpdateStats();
+            card3D.UpdateStatusIcons();
         }
 
         // Play shake animation

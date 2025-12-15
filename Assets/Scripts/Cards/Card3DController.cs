@@ -14,6 +14,11 @@ public class Card3DController : MonoBehaviour
     [SerializeField] private TMP_Text descText;
     [SerializeField] private Image grayFilm;
 
+    [Header("Status Effect Icons")]
+    [SerializeField] private GameObject strengthIcon;
+    [SerializeField] private GameObject weaknessIcon;
+    [SerializeField] private GameObject poisonIcon;
+
     [Header("Card Play Animation")]
     [SerializeField] private float animationDuration = 0.3f;
     [SerializeField] private Vector3 targetScale;
@@ -27,7 +32,7 @@ public class Card3DController : MonoBehaviour
         Instance = instance;
         name = instance.Data.name;
         UpdateVisuals();
-        
+
         // Start animation
         StartCoroutine(PlayCardAnimation());
     }
@@ -42,13 +47,13 @@ public class Card3DController : MonoBehaviour
 
         if (nameText != null)
             nameText.text = Instance.Data.cardName;
-        
+
         if (costText != null)
-            costText.text = Instance.Data.cost.ToString();       
-        
+            costText.text = Instance.Data.cost.ToString();
+
         if (descText != null)
             descText.text = Instance.Data.description;
-        
+
         // Set artwork image
         if (artworkImage != null)
         {
@@ -57,6 +62,7 @@ public class Card3DController : MonoBehaviour
         }
 
         UpdateStats();
+        UpdateStatusIcons();
     }
 
     public void UpdateStats()
@@ -71,6 +77,41 @@ public class Card3DController : MonoBehaviour
         if (damageText != null)
         {
             damageText.text = Instance.Attack.ToString();
+        }
+    }
+
+    /// <summary>
+    /// Update status effect icons based on current status effects
+    /// </summary>
+    public void UpdateStatusIcons()
+    {
+        if (Instance == null)
+        {
+            if (strengthIcon != null) strengthIcon.SetActive(false);
+            if (weaknessIcon != null) weaknessIcon.SetActive(false);
+            if (poisonIcon != null) poisonIcon.SetActive(false);
+            return;
+        }
+
+        EntityBase owner = Instance.Owner;
+
+        // Update Strength icon
+        if (strengthIcon != null)
+        {
+            strengthIcon.SetActive(owner.HasStrength);
+        }
+
+        // Update Weakness icon
+        if (weaknessIcon != null)
+        {
+            weaknessIcon.SetActive(owner.HasWeakness);
+        }
+
+        // Update Poison icon and stack count
+        if (poisonIcon != null)
+        {
+            bool hasPoison = owner.PoisonStacks > 0;
+            poisonIcon.SetActive(hasPoison);
         }
     }
 
@@ -99,23 +140,23 @@ public class Card3DController : MonoBehaviour
             finalScale = transform.localScale;
             targetScale = finalScale; // Store it for future reference
         }
-        
+
         // Start from small scale (10% of target)
         Vector3 startScale = finalScale * 0.1f;
         transform.localScale = startScale;
-        
+
         float elapsed = 0f;
-        
+
         while (elapsed < animationDuration)
         {
             elapsed += Time.deltaTime;
             float t = elapsed / animationDuration;
-            
+
             // Simple ease-out curve
             t = 1f - (1f - t) * (1f - t);
-            
+
             transform.localScale = Vector3.Lerp(startScale, finalScale, t);
-            
+
             yield return null;
         }
 

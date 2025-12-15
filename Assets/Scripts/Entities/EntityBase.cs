@@ -71,6 +71,7 @@ public abstract class EntityBase : MonoBehaviour
         if (turns <= 0) return;
         strengthTurnsRemaining += turns;
         Debug.Log($"{entityName} gained Strength for {turns} turns (total {strengthTurnsRemaining}).");
+        RefreshOwnedCardsStatusIcons();
     }
 
     /// <summary>
@@ -82,6 +83,7 @@ public abstract class EntityBase : MonoBehaviour
         if (turns <= 0) return;
         weaknessTurnsRemaining += turns;
         Debug.Log($"{entityName} gained Weakness for {turns} turns (total {weaknessTurnsRemaining}).");
+        RefreshOwnedCardsStatusIcons();
     }
 
     /// <summary>
@@ -92,6 +94,7 @@ public abstract class EntityBase : MonoBehaviour
         if (stacks <= 0) return;
         poisonStacks += stacks;
         Debug.Log($"{entityName} gained {stacks} Poison stacks (total {poisonStacks}).");
+        RefreshOwnedCardsStatusIcons();
     }
 
     /// <summary>
@@ -134,6 +137,8 @@ public abstract class EntityBase : MonoBehaviour
             if (weaknessTurnsRemaining <= 0)
                 Debug.Log($"{entityName}'s Weakness has expired.");
         }
+
+        RefreshOwnedCardsStatusIcons();
     }
 
     /// <summary>
@@ -158,6 +163,17 @@ public abstract class EntityBase : MonoBehaviour
             {
                 Debug.Log($"{entityName}'s Poison stacks decay to {poisonStacks}.");
             }
+
+            RefreshOwnedCardsStatusIcons();
+        }
+    }
+
+    private void RefreshOwnedCardsStatusIcons()
+    {
+        var card3D = GetComponent<Card3DController>();
+        if (card3D != null)
+        {
+            card3D.UpdateStatusIcons();
         }
     }
 }
