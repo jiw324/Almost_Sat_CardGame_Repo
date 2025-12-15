@@ -205,6 +205,7 @@ MonoBehaviour:
   healthText: {fileID: 5059468843939422300}
   descText: {fileID: 0}
   grayFilm: {fileID: 5947504238554395945}
+  visualRoot: {fileID: 873838674780560700}
   animationDuration: 0.3
   targetScale: {x: 0.8112, y: 0.03, z: 0.704}
 --- !u!114 &-5610489812881739548
@@ -610,6 +611,11 @@ PrefabInstance:
       addedObject: {fileID: 6526672475390885401}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b39f880c06d5dde4cbd4e5c1265341d2, type: 3}
+--- !u!224 &873838674780560700 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1111607720804802971, guid: b39f880c06d5dde4cbd4e5c1265341d2, type: 3}
+  m_PrefabInstance: {fileID: 237924352890109095}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2771437070000672457 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2682836567760876142, guid: b39f880c06d5dde4cbd4e5c1265341d2, type: 3}
