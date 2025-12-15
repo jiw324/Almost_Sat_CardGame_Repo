@@ -12,6 +12,7 @@ public class Card3DController : MonoBehaviour
     [SerializeField] private TMP_Text damageText;
     [SerializeField] private TMP_Text healthText;
     [SerializeField] private TMP_Text descText;
+    [SerializeField] private Image grayFilm;
 
     [Header("Card Play Animation")]
     [SerializeField] private float animationDuration = 0.3f;
@@ -70,6 +71,14 @@ public class Card3DController : MonoBehaviour
         if (damageText != null)
         {
             damageText.text = Instance.Attack.ToString();
+        }
+    }
+
+    public void SetCanActVisual(bool canAct)
+    {
+        if (grayFilm != null)
+        {
+            grayFilm.gameObject.SetActive(!canAct); // Film is visible when canAct is FALSE
         }
     }
 

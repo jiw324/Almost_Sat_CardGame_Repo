@@ -9,9 +9,9 @@ public class MinionBehaviour : MonoBehaviour
 
     // --- New activation state ---
     // True the turn the minion is summoned; cleared at the start of its owner's next turn.
-    public bool hasSummoningSickness = true;
+    private bool hasSummoningSickness = true;
     // True once the minion has performed an attack this turn.
-    public bool hasActedThisTurn = false;
+    private bool hasActedThisTurn = false;
 
     // --- Animation state ---
     [Header("Animation Settings")]
@@ -25,6 +25,7 @@ public class MinionBehaviour : MonoBehaviour
     private Vector3 originalPosition;
     private bool isSelected = false;
     private Coroutine currentAnimation;
+    private bool lastCanActState = true;
 
     /// <summary>
     /// Can this minion currently perform an attack?
@@ -46,6 +47,32 @@ public class MinionBehaviour : MonoBehaviour
             // Minion may only act during its controller's turn
             return (ownerIsPlayer && isPlayerTurn) || (!ownerIsPlayer && !isPlayerTurn);
         }
+    }
+
+    private void UpdateCanActVisual()
+    {
+        var card3D = GetComponent<Card3DController>();
+        if (card3D != null)
+        {
+            // Only show gray film when:
+            // 1. Has summoning sickness, OR
+            // 2. Has acted this turn AND it's currently their turn
+            var tm = TurnManager.Instance;
+            bool isTheirTurn = false;
+
+            if (tm != null && instance != null)
+            {
+                bool ownerIsPlayer = instance.Owner is PlayerEntity;
+                bool isPlayerTurn = tm.IsPlayerTurn;
+                isTheirTurn = (ownerIsPlayer && isPlayerTurn) || (!ownerIsPlayer && !isPlayerTurn);
+            }
+
+            bool shouldBeGrayed = hasSummoningSickness || (hasActedThisTurn && isTheirTurn);
+            card3D.SetCanActVisual(!shouldBeGrayed);
+        }
+
+        // Update cached state
+        lastCanActState = CanAct;
     }
 
     public void Initialize(BoardSlot s, CardInstance i)
@@ -74,6 +101,8 @@ public class MinionBehaviour : MonoBehaviour
         }
         
         originalPosition = transform.localPosition;
+
+        UpdateCanActVisual();
     }
 
     private Vector3 GetOriginalWorldPosition()
@@ -113,6 +142,8 @@ public class MinionBehaviour : MonoBehaviour
             // Each new turn: reset action state
             hasActedThisTurn = false;
         }
+
+        UpdateCanActVisual();
     }
 
     private void HandleEnemyTurnStarted()
@@ -127,6 +158,8 @@ public class MinionBehaviour : MonoBehaviour
 
             hasActedThisTurn = false;
         }
+
+        UpdateCanActVisual();
     }
 
     /// <summary>
@@ -212,6 +245,8 @@ public class MinionBehaviour : MonoBehaviour
         StartCoroutine(AttackAnimationCoroutine(target, finalDamage));
 
         hasActedThisTurn = true;
+
+        UpdateCanActVisual();
     }
 
 
