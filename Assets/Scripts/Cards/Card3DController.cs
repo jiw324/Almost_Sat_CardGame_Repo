@@ -10,7 +10,10 @@ public class Card3DController : MonoBehaviour
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text costText;
     [SerializeField] private TMP_Text damageText;
+    [SerializeField] private TMP_Text healthText;
     [SerializeField] private TMP_Text descText;
+    [SerializeField] private Image grayFilm;
+    [SerializeField] private RectTransform visualRoot;
 
     [Header("Card Play Animation")]
     [SerializeField] private float animationDuration = 0.3f;
@@ -42,13 +45,7 @@ public class Card3DController : MonoBehaviour
             nameText.text = Instance.Data.cardName;
         
         if (costText != null)
-            costText.text = Instance.Data.cost.ToString();
-        
-        if (damageText != null)
-        {
-            damageText.text = Instance.Data.damage > 0 ? Instance.Data.damage.ToString() : "";
-            damageText.gameObject.SetActive(Instance.Data.damage > 0);
-        }
+            costText.text = Instance.Data.cost.ToString();       
         
         if (descText != null)
             descText.text = Instance.Data.description;
@@ -58,6 +55,37 @@ public class Card3DController : MonoBehaviour
         {
             artworkImage.sprite = Instance.Data.artwork;
             artworkImage.enabled = Instance.Data.artwork != null;
+        }
+
+        if (Instance.Data.type == "spell")
+        {
+            visualRoot.Find("Damage").gameObject.SetActive(false);
+            visualRoot.Find("Health").gameObject.SetActive(false);
+        }
+
+        UpdateStats();
+    }
+
+    public void UpdateStats()
+    {
+        if (Instance == null) return;
+
+        if (healthText != null)
+        {
+            healthText.text = Instance.CurrentHP.ToString();
+        }
+
+        if (damageText != null)
+        {
+            damageText.text = Instance.Attack.ToString();
+        }
+    }
+
+    public void SetCanActVisual(bool canAct)
+    {
+        if (grayFilm != null)
+        {
+            grayFilm.gameObject.SetActive(!canAct); // Film is visible when canAct is FALSE
         }
     }
 

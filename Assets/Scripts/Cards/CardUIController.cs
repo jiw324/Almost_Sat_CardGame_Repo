@@ -13,6 +13,7 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text costText;
     [SerializeField] private TMP_Text damageText;
+    [SerializeField] private TMP_Text healthText;
     [SerializeField] private TMP_Text descText;
     [SerializeField] private RectTransform visualRoot;
 
@@ -155,8 +156,12 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
 
         if (damageText != null)
         {
-            damageText.text = Instance.Data.damage > 0 ? Instance.Data.damage.ToString() : "";
-            damageText.gameObject.SetActive(Instance.Data.damage > 0);
+            damageText.text = Instance.Data.minionAttack.ToString();
+        }
+
+        if (healthText != null)
+        {
+            healthText.text = Instance.Data.minionHealth.ToString();
         }
 
         if (descText != null)
@@ -171,7 +176,16 @@ public class CardUIController : MonoBehaviour, IPointerClickHandler,
 
         if (Instance.Data.type == "spell")
         {
-            visualRoot.Find("Type").Find("Spell").gameObject.SetActive(true);
+            visualRoot.Find("Damage").gameObject.SetActive(false);
+            visualRoot.Find("Health").gameObject.SetActive(false);
+            if (Instance.Data.isRowEffect)
+            {
+                visualRoot.Find("Type").Find("Row").gameObject.SetActive(true);
+            }
+            else
+            {
+                visualRoot.Find("Type").Find("Spell").gameObject.SetActive(true);
+            }
         }
         else if (Instance.Data.isRanged)
         {

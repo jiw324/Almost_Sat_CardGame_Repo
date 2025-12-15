@@ -79,8 +79,29 @@ public class DeckBuilderMenu : MonoBehaviour
         UpdateSaveButtonState();
     }
 
+    private void SortAvailableCards()
+    {
+        if (availableCardsPool == null || availableCardsPool.CardIds == null)
+            return;
+
+        // Create a dictionary for O(1) lookup of card indices
+        var indexMap = new Dictionary<CardId, int>();
+        for (int i = 0; i < availableCardsPool.CardIds.Count; i++)
+        {
+            indexMap[availableCardsPool.CardIds[i]] = i;
+        }
+
+        // Sort availableCards based on their order in the DeckDefinition
+        availableCards = availableCards
+            .OrderBy(cardId => indexMap.ContainsKey(cardId) ? indexMap[cardId] : int.MaxValue)
+            .ToList();
+    }
+
     private void PopulateCardPool()
     {
+        // Sort cards before displaying
+        SortAvailableCards();
+
         // Clear existing cards
         foreach (Transform child in cardPoolArea)
         {
