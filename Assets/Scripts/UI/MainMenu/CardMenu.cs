@@ -19,6 +19,8 @@ public class CardMenu : MonoBehaviour
 
     [SerializeField] private static CardMenu currentlyOpenCard;
 
+    [SerializeField] private bool disableClickToggle = false;
+
     void Start()
     {
         animator = GetComponent<Animator>();
@@ -37,6 +39,9 @@ public class CardMenu : MonoBehaviour
 
     void OnCardClicked()
     {
+        if (isOpen && disableClickToggle)
+            return;
+
         if (currentlyOpenCard != null && currentlyOpenCard != this)
         {
             currentlyOpenCard.CloseCard();
