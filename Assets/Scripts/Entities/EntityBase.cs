@@ -33,7 +33,13 @@ public abstract class EntityBase : MonoBehaviour
         currentHealth -= amount;
         Debug.Log($"{entityName} took {amount} damage. Current HP: {currentHealth}");
 
-        var bm = BattleManager.Instance;
+        // Show damage popup
+        if (amount > 0 && DamagePopupManager.Instance != null)
+        {
+            DamagePopupManager.Instance.ShowDamagePopup(amount, this);
+        }
+
+            var bm = BattleManager.Instance;
         if (bm != null)
         {
             if (this is PlayerEntity)
