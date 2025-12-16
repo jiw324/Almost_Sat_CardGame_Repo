@@ -96,6 +96,10 @@ public class DamagePopup : MonoBehaviour
         // Offset upward slightly so it appears above the entity
         transform.position += Vector3.up * 0.5f;
         
+        // Add random Z rotation (-15 to 15 degrees) for visual variety
+        float randomZRotation = Random.Range(-15f, 15f);
+        transform.Rotate(0, 0, randomZRotation, Space.Self);
+        
         // Preserve the prefab's rotation (don't reset it)
         // The rotation should be set in the prefab to face the camera correctly
 
