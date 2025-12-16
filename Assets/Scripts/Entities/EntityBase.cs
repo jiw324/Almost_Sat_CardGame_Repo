@@ -181,5 +181,28 @@ public abstract class EntityBase : MonoBehaviour
         {
             card3D.UpdateStatusIcons();
         }
+        if (this is PlayerEntity || this is EnemyEntity)
+        {
+            RefreshAvatarStatusIcons();
+        }
+    }
+
+    private void RefreshAvatarStatusIcons()
+    {
+        var bm = BattleManager.Instance;
+        if (bm == null || bm.uiManager == null) return;
+
+        if (this is PlayerEntity)
+        {
+            var playerAvatar = bm.uiManager.GetPlayerAvatar();
+            if (playerAvatar != null)
+                playerAvatar.UpdateStatusIcons(this);
+        }
+        else if (this is EnemyEntity)
+        {
+            var enemyAvatar = bm.uiManager.GetEnemyAvatar();
+            if (enemyAvatar != null)
+                enemyAvatar.UpdateStatusIcons(this);
+        }
     }
 }
