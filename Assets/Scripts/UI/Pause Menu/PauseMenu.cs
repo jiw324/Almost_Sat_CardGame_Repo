@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
 {
@@ -21,6 +22,12 @@ public class PauseMenu : MonoBehaviour
     private static readonly int FlipAndExpand = Animator.StringToHash("FlipAndExpand");
     private static readonly int BackToIdle = Animator.StringToHash("BackToIdle");
 
+    [Header("Audio Sliders")]
+    [SerializeField] private Slider uiSlider;
+    [SerializeField] private Slider mapSlider;
+    [SerializeField] private Slider combatSlider;
+    [SerializeField] private Slider musicSlider;
+
     private bool isOpen = false;
 
     private void Awake()
@@ -31,6 +38,8 @@ public class PauseMenu : MonoBehaviour
         optionsPanel.SetActive(false);
         exitPanel.SetActive(false);
         screenDim.SetActive(false);
+
+        Debug.Log("PauseMenu Awake on " + gameObject.scene.name);
     }
 
     void OnEnable()
@@ -47,12 +56,12 @@ public class PauseMenu : MonoBehaviour
         if (pauseAction != null)
         {
             pauseAction.action.performed -= OnPausePressed;
-            pauseAction.action.Disable();
         }
     }
 
     private void OnPausePressed(InputAction.CallbackContext ctx)
     {
+        Debug.Log("Pause input received");
         if (!isOpen)
         {
             OpenMenu();
@@ -100,7 +109,20 @@ public class PauseMenu : MonoBehaviour
     {
         animator.SetTrigger(FlipAndExpand);
         StartCoroutine(PanelAfterDelay(0.3f, buttonsPanel, false));
-        optionsPanel.SetActive(true);
+        StartCoroutine(PanelAfterDelay(0.3f, optionsPanel, true));
+        //optionsPanel.SetActive(true);
+        SyncAudioSliders();
+    }
+
+    private void SyncAudioSliders()
+    {
+        if (AudioManager.Instance == null)
+            return;
+
+        uiSlider.SetValueWithoutNotify(AudioManager.Instance.uiVolume);
+        mapSlider.SetValueWithoutNotify(AudioManager.Instance.mapVolume);
+        combatSlider.SetValueWithoutNotify(AudioManager.Instance.combatVolume);
+        musicSlider.SetValueWithoutNotify(AudioManager.Instance.musicVolume);
     }
 
     public void OpenExit()
@@ -134,4 +156,38 @@ public class PauseMenu : MonoBehaviour
         if (panel != null)
             panel.SetActive(show);
     }
+
+    public void OnSaveGamePressed()
+    {
+        if (GameSession.Instance == null) return;
+
+        GameSession.Instance.CaptureAudioSettings();
+        SessionSaveManager.SaveGameSession(GameSession.Instance.gameSessionData);
+    }
+
+    public void OnUIVolumeChanged(float value)
+    {
+        AudioManager.Instance?.SetUIVolume(value);
+    }
+
+    public void OnMapVolumeChanged(float value)
+    {
+        AudioManager.Instance?.SetMapVolume(value);
+    }
+
+    public void OnCombatVolumeChanged(float value)
+    {
+        AudioManager.Instance?.SetCombatVolume(value);
+    }
+
+    public void OnMusicVolumeChanged(float value)
+    {
+        AudioManager.Instance?.SetMusicVolume(value);
+    }
+
+    public void TriggerUIButtonSound()
+    {
+        AudioManager.Instance.PlaySoundById("UIButton");
+    }
+
 }

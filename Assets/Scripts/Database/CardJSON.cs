@@ -8,7 +8,8 @@ public class CardJSON
     public string type;
     public bool isRanged;
     public bool isRowEffect = false;
-
+    public string playCardSoundID;
+    public string cardAttackSoundID;
 
     public string effectId;      
     public int effectValue;      

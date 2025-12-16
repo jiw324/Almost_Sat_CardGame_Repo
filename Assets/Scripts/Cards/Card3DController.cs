@@ -13,6 +13,7 @@ public class Card3DController : MonoBehaviour
     [SerializeField] private TMP_Text healthText;
     [SerializeField] private TMP_Text descText;
     [SerializeField] private Image grayFilm;
+    [SerializeField] private RectTransform visualRoot;
 
     [Header("Status Effect Icons")]
     [SerializeField] private GameObject strengthIcon;
@@ -59,6 +60,12 @@ public class Card3DController : MonoBehaviour
         {
             artworkImage.sprite = Instance.Data.artwork;
             artworkImage.enabled = Instance.Data.artwork != null;
+        }
+
+        if (Instance.Data.type == "spell")
+        {
+            visualRoot.Find("Damage").gameObject.SetActive(false);
+            visualRoot.Find("Health").gameObject.SetActive(false);
         }
 
         UpdateStats();

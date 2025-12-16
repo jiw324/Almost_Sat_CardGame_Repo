@@ -433,6 +433,7 @@ MonoBehaviour:
   strengthIcon: {fileID: 7464551440746268737}
   weaknessIcon: {fileID: 4954253253699995581}
   poisonIcon: {fileID: 6480510121379877602}
+  visualRoot: {fileID: 873838674780560700}
   animationDuration: 0.3
   targetScale: {x: 0.8112, y: 0.03, z: 0.704}
 --- !u!114 &-5610489812881739548

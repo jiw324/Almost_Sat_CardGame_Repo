@@ -12,7 +12,9 @@
                     "effectId": "aoe_damage",
                     "effectValue": 4
                 }
-            ]
+            ],
+            "playCardSoundID": "FireballCast",
+            "cardAttackSoundID": "FireballHit"
         },
         {
             "id": "Apocalypse",
@@ -26,7 +28,9 @@
                     "effectId": "aoe_damage",
                     "effectValue": -4
                 }
-            ]
+            ],
+            "playCardSoundID": "ApocalypseCast",
+            "cardAttackSoundID": "ApocalypseHit"
         },
         {
             "id": "slash",
@@ -36,7 +40,9 @@
             "type": "spell",
             "isRanged": true,
             "effectId": "damage_enemy",
-            "effectValue": 4
+            "effectValue": 4,
+            "playCardSoundID": "SlashCast",
+            "cardAttackSoundID": "SlashHit"
         },
         {
             "id": "pocketbomb",
@@ -47,7 +53,9 @@
             "isRanged": true,
             "minigameId": "reaction",
             "effectId": "damage_enemy",
-            "effectValue": 5
+            "effectValue": 5,
+            "playCardSoundID": "PocketBombCast",
+            "cardAttackSoundID": "PocketBombHit"
         },
         {
             "id": "healinghands",
@@ -57,7 +65,9 @@
             "type": "spell",
             "isRanged": true,
             "effectId": "gain_shield",
-            "effectValue": 5
+            "effectValue": 5,
+            "playCardSoundID": "HealingHandsCast",
+            "cardAttackSoundID": "HealingHandsHit"
         },
         {
             "id": "warrior",
@@ -74,7 +84,9 @@
                     "effectId": "gain_shield",
                     "effectValue": 4
                 }
-            ]
+            ],
+            "playCardSoundID": "WarriorCast",
+            "cardAttackSoundID": "WarriorHit"
         },
         {
             "id": "archer",
@@ -86,7 +98,9 @@
             "isMinion": true,
             "minionAttack": 4,
             "minionHealth": 2,
-            "ignoreSummoningSickness": true
+            "ignoreSummoningSickness": true,
+            "playCardSoundID": "ArcherCast",
+            "cardAttackSoundID": "ArcherHit"
         },
         {
             "id": "rune",
@@ -97,7 +111,9 @@
             "isRanged": false,
             "isMinion": true,
             "minionAttack": 0,
-            "minionHealth": 1
+            "minionHealth": 1,
+            "playCardSoundID": "RuneCast",
+            "cardAttackSoundID": "RuneHit"
         },
         {
             "id": "runicblast",
@@ -108,7 +124,9 @@
             "isRanged": true,
             "minigameId": "typing",
             "effectId": "runic_blast",
-            "effectValue": 3
+            "effectValue": 3,
+            "playCardSoundID": "RunicBlastCast",
+            "cardAttackSoundID": "RunicBlastHit"
         },
         {
             "id": "spinnysword",
@@ -119,7 +137,9 @@
             "minigameId": "clickspeed",
             "isRanged": false,
             "effectId": "damage_enemy",
-            "effectValue": 4
+            "effectValue": 4,
+            "playCardSoundID": "SpinnySwordCast",
+            "cardAttackSoundID": "SpinnySwordHit"
         },
         {
             "id": "cozybuffet",
@@ -130,7 +150,9 @@
             "minigameId": "catchrecipe",
             "isRanged": false,
             "effectId": "gain_shield",
-            "effectValue": 6
+            "effectValue": 6,
+            "playCardSoundID": "CozyBuffetCast",
+            "cardAttackSoundID": "CozyBuffetHit"
         },
         {
             "id": "shmovement",
@@ -141,7 +163,9 @@
             "minigameId": "platformer",
             "isRanged": false,
             "effectId": "damage_enemy",
-            "effectValue": 5
+            "effectValue": 5,
+            "playCardSoundID": "ShmovementCast",
+            "cardAttackSoundID": "ShmovementHit"
 
         },
         {
@@ -157,7 +181,9 @@
                     "effectId": "strength",
                     "effectValue": 2
                 }
-            ]
+            ],
+            "playCardSoundID": "StrengthCast",
+            "cardAttackSoundID": "StrengthHit"
         },
         {
             "id": "WeaknessHex",
@@ -172,7 +198,9 @@
                     "effectId": "weakness",
                     "effectValue": 2
                 }
-            ]
+            ],
+            "playCardSoundID": "WeaknessCast",
+            "cardAttackSoundID": "WeaknessHit"
         },
         {
             "id": "PoisonDart",
@@ -187,7 +215,9 @@
                     "effectId": "poison",
                     "effectValue": 8
                 }
-            ]
+            ],
+            "playCardSoundID": "PoisonDartCast",
+            "cardAttackSoundID": "PoisonDartHit"
         },
         {
             "id": "MeleeWarCry",
@@ -203,7 +233,9 @@
                     "effectId": "row_player_melee_strength",
                     "effectValue": 2
                 }
-            ]
+            ],
+            "playCardSoundID": "MeleeWarCryCast",
+            "cardAttackSoundID": "MeleeWarCryHit"
         },
         {
             "id": "SuppressRanged",
@@ -219,7 +251,9 @@
                     "effectId": "row_enemy_ranged_weakness",
                     "effectValue": 2
                 }
-            ]
+            ],
+            "playCardSoundID": "SuppressRangedCast",
+            "cardAttackSoundID": "SuppressRangedHit"
         }
 
     ]

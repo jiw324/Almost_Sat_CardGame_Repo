@@ -101,6 +101,7 @@ public class MapStateManager : MonoBehaviour
 
     private void SaveSession()
     {
+        GameSession.Instance.CaptureAudioSettings();
         SessionSaveManager.SaveGameSession(GameSession.Instance.gameSessionData);
     }
 

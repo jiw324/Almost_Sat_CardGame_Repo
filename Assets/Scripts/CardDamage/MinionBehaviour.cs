@@ -336,6 +336,12 @@ public class MinionBehaviour : MonoBehaviour
 
         instance.TakeDamage(amount);
 
+        // Show damage popup at minion's position
+        if (amount > 0 && DamagePopupManager.Instance != null)
+        {
+            DamagePopupManager.Instance.ShowDamagePopup(amount, transform.position);
+        }
+
         // Update health/damage display
         var card3D = GetComponent<Card3DController>();
         if (card3D != null)

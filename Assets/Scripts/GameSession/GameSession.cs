@@ -26,6 +26,7 @@ public class GameSession : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         GameSessionData loadedData = SessionSaveManager.LoadGameSession("Save");
+
         if (loadedData != null)
         {
             gameSessionData = loadedData;
@@ -33,15 +34,31 @@ public class GameSession : MonoBehaviour
         }
         else
         {
-            if (gameSessionData == null)
-                gameSessionData = new GameSessionData();
-
+            gameSessionData = new GameSessionData();
             gameSessionData.ResetSessionData(startingPlayerDeck);
-            Debug.Log("No save found — initialized new game session");
         }
 
         EnsurePlayerDeckInitialized();
+        ApplyAudioSettings();
     }
+
+    private void Start()
+    {
+        ApplyAudioSettings();
+    }
+
+    public void ApplyAudioSettings()
+    {
+        if (gameSessionData?.audioSettings != null && AudioManager.Instance != null)
+            AudioManager.Instance.ApplySettings(gameSessionData.audioSettings);
+    }
+
+    public void CaptureAudioSettings()
+    {
+        if (AudioManager.Instance != null)
+            gameSessionData.audioSettings = AudioManager.Instance.CaptureSettings();
+    }
+
 
     //-------Temporary for testing Reset/Save/Load - Need to hook up to pause menu--------------------
     private InputAction saveAction;

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Linq;
 
 public class MapCameraController : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class MapCameraController : MonoBehaviour
 
     [SerializeField] private float horizontalPadding = 1f;
     [SerializeField] private float verticalPadding = 1f;
+
+    [SerializeField] private float floorLookDownOffset = 0.75f;
 
     private void Awake()
     {
@@ -55,19 +58,34 @@ public class MapCameraController : MonoBehaviour
         var state = MapStateManager.Instance;
         Node current = state?.GetCurrentNode();
 
-        if (current != null)
+        if (current != null && MapGenerationManager.Instance?.ActiveMap != null)
         {
-            Vector3 nodePos = MapGenerationManager.Instance.ActiveMap
-                .Grid
-                .GridToWorld(current.GridPos.x, current.GridPos.y);
+            var grid = MapGenerationManager.Instance.ActiveMap.Grid;
 
-            Vector3 newCamPos = new Vector3(
-                nodePos.x,
+            Vector3 currentWorld = grid.GridToWorld(current.GridPos.x, current.GridPos.y);
+            float floorSpacing = grid.YSpacing;
+            float targetZ = currentWorld.z - floorSpacing * floorLookDownOffset;
+
+            var available = state.GetAvailableNodes().ToList();
+
+            float targetX;
+            if (available.Count > 0)
+            {
+                targetX = available
+                    .Select(n => grid.GridToWorld(n.GridPos.x, n.GridPos.y).x)
+                    .Average();
+            }
+            else
+            {
+                targetX = currentWorld.x;
+            }
+
+            transform.position = new Vector3(
+                targetX,
                 transform.position.y,
-                nodePos.z
+                targetZ
             );
 
-            transform.position = newCamPos;
             return;
         }
 

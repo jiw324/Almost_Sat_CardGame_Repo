@@ -221,11 +221,15 @@ public class DeckBuilderMenu : MonoBehaviour
         if (currentDeck.Count >= maxDeckSize)
         {
             Debug.LogWarning($"Deck is full! Maximum {maxDeckSize} cards.");
+            AudioManager.Instance.PlaySoundById("UIButtonError");
             return;
         }
 
         // Add to deck
         currentDeck.Add(cardId);
+
+        // Trigger Audio
+        AudioManager.Instance.PlaySoundById("Cards");
 
         // Remove this specific card from the available pool
         availableCards.Remove(cardId);
@@ -249,6 +253,9 @@ public class DeckBuilderMenu : MonoBehaviour
 
         // Add back to available pool
         availableCards.Add(cardId);
+
+        // Trigger Audio
+        AudioManager.Instance.PlaySoundById("Cards");
 
         // Refresh both pool and deck list
         RefreshUI();
@@ -284,12 +291,15 @@ public class DeckBuilderMenu : MonoBehaviour
         if (currentDeck.Count < minDeckSize || currentDeck.Count > maxDeckSize)
         {
             Debug.LogWarning($"Deck must have between {minDeckSize} and {maxDeckSize} cards.");
+            AudioManager.Instance.PlaySoundById("UIButtonError");
             return;
         }
 
         // Create new deck instance and save to session
         DeckInstance newDeck = new DeckInstance(currentDeck);
         SessionGrabber.getGameSession().SetPlayerDeck(newDeck);
+
+        AudioManager.Instance.PlaySoundById("UIButton");
 
         Debug.Log($"Deck saved with {currentDeck.Count} cards!");
 
