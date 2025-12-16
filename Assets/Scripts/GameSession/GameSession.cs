@@ -224,6 +224,11 @@ public class GameSession : MonoBehaviour
         gameSessionData.sessionPlayerData.health = health;
     }
 
+    public void SetPlayerMana(int mana)
+    {
+        gameSessionData.sessionPlayerData.mana = mana;
+    }
+
     public void SetPlayerGold(int gold)
     {
         gameSessionData.sessionPlayerData.gold = gold;
