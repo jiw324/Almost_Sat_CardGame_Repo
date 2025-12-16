@@ -155,11 +155,11 @@ public abstract class EntityBase : MonoBehaviour
     {
         if (poisonStacks > 0)
         {
-            int dmg = poisonStacks;
+            int dmg = 2;
             Debug.Log($"{entityName} takes {dmg} poison damage (stacks {poisonStacks}).");
             TakeDamage(dmg);
 
-            poisonStacks /= 2;
+            poisonStacks--;
             if (poisonStacks <= 0)
             {
                 poisonStacks = 0;

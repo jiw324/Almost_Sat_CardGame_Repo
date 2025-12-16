@@ -3,7 +3,7 @@
         {
             "id": "fireball",
             "cardName": "Fireball",
-            "description": "Deal damage to all enemies.",
+            "description": "Deal 4 damage to all enemies.",
             "cost": 3,
             "type": "spell",
             "isRanged": true,
@@ -19,14 +19,14 @@
         {
             "id": "Apocalypse",
             "cardName": "Apocalypse",
-            "description": "Damage everything on the board, including yourself.",
+            "description": "Deal 7 damage to everything on the board, including yourself.",
             "cost": 3,
             "type": "spell",
             "isRanged": true,
             "effects": [
                 {
                     "effectId": "aoe_damage",
-                    "effectValue": -4
+                    "effectValue": -7
                 }
             ],
             "playCardSoundID": "ApocalypseCast",
@@ -35,32 +35,32 @@
         {
             "id": "slash",
             "cardName": "Slash",
-            "description": "Deal damage to an enemy.",
+            "description": "Deal 3 damage to an enemy.",
             "cost": 1,
             "type": "spell",
             "isRanged": true,
             "effectId": "damage_enemy",
-            "effectValue": 4,
+            "effectValue": 3,
             "playCardSoundID": "SlashCast",
             "cardAttackSoundID": "SlashHit"
         },
         {
             "id": "pocketbomb",
             "cardName": "Pocket Bomb [M]",
-            "description": "[REACTION] Throw a bomb at an enemy. Throw earlier for more damage.",
+            "description": "[REACTION] Throw a bomb at an enemy. Throw earlier for more damage (0-8).",
             "cost": 1,
             "type": "spell",
             "isRanged": true,
             "minigameId": "reaction",
             "effectId": "damage_enemy",
-            "effectValue": 5,
+            "effectValue": 4,
             "playCardSoundID": "PocketBombCast",
             "cardAttackSoundID": "PocketBombHit"
         },
         {
             "id": "healinghands",
             "cardName": "Healing Hands",
-            "description": "Grants health back to its caster.",
+            "description": "Grants 5 health back to its caster.",
             "cost": 2,
             "type": "spell",
             "isRanged": true,
@@ -118,11 +118,10 @@
         {
             "id": "runicblast",
             "cardName": "Runic Blast [M]",
-            "description": "[TYPING] Deal damage for each rune you control.",
+            "description": "[TYPING] Deal (0-3) damage for each rune you control.",
             "cost": 2,
             "type": "spell",
             "isRanged": true,
-            "minigameId": "typing",
             "effectId": "runic_blast",
             "effectValue": 3,
             "playCardSoundID": "RunicBlastCast",
@@ -131,7 +130,7 @@
         {
             "id": "spinnysword",
             "cardName": "Spinny Sword [M]",
-            "description": "[CLICK SPEED] Spin a pair of swords and throw them at an enemy.",
+            "description": "[CLICK SPEED] Spin a pair of swords and throw them at an enemy for (0-8) damage.",
             "cost": 1,
             "type": "spell",
             "minigameId": "clickspeed",
@@ -157,7 +156,7 @@
         {
             "id": "shmovement",
             "cardName": "Shmovement [M]",
-            "description": "[PLATFORMER] Jump over gaps to close distance and damage a unit.",
+            "description": "[PLATFORMER] Jump over gaps to close distance and damage (~5) a unit.",
             "cost": 1,
             "type": "spell",
             "minigameId": "platformer",
@@ -205,7 +204,7 @@
         {
             "id": "PoisonDart",
             "cardName": "Poison Dart",
-            "description": "Apply 8 Poison stacks to a hero or minion.",
+            "description": "Apply 5 Poison stacks to a hero or minion (2dmg / turn).",
             "cost": 1,
             "type": "spell",
             "isRanged": false,
@@ -213,7 +212,7 @@
             "effects": [
                 {
                     "effectId": "poison",
-                    "effectValue": 8
+                    "effectValue": 5
                 }
             ],
             "playCardSoundID": "PoisonDartCast",
