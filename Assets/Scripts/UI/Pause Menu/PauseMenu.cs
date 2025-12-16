@@ -109,7 +109,8 @@ public class PauseMenu : MonoBehaviour
     {
         animator.SetTrigger(FlipAndExpand);
         StartCoroutine(PanelAfterDelay(0.3f, buttonsPanel, false));
-        optionsPanel.SetActive(true);
+        StartCoroutine(PanelAfterDelay(0.3f, optionsPanel, true));
+        //optionsPanel.SetActive(true);
         SyncAudioSliders();
     }
 
