@@ -57,9 +57,23 @@ public class BoardManager : MonoBehaviour
 
     private void OnClickPerformed(InputAction.CallbackContext ctx)
     {
+        // Lock input during banner animations
+        if (TurnManager.Instance != null && TurnManager.Instance.turnBanner != null)
+        {
+            if (TurnManager.Instance.turnBanner.IsShowing)
+            {
+                Debug.Log("[BoardManager] Input locked - banner is showing.");
+                return;
+            }
+        }
+        
         Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        if (!Physics.Raycast(ray, out RaycastHit hit)) return;
-
+        if (!Physics.Raycast(ray, out RaycastHit hit)) {
+            Debug.Log("[BoardManager] Raycast hit nothing.");
+            return;
+        }
+        
+        Debug.Log($"[BoardManager] Raycast hit: {hit.collider.name} (GameObject: {hit.collider.gameObject.name}, Tag: {hit.collider.tag})");
         // 1) If we are waiting for a summon target right after placing a minion
         if (pendingSummonCard != null && pendingSummonSlot != null)
         {
@@ -197,6 +211,16 @@ public class BoardManager : MonoBehaviour
         // 3) If an on-board minion is selected, second click chooses the target to attack/effect
         if (selectedMinion != null)
         {
+            // Check if we clicked on the same minion that's selected - if so, deselect it
+            var clickedMinion = hit.collider.GetComponentInParent<MinionBehaviour>();
+            if (clickedMinion != null && clickedMinion == selectedMinion)
+            {
+                Debug.Log("[BoardManager] Clicked on the same minion that's already selected. Deselecting it.");
+                selectedMinion.SetSelected(false);
+                selectedMinion = null;
+                return;
+            }
+
             // First try to get a direct entity from the click
             var target = ResolveClickToEntityStrict(hit);
 

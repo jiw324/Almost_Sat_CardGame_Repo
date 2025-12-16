@@ -1,9 +1,15 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BoardSlot : MonoBehaviour
 {
     [SerializeField] public bool isRanged;
     [SerializeField] private Transform pedestal;
+    [Header("Visual Feedback")]
+    [SerializeField] private Image statusImage;
+    [SerializeField] private Color availableColor = Color.green;
+    [SerializeField] private Color occupiedColor = Color.red;
+    
     public bool isOccupied;
     public CardInstance currentCard;
     private GameObject spawnedObject;
@@ -69,12 +75,20 @@ public class BoardSlot : MonoBehaviour
 
         currentCard = card;
         isOccupied = true;
+        UpdateStatusColor();
         Vector3 spawnPos = transform.position;
 
         if (pedestal != null)
         {
             // Get the top of the pedestal using its collider bounds
-            if (pedestal.TryGetComponent(out Collider col))
+            // Check both the pedestal itself and its children for a collider
+            Collider col = pedestal.GetComponent<Collider>();
+            if (col == null)
+            {
+                col = pedestal.GetComponentInChildren<Collider>();
+            }
+            
+            if (col != null)
             {
                 float pillarTopY = col.bounds.max.y;
                 spawnPos = new Vector3(pedestal.position.x, pillarTopY + 0.05f, pedestal.position.z);
@@ -82,7 +96,9 @@ public class BoardSlot : MonoBehaviour
             else
             {
                 // fallback: just place slightly above pedestal transform
-                spawnPos = pedestal.position + pedestal.up * 0.5f;
+                // Set Z to 0 to prevent offset issues
+                spawnPos = new Vector3(pedestal.position.x, pedestal.position.y + 0.01f, pedestal.position.z);
+                Debug.LogWarning($"[BoardSlot] Pedestal '{pedestal.name}' has no Collider component (checked self and children). Using fallback positioning.");
             }
         }
 
@@ -126,6 +142,26 @@ public class BoardSlot : MonoBehaviour
         spawnedObject = null;
         currentCard = null;
         isOccupied = false;
+        UpdateStatusColor();
     }
 
+    /// <summary>
+    /// Updates the status image color based on whether the slot is available or occupied.
+    /// </summary>
+    private void UpdateStatusColor()
+    {
+        if (statusImage != null)
+        {
+            statusImage.color = isOccupied ? occupiedColor : availableColor;
+        }
+    }
+
+    /// <summary>
+    /// Call this in the Inspector or from code to update the status color immediately.
+    /// </summary>
+    [ContextMenu("Update Status Color")]
+    public void RefreshStatusColor()
+    {
+        UpdateStatusColor();
+    }
 }
