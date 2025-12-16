@@ -698,14 +698,14 @@ public class BoardManager : MonoBehaviour
             if (bm == null) continue;
             
             // Check if it's the enemy UI
-            if (bm.uiManager != null && bm.uiManager.enemyUI == avatarUI)
+            if (bm.uiManager != null && bm.uiManager.enemyAvatar == avatarUI)
             {
                 // Return enemy entity
                 return GetDefaultEnemyHero();
             }
             
             // Check if it's the player UI
-            if (bm.uiManager != null && bm.uiManager.playerUI == avatarUI)
+            if (bm.uiManager != null && bm.uiManager.playerAvatar == avatarUI)
             {
                 // Return player entity
                 return bm.player;

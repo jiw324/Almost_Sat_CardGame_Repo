@@ -169,9 +169,9 @@ public abstract class EntityBase : MonoBehaviour
             {
                 Debug.Log($"{entityName}'s Poison stacks decay to {poisonStacks}.");
             }
-
-            RefreshOwnedCardsStatusIcons();
         }
+
+        RefreshOwnedCardsStatusIcons();
     }
 
     private void RefreshOwnedCardsStatusIcons()

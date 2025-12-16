@@ -131,9 +131,9 @@ public class BattleManager : MonoBehaviour
                 }
 
                 // Set enemy portrait if available
-                if (enemyDef != null && enemyDef.Portrait != null && uiManager != null && uiManager.enemyUI != null)
+                if (enemyDef != null && enemyDef.Portrait != null && uiManager != null && uiManager.enemyAvatar != null)
                 {
-                    uiManager.enemyUI.SetPortrait(enemyDef.Portrait);
+                    uiManager.enemyAvatar.SetPortrait(enemyDef.Portrait);
                 }
             }
         }

@@ -2,25 +2,28 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    public AvatarUI playerUI;
-    public AvatarUI enemyUI;
+    public AvatarUI playerAvatar;
+    public AvatarUI enemyAvatar;
+
+    public AvatarUI GetPlayerAvatar() => playerAvatar;
+    public AvatarUI GetEnemyAvatar() => enemyAvatar;
 
     public void InitializeUI(int playerHealth, int playerMana, int enemyHealth, int enemyMana)
     {
-        if (playerUI != null)
+        if (playerAvatar != null)
         {
-            playerUI.SetHealth(playerHealth);
-            playerUI.SetMana(playerMana);
+            playerAvatar.SetHealth(playerHealth);
+            playerAvatar.SetMana(playerMana);
         }
         else
         {
             Debug.LogWarning("[UIManager] PlayerUI is not assigned.");
         }
 
-        if (enemyUI != null)
+        if (enemyAvatar != null)
         {
-            enemyUI.SetHealth(enemyHealth);
-            enemyUI.SetMana(enemyMana);
+            enemyAvatar.SetHealth(enemyHealth);
+            enemyAvatar.SetMana(enemyMana);
         }
         else
         {
@@ -30,26 +33,26 @@ public class UIManager : MonoBehaviour
 
     public void UpdatePlayerHealth(int newHealth)
     {
-        if (playerUI != null)
-            playerUI.SetHealth(newHealth);
+        if (playerAvatar != null)
+            playerAvatar.SetHealth(newHealth);
     }
 
     public void UpdatePlayerMana(int newMana)
     {
-        if (playerUI != null)
-            playerUI.SetMana(newMana);
+        if (playerAvatar != null)
+            playerAvatar.SetMana(newMana);
     }
 
     public void UpdateEnemyHealth(int newHealth)
     {
-        if (enemyUI != null)
-            enemyUI.SetHealth(newHealth);
+        if (enemyAvatar != null)
+            enemyAvatar.SetHealth(newHealth);
     }
 
     public void UpdateEnemyMana(int newMana)
     {
-        if (enemyUI != null)
-            enemyUI.SetMana(newMana);
+        if (enemyAvatar != null)
+            enemyAvatar.SetMana(newMana);
     }
     
 }

@@ -92,33 +92,32 @@ public class Card3DController : MonoBehaviour
     /// </summary>
     public void UpdateStatusIcons()
     {
-        if (Instance == null)
+        // Try to get the MinionEntity component (for minions on board)
+        MinionEntity minionEntity = GetComponent<MinionEntity>();
+
+        if (minionEntity == null)
         {
+            // Not a minion or not initialized yet
             if (strengthIcon != null) strengthIcon.SetActive(false);
             if (weaknessIcon != null) weaknessIcon.SetActive(false);
             if (poisonIcon != null) poisonIcon.SetActive(false);
             return;
         }
 
-        EntityBase owner = Instance.Owner;
-
-        // Update Strength icon
+        // Update icons based on the minion's own status effects
         if (strengthIcon != null)
         {
-            strengthIcon.SetActive(owner.HasStrength);
+            strengthIcon.SetActive(minionEntity.HasStrength);
         }
 
-        // Update Weakness icon
         if (weaknessIcon != null)
         {
-            weaknessIcon.SetActive(owner.HasWeakness);
+            weaknessIcon.SetActive(minionEntity.HasWeakness);
         }
 
-        // Update Poison icon and stack count
         if (poisonIcon != null)
         {
-            bool hasPoison = owner.PoisonStacks > 0;
-            poisonIcon.SetActive(hasPoison);
+            poisonIcon.SetActive(minionEntity.PoisonStacks > 0);
         }
     }
 
