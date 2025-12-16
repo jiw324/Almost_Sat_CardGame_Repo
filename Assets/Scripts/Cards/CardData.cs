@@ -15,6 +15,8 @@ public class CardData : ScriptableObject
     public bool isRowEffect = false;
     public CardEffect effect;
     public int damage;
+    public string playCardSoundID;
+    public string cardAttackSoundID;
 
     [Serializable]
     public class EffectBinding

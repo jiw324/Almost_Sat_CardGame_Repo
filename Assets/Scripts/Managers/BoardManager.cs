@@ -130,8 +130,8 @@ public class BoardManager : MonoBehaviour
                                 pendingSummonSlot = slot;
                             }
                         }
+                        AudioManager.Instance.PlaySoundById(inst.Data.playCardSoundID);
                     }
-
                 }
                 // clicks elsewhere while minion card is selected: ignore
                 return;
@@ -171,7 +171,9 @@ public class BoardManager : MonoBehaviour
                 }
 
                 Debug.Log($"[BoardManager] Casting spell {inst.Data.cardName} by Player targeting {GetTargetDescription(targetEntity)}");
-                
+
+                AudioManager.Instance.PlaySoundById(inst.Data.playCardSoundID);
+
                 // Show spell flash animation
                 StartCoroutine(SpellFlashAnimation(inst, targetEntity));
 
@@ -226,6 +228,7 @@ public class BoardManager : MonoBehaviour
             // Only attack if we ended up with a valid target
             if (target != null)
             {
+                AudioManager.Instance.PlaySoundById(selectedMinion.instance.Data.cardAttackSoundID);
                 selectedMinion.SetSelected(false);
                 selectedMinion.AttackTarget(target);
                 selectedMinion = null; // done

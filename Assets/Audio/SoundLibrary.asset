@@ -31,18 +31,69 @@ MonoBehaviour:
   - id: OpenRelics
     clip: {fileID: 8300000, guid: d3d6b94e7a9e47849af63615dc0dc516, type: 3}
     channel: 1
-  - id: MinionPlace
-    clip: {fileID: 8300000, guid: 5682dd95e2997d5458f5abb21d064095, type: 3}
-    channel: 2
-  - id: SpellPlace
-    clip: {fileID: 8300000, guid: 540c0c91619f3cf44a3a201863c80021, type: 3}
-    channel: 2
-  - id: MinionAttack
-    clip: {fileID: 8300000, guid: 5682dd95e2997d5458f5abb21d064095, type: 3}
-    channel: 2
   - id: LootFind
     clip: {fileID: 8300000, guid: 4e7f6865c62d2bc46ba15d79bed8d239, type: 3}
     channel: 3
+  - id: FireballCast
+    clip: {fileID: 8300000, guid: 540c0c91619f3cf44a3a201863c80021, type: 3}
+    channel: 2
+  - id: ApocalypseCast
+    clip: {fileID: 8300000, guid: 2c5af54b681aca44788eb1b1ad9fe017, type: 3}
+    channel: 2
+  - id: SlashCast
+    clip: {fileID: 8300000, guid: afbc10bd2c79c6c41a1c48f3c53840c8, type: 3}
+    channel: 2
+  - id: PocketBombCast
+    clip: {fileID: 8300000, guid: 8c001d477dc340c4d83fb2e66be2be5a, type: 3}
+    channel: 2
+  - id: HealingHandsCast
+    clip: {fileID: 8300000, guid: 19e679456d386ab4b808d07bb2544773, type: 3}
+    channel: 2
+  - id: RunicBlastCast
+    clip: {fileID: 8300000, guid: 3802428c7771f244495b60aa49f60655, type: 3}
+    channel: 2
+  - id: SpinnySwordCast
+    clip: {fileID: 8300000, guid: b83ef44da6524764eac59e4a867d5580, type: 3}
+    channel: 2
+  - id: CozyBuffetCast
+    clip: {fileID: 8300000, guid: ffb7f94439a9e534fbe3c97b3a638d11, type: 3}
+    channel: 2
+  - id: ShmovementCast
+    clip: {fileID: 8300000, guid: adb0149681b16454399b4d7af7d6d382, type: 3}
+    channel: 2
+  - id: StrengthCast
+    clip: {fileID: 8300000, guid: fde6a5ac31e21de449df594f9137d206, type: 3}
+    channel: 2
+  - id: WeaknessCast
+    clip: {fileID: 8300000, guid: a249d88fe39ef7d4fb212e0ce9a77d6c, type: 3}
+    channel: 2
+  - id: PoisonDartCast
+    clip: {fileID: 8300000, guid: 09539cb7d503ede41bd1613bcc2e09c4, type: 3}
+    channel: 2
+  - id: MeleeWarCryCast
+    clip: {fileID: 8300000, guid: f7b3be9a13bffbf41879cdc703aed957, type: 3}
+    channel: 2
+  - id: SupressRangedCast
+    clip: {fileID: 8300000, guid: 80539210418eeaa43b21787e55269ba3, type: 3}
+    channel: 2
+  - id: WarriorCast
+    clip: {fileID: 8300000, guid: b79a1461ed2167e4c993aa32303e6fe8, type: 3}
+    channel: 2
+  - id: WarriorHit
+    clip: {fileID: 8300000, guid: bd8ad4edcacece44ca8f86c93967c60c, type: 3}
+    channel: 2
+  - id: ArcherCast
+    clip: {fileID: 8300000, guid: c521190f477919843a17b83b3bbab874, type: 3}
+    channel: 2
+  - id: ArcherHit
+    clip: {fileID: 8300000, guid: a5a12b2b1e6f58b479e709021a52246a, type: 3}
+    channel: 2
+  - id: RuneCast
+    clip: {fileID: 8300000, guid: 5682dd95e2997d5458f5abb21d064095, type: 3}
+    channel: 2
+  - id: RuneHit
+    clip: {fileID: 8300000, guid: 5762788ccc11aa040b5b232e84bd6aee, type: 3}
+    channel: 2
   music:
   - id: Menu
     clip: {fileID: 8300000, guid: 6e9e896269326864894f323686b40aee, type: 3}

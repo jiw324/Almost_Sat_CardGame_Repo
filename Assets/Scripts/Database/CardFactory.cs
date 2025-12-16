@@ -21,6 +21,8 @@ public static class CardFactory
         cardData.type = data.type;
         cardData.isRanged = data.isRanged;
         cardData.isRowEffect = data.isRowEffect;
+        cardData.playCardSoundID = data.playCardSoundID;
+        cardData.cardAttackSoundID = data.cardAttackSoundID;
 
         // Load sprite from Resources/Cards/ folder
         string spritePath = $"Cards/{id}";

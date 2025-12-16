@@ -211,6 +211,7 @@ public class HandManager : MonoBehaviour
         if (card == null) return;
         cardsInHand.Add(card);
         Debug.Log($"[HandManager] Added {card.Data.name} to hand.\n{card.Data.PrintCard()}");
+        AudioManager.Instance.PlaySoundById("Cards");
 
         // Only create UI for players
         bool isPlayer = owner is PlayerEntity;
@@ -232,6 +233,7 @@ public class HandManager : MonoBehaviour
         if (cardsInHand.Contains(card))
         {
             cardsInHand.Remove(card);
+            AudioManager.Instance.PlaySoundById("Cards");
         }
     }
 
