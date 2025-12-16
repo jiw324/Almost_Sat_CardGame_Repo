@@ -184,4 +184,9 @@ public class PauseMenu : MonoBehaviour
         AudioManager.Instance?.SetMusicVolume(value);
     }
 
+    public void TriggerUIButtonSound()
+    {
+        AudioManager.Instance.PlaySoundById("UIButton");
+    }
+
 }
