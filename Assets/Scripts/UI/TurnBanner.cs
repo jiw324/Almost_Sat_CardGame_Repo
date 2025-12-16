@@ -15,6 +15,11 @@ public class TurnBanner : MonoBehaviour
     private static readonly int ShowBanner = Animator.StringToHash("ShowBanner");
 
     private bool isShowing = false;
+    
+    /// <summary>
+    /// Returns true if a banner is currently being displayed.
+    /// </summary>
+    public bool IsShowing => isShowing;
 
     private void Awake()
     {
