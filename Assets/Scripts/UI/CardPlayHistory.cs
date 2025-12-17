@@ -8,8 +8,10 @@ using UnityEngine.EventSystems;
 public class CardPlayHistory : MonoBehaviour
 {
     [Header("Configuration")]
-    [SerializeField] private float barWidth = 100f;
-    [SerializeField] private float barOffsetX = 10f;
+    [SerializeField] private float barWidth = 400f;  // Width of the history bar
+    [SerializeField] private float barOffsetX = 100f;  // X position from left
+    [SerializeField] private float barOffsetY = 500f;  // Y position from bottom
+    [SerializeField] private float barHeight = 700f;  // Height of the history bar
     
     [Header("Visual Settings")]
     [SerializeField] private Color backgroundColor = new Color(0, 0, 0, 0.7f);
@@ -199,6 +201,20 @@ public class CardPlayHistory : MonoBehaviour
                 Debug.Log("[PlayHistory] Added GraphicRaycaster to existing Canvas");
             }
             
+            // Ensure it has proper CanvasScaler settings
+            CanvasScaler scaler = existingCanvas.GetComponent<CanvasScaler>();
+            if (scaler == null)
+            {
+                scaler = existingCanvas.gameObject.AddComponent<CanvasScaler>();
+                Debug.Log("[PlayHistory] Added CanvasScaler to existing Canvas");
+            }
+            
+            // Set to scale with screen size
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920, 1080);
+            scaler.matchWidthOrHeight = 0.5f;  // Balance between width and height
+            Debug.Log($"[PlayHistory] Set CanvasScaler to ScaleWithScreenSize");
+            
             return existingCanvas;
         }
         
@@ -207,9 +223,10 @@ public class CardPlayHistory : MonoBehaviour
         Canvas newCanvas = canvasObj.AddComponent<Canvas>();
         newCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
         
-        CanvasScaler scaler = canvasObj.AddComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920, 1080);
+        CanvasScaler newScaler = canvasObj.AddComponent<CanvasScaler>();
+        newScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        newScaler.referenceResolution = new Vector2(1920, 1080);
+        newScaler.matchWidthOrHeight = 0.5f;  // Balance between width and height
         
         canvasObj.AddComponent<GraphicRaycaster>();
         
@@ -228,8 +245,10 @@ public class CardPlayHistory : MonoBehaviour
         barRect.anchorMin = new Vector2(0, 0);      // Bottom left corner
         barRect.anchorMax = new Vector2(0, 0);      // Bottom left corner
         barRect.pivot = new Vector2(0, 0);          // Anchor from bottom left
-        barRect.anchoredPosition = new Vector2(barOffsetX, 180);  // Moved up - offset from bottom
-        barRect.sizeDelta = new Vector2(barWidth, 300);  // Fixed height to fit the empty space
+        barRect.anchoredPosition = new Vector2(barOffsetX, barOffsetY);  // Position from bottom
+        barRect.sizeDelta = new Vector2(barWidth, barHeight);  // Size of the history bar
+        
+        Debug.Log($"[PlayHistory] Bar created at position ({barOffsetX}, {barOffsetY}) with size ({barWidth}, {barHeight})");
         
         Image bgImage = displayBarObject.AddComponent<Image>();
         bgImage.color = backgroundColor;

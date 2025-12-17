@@ -754,8 +754,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 268337ac0dea36947b03bcdb3bb8b4c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  barWidth: 100
-  barOffsetX: 10
+  barWidth: 200
+  barOffsetX: 30
+  barOffsetY: 300
+  barHeight: 600
   backgroundColor: {r: 0, g: 0, b: 0, a: 0.7}
   playerCardColor: {r: 0.3, g: 0.6, b: 1, a: 1}
   enemyCardColor: {r: 1, g: 0.2, b: 0.2, a: 1}
@@ -763,7 +765,7 @@ MonoBehaviour:
   cardSpacing: 5
   maxCardsShown: 20
   cardUIPrefab: {fileID: 3072006593040025153, guid: b39f880c06d5dde4cbd4e5c1265341d2, type: 3}
-  previewPosition: {x: 240, y: 270}
+  previewPosition: {x: 400, y: 600}
   showTestCards: 0
   numberOfTestCards: 3
 --- !u!1 &1841611669
