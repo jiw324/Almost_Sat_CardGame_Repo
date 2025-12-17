@@ -248,24 +248,31 @@ public class BattleManager : MonoBehaviour
         
         if (playerHealth <= 0)
         {
-            EndBattle("You were defeated");
+            EndBattle(false);
         }
         else if (enemyHealth <= 0)
         {
-            EndBattle("Enemy defeated");
+            EndBattle(true);
         }
     }
 
-    public void EndBattle(string message)
+    public void EndBattle(bool wonBattle)
     {
         if (endSequenceStarted) return;
         endSequenceStarted = true;
-        SessionGrabber.getGameSession().SetPlayerGold(
-            SessionGrabber.getGameSession().GetPlayerGold() + 10); // reward 10 gold for winning
-        StartCoroutine(ShowEndBannerAndReturnToMap(message));
+        string bannerMessage = "Enemy Defeated";
+        if(!wonBattle)
+        {
+            bannerMessage = "You were defeated";
+        } else
+        {
+            SessionGrabber.getGameSession().SetPlayerGold(
+                SessionGrabber.getGameSession().GetPlayerGold() + 10); // reward 10 gold for winning
+        }
+        StartCoroutine(ShowEndBannerAndReturnToMap(bannerMessage, wonBattle));
     }
 
-    private IEnumerator ShowEndBannerAndReturnToMap(string message)
+    private IEnumerator ShowEndBannerAndReturnToMap(string message, bool wonBattle)
     {
         var tb = Object.FindFirstObjectByType<TurnBanner>();
         if (tb != null)
@@ -283,9 +290,41 @@ public class BattleManager : MonoBehaviour
         // Go to Map route
         var msm = FindFirstObjectByType<MapStateManager>();
         if (msm != null)
-        {
-            msm.MarkCompleted(msm.GetCurrentNode());
-            msm.ReturnToMapScene();
+        { 
+            if(wonBattle)
+            {
+                msm.MarkCompleted(msm.GetCurrentNode());
+                msm.ReturnToMapScene();
+            }
+            else
+            {
+                GameSession session = SessionGrabber.getGameSession();
+                if (session != null)
+                {
+                    session.EndRun();
+                    session.ResetGameSessionData();
+                    SessionSaveManager.SaveGameSession(session.gameSessionData);
+                }
+
+                var sceneManagerObj = GameObject.Find("SceneManager");
+                if (sceneManagerObj != null)
+                {
+                    var sceneSwitch = sceneManagerObj.GetComponent<SceneSwitch>();
+                    if (sceneSwitch != null)
+                    {
+                        sceneSwitch.SceneChanger("MainMenu");
+                    }
+                    else
+                    {
+                        Debug.LogError("[BattleManager] SceneSwitch missing on SceneManager.");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("[BattleManager] SceneManager object not found.");
+                }
+            }
+
         }
     }
 
