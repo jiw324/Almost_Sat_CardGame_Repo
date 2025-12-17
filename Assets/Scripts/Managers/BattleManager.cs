@@ -90,7 +90,15 @@ public class BattleManager : MonoBehaviour
             // Try to load enemy definition from Resources
             if (!string.IsNullOrWhiteSpace(combatData.enemyDefinitionName))
             {
-                enemyDef = Resources.Load<EnemyDefinition>($"Enemies/{combatData.enemyDefinitionName}");
+                if (combatData.enemyDefinitionName.Contains("/"))
+                {
+                    enemyDef = Resources.Load<EnemyDefinition>(combatData.enemyDefinitionName);
+                }
+                else
+                {
+                    enemyDef = Resources.Load<EnemyDefinition>($"Enemies/{combatData.enemyDefinitionName}");
+                }
+
                 if (enemyDef == null)
                 {
                     Debug.LogWarning($"[BattleManager] Could not load EnemyDefinition '{combatData.enemyDefinitionName}' from Resources/Enemies/. Using combat node data directly.");

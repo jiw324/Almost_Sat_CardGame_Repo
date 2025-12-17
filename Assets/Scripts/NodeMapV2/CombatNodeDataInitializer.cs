@@ -28,7 +28,17 @@ public static class CombatNodeDataInitializer
         // Try to load enemy definition and populate data
         if (!string.IsNullOrWhiteSpace(enemyDefinitionName))
         {
-            EnemyDefinition enemyDef = Resources.Load<EnemyDefinition>($"Enemies/{enemyDefinitionName}");
+            EnemyDefinition enemyDef = null;
+
+            if (enemyDefinitionName.Contains("/"))
+            {
+                enemyDef = Resources.Load<EnemyDefinition>(enemyDefinitionName);
+            }
+            else
+            {
+                enemyDef = Resources.Load<EnemyDefinition>($"Enemies/{enemyDefinitionName}");
+            }
+
             if (enemyDef != null)
             {
                 combatData.enemyHealth = enemyDef.MaxHealth;

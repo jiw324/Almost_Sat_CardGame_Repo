@@ -254,12 +254,27 @@ public class MapGenerationManager : MonoBehaviour
             }
         }
 
+        // Assign a boss from Resources/Bosses (supports multiple boss assets in that folder)
         if (map.BossNode != null &&
             map.BossNode.Definition != null &&
             map.BossNode.Definition.nodeType == NodeType.Combat)
         {
-            string randomEnemy = availableEnemies[Random.Range(0, availableEnemies.Length)];
-            CombatNodeEnemyAssigner.AssignEnemyToNode(map.BossNode, randomEnemy);
+            EnemyDefinition[] bossDefinitions = Resources.LoadAll<EnemyDefinition>("Bosses");
+            if (bossDefinitions != null && bossDefinitions.Length > 0)
+            {
+                // Pick the first boss found.
+                EnemyDefinition bossEnemy = bossDefinitions[0];
+                string bossPath = $"Bosses/{bossEnemy.name}";
+                CombatNodeEnemyAssigner.AssignEnemyToNode(map.BossNode, bossPath);             
+                Debug.Log($"[MapGenerationManager] Assigned boss enemy '{bossEnemy.name}' to boss node.");
+                return;
+            }
+            else
+            {
+                // Fallback to one of the regular enemies
+                string randomEnemy = availableEnemies[Random.Range(0, availableEnemies.Length)];
+                CombatNodeEnemyAssigner.AssignEnemyToNode(map.BossNode, randomEnemy);
+            }
             assignedCount++;
         }
 
