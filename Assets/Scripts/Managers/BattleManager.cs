@@ -268,6 +268,8 @@ public class BattleManager : MonoBehaviour
         {
             SessionGrabber.getGameSession().SetPlayerGold(
                 SessionGrabber.getGameSession().GetPlayerGold() + 10); // reward 10 gold for winning
+
+            SessionGrabber.getGameSession().SetPlayerHealth(playerHealth); // save health after battle
         }
         StartCoroutine(ShowEndBannerAndReturnToMap(bannerMessage, wonBattle));
     }
