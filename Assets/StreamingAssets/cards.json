@@ -10,7 +10,7 @@
             "effects": [
                 {
                     "effectId": "aoe_damage",
-                    "effectValue": 4
+                    "effectValue": 7
                 }
             ],
             "playCardSoundID": "FireballCast",
@@ -40,7 +40,7 @@
             "type": "spell",
             "isRanged": true,
             "effectId": "damage_enemy",
-            "effectValue": 3,
+            "effectValue": 4,
             "playCardSoundID": "SlashCast",
             "cardAttackSoundID": "SlashHit"
         },
@@ -82,7 +82,7 @@
             "onSummon": [
                 {
                     "effectId": "gain_shield",
-                    "effectValue": 4
+                    "effectValue": 2
                 }
             ],
             "playCardSoundID": "WarriorCast",
@@ -96,7 +96,7 @@
             "type": "minion",
             "isRanged": true,
             "isMinion": true,
-            "minionAttack": 4,
+            "minionAttack": 5,
             "minionHealth": 2,
             "ignoreSummoningSickness": true,
             "playCardSoundID": "ArcherCast",

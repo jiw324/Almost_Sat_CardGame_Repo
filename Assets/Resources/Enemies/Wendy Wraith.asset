@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Wendy Wraith
   m_EditorClassIdentifier: 
   enemyName: Enemy
-  maxHealth: 15
-  startingMana: 5
+  maxHealth: 30
+  startingMana: 4
   portrait: {fileID: 21300000, guid: 4e43b0758faf2c548819f4c93474a7e5, type: 3}
   deckDefinition: {fileID: 11400000, guid: 53b4ce0a2d0d24cc5a6ea61669802825, type: 2}

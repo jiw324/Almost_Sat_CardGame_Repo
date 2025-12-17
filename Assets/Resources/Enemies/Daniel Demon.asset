@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Daniel Demon
   m_EditorClassIdentifier: 
   enemyName: Enemy
-  maxHealth: 20
-  startingMana: 1
+  maxHealth: 50
+  startingMana: 2
   portrait: {fileID: 21300000, guid: 558ac0b090fec274d8e35cea44527bca, type: 3}
   deckDefinition: {fileID: 11400000, guid: 53b4ce0a2d0d24cc5a6ea61669802825, type: 2}
