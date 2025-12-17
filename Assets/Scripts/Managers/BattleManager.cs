@@ -281,7 +281,7 @@ public class BattleManager : MonoBehaviour
         }
 
         // Wait a moment to let UI update; then load map
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSecondsRealtime(2f);
 
         if (tb != null)
         {
