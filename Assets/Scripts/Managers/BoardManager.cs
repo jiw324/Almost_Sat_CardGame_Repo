@@ -192,6 +192,13 @@ public class BoardManager : MonoBehaviour
                 StartCoroutine(SpellFlashAnimation(inst, targetEntity));
 
                 _ = inst.PlayCardAsync(null, targetEntity);
+                
+                // Track player spell in history
+                var playHistory = FindFirstObjectByType<CardPlayHistory>();
+                if (playHistory != null && inst.Data != null)
+                {
+                    playHistory.OnPlayerPlayedCard(inst.Data);
+                }
 
                 if (bm != null && bm.uiManager != null)
                 {
@@ -386,6 +393,13 @@ public class BoardManager : MonoBehaviour
         _ = inst.PlayCardAsync(slot);
         if (slot.PlaceCard(inst))
         {
+            // Track player card in history
+            var playHistory = FindFirstObjectByType<CardPlayHistory>();
+            if (playHistory != null && inst.Data != null)
+            {
+                playHistory.OnPlayerPlayedCard(inst.Data);
+            }
+            
             var hm = FindFirstObjectByType<HandManager>();
             if (hm != null) hm.RemoveByInstance(inst);
             Destroy(selectedCard.gameObject);

@@ -90,6 +90,26 @@ public class MulliganOverlay : MonoBehaviour
         SetRootActive(false);
         ClearOptions();
         turnManager.OnMulliganFinished();
+        
+        // Show the play history bar after mulligan is confirmed (only in battle scenes)
+        string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        if (currentScene.Contains("Battle") || currentScene.Contains("Forest"))
+        {
+            var playHistory = FindFirstObjectByType<CardPlayHistory>();
+            if (playHistory != null)
+            {
+                playHistory.ShowBarAfterMulligan();
+                Debug.Log("[MulliganOverlay] Showing play history bar in battle scene: " + currentScene);
+            }
+            else
+            {
+                Debug.LogWarning("[MulliganOverlay] CardPlayHistory not found in scene");
+            }
+        }
+        else
+        {
+            Debug.Log($"[MulliganOverlay] Not a battle scene ({currentScene}), skipping play history bar");
+        }
     }
 
     public void HideImmediate()

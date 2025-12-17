@@ -258,6 +258,13 @@ public static class EnemyAI
                 bm.enemyHandManager.RemoveByInstance(inst);
                 bm.enemyHandManager.DiscardCard(inst);
             }
+            
+            // Track enemy card in history
+            var playHistory = UnityEngine.Object.FindFirstObjectByType<CardPlayHistory>();
+            if (playHistory != null && inst.Data != null)
+            {
+                playHistory.OnEnemyPlayedCard(inst.Data);
+            }
 
             Debug.Log($"[EnemyAI] Played minion {inst.Data.cardName} for cost {inst.Data.cost}. Remaining mana: {bm.enemyMana}");
             return true;
@@ -331,6 +338,13 @@ public static class EnemyAI
         {
             bm.enemyHandManager.RemoveByInstance(inst);
             bm.enemyHandManager.DiscardCard(inst);
+        }
+        
+        // Track enemy spell in history
+        var playHistory = UnityEngine.Object.FindFirstObjectByType<CardPlayHistory>();
+        if (playHistory != null && inst.Data != null)
+        {
+            playHistory.OnEnemyPlayedCard(inst.Data);
         }
 
         Debug.Log($"[EnemyAI] Cast spell {inst.Data.cardName} for cost {inst.Data.cost}. Remaining mana: {bm.enemyMana}");

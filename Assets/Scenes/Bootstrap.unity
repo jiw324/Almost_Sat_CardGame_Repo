@@ -189,6 +189,11 @@ MonoBehaviour:
       completedNodeIds: []
       currentNodeType: 0
       currentNodeJson: 
+    audioSettings:
+      uiVolume: 1
+      mapVolume: 1
+      combatVolume: 1
+      musicVolume: 1
   startingPlayerDeck: {fileID: 11400000, guid: 14f9705b56c666b4887ca14ffc9e6dff, type: 2}
 --- !u!1 &46919001
 GameObject:
@@ -321,6 +326,7 @@ MonoBehaviour:
   uiVolume: 0.15
   mapVolume: 0.35
   combatVolume: 0.5
+  musicVolume: 1
 --- !u!4 &475012744
 Transform:
   m_ObjectHideFlags: 0
@@ -704,6 +710,62 @@ MonoBehaviour:
   fogPrefab: {fileID: 9019322638695637648, guid: efc1a35888f08aa4aa744822777f658e, type: 3}
   useRandomSeed: 1
   debugSeed: 12345
+--- !u!1 &1684611639
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1684611641}
+  - component: {fileID: 1684611642}
+  m_Layer: 0
+  m_Name: PlayHistoryManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1684611641
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1684611639}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 519.77234, y: 291.1066, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1684611642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1684611639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 268337ac0dea36947b03bcdb3bb8b4c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  barWidth: 100
+  barOffsetX: 10
+  backgroundColor: {r: 0, g: 0, b: 0, a: 0.7}
+  playerCardColor: {r: 0.3, g: 0.6, b: 1, a: 1}
+  enemyCardColor: {r: 1, g: 0.2, b: 0.2, a: 1}
+  cardHeight: 80
+  cardSpacing: 5
+  maxCardsShown: 20
+  cardUIPrefab: {fileID: 3072006593040025153, guid: b39f880c06d5dde4cbd4e5c1265341d2, type: 3}
+  previewPosition: {x: 240, y: 270}
+  showTestCards: 0
+  numberOfTestCards: 3
 --- !u!1 &1841611669
 GameObject:
   m_ObjectHideFlags: 0
@@ -762,3 +824,4 @@ SceneRoots:
   - {fileID: 46919003}
   - {fileID: 183742320}
   - {fileID: 475012744}
+  - {fileID: 1684611641}
