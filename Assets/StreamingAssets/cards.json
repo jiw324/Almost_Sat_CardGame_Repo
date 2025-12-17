@@ -10,7 +10,7 @@
             "effects": [
                 {
                     "effectId": "aoe_damage",
-                    "effectValue": 7
+                    "effectValue": 4
                 }
             ],
             "playCardSoundID": "FireballCast",
@@ -40,7 +40,7 @@
             "type": "spell",
             "isRanged": true,
             "effectId": "damage_enemy",
-            "effectValue": 4,
+            "effectValue": 3,
             "playCardSoundID": "SlashCast",
             "cardAttackSoundID": "SlashHit"
         },
@@ -96,7 +96,7 @@
             "type": "minion",
             "isRanged": true,
             "isMinion": true,
-            "minionAttack": 5,
+            "minionAttack": 4,
             "minionHealth": 2,
             "ignoreSummoningSickness": true,
             "playCardSoundID": "ArcherCast",
@@ -118,12 +118,12 @@
         {
             "id": "runicblast",
             "cardName": "Runic Blast [M]",
-            "description": "[TYPING] Deal (0-3) damage for each rune you control.",
+            "description": "[TYPING] Deal (0-4) damage for each rune you control.",
             "cost": 2,
             "type": "spell",
             "isRanged": true,
             "effectId": "runic_blast",
-            "effectValue": 3,
+            "effectValue": 2,
             "playCardSoundID": "RunicBlastCast",
             "cardAttackSoundID": "RunicBlastHit"
         },
